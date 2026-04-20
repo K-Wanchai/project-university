@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>เข้าสู่ระบบ</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<link rel="stylesheet" href="../css/login.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- LEFT -->
+    <div class="left">
+        <h1>ครูปุ๊ก<br>ติวเตอร์</h1>
+    </div>
+
+    <!-- RIGHT -->
+    <div class="right">
+
+        <!-- MOBILE LOGO -->
+        <div class="mobile-header">
+            <h1>ครูปุ๊กติวเตอร์</h1>
+        </div>
+
+        <div class="form-box">
+            <h2>เข้าสู่ระบบ</h2>
+
+            <form id="loginForm">
+
+                <div class="input-group">
+                    <i class="fa fa-user icon"></i>
+                    <input type="text" placeholder="ชื่อผู้ใช้ / อีเมล" required>
+                </div>
+
+                <div class="input-group">
+                    <i class="fa fa-lock icon"></i>
+                    <input type="password" id="password" placeholder="รหัสผ่าน" required>
+                    <i class="fa fa-eye toggle"></i>
+                </div>
+
+                <button type="submit">เข้าสู่ระบบ</button>
+
+                <p class="link forgot">ลืมรหัสผ่าน?</p>
+                <p class="link center">ยังไม่มีบัญชี? <span>สมัครสมาชิก</span></p>
+                <p class="link center gray">เข้าสู่ระบบสำหรับ <b>ผู้ปกครอง</b></p>
+
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<script src="../js/login.js"></script>
+</body>
+</html>
