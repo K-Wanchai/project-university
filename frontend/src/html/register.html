@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>สมัครสมาชิก</title>
+
+  <!-- CSS -->
+  <link rel="stylesheet" href="../css/register.css">
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h1>ครูปุ๊ก<br>ติวเตอร์</h1>
+    
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+    <h1>สมัครสมาชิกใหม่</h1>
+
+    <!-- Section 1 -->
+    <div class="card">
+      <h3>1. ข้อมูลส่วนตัว</h3>
+
+      <div class="row">
+        <input type="text" placeholder="ชื่อ">
+        <input type="text" placeholder="นามสกุล">
+        <input type="text" placeholder="เลขบัตรประชาชน">
+      </div>
+
+      <div class="row">
+        <input type="date">
+        
+        <div class="radio-group">
+          เพศ:
+          <label><input type="radio" name="gender"> ชาย</label>
+          <label><input type="radio" name="gender"> หญิง</label>
+        </div>
+
+        <select>
+  <option value="">เลือกระดับชั้น</option>
+  <option value="junior">มัธยมศึกษาตอนต้น</option>
+  <option value="senior">มัธยมศึกษาตอนปลาย</option>
+  <option value="university">ระดับอุดมศึกษา</option>
+</select>
+      </div>
+    </div>
+
+    <!-- Section 2 -->
+    <div class="card">
+      <h3>2. ข้อมูลการติดต่อ</h3>
+
+      <div class="row">
+        <input type="text" placeholder="เบอร์โทรศัพท์">
+        <input type="email" placeholder="อีเมล">
+        <input type="text" placeholder="ที่อยู่">
+      </div>
+    </div>
+
+    <!-- Section 3 -->
+    <div class="card">
+      <h3>3. ข้อมูลบัญชีผู้ใช้</h3>
+
+      <div class="row">
+        <input type="text" placeholder="ชื่อผู้ใช้">
+        <input type="password" placeholder="รหัสผ่าน">
+        <input type="password" placeholder="ยืนยันรหัสผ่าน">
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <label>
+        <input type="checkbox" id="accept" required>
+        ยินยอมรับเงื่อนไขการใช้งานและนโยบายความเป็นส่วนตัว
+      </label>
+
+      <button id="submitBtn">สมัครสมาชิก</button>
+      <p>มีบัญชีแล้ว? <a href="#">เข้าสู่ระบบ</a></p>
+    </div>
+
+  </div>
+</div>
+
+<script src="../js/register.js"></script>
+</body>
+</html>
