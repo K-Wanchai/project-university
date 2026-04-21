@@ -17,7 +17,8 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
                 
-                .requestMatchers("/api/auth/**", "/error").permitAll()
+                // เปิดอนุญาตเส้นทางเหล่านี้ให้เข้าถึงได้โดยไม่ต้องล็อกอิน (เพื่อการทดสอบ)
+                .requestMatchers("/api/auth/**", "/api/admin/**", "/api/courses/**", "/error").permitAll()
                 
                 .anyRequest().authenticated()
             );
