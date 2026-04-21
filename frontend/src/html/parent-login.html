@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>เข้าสู่ระบบผู้ปกครอง</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<link rel="stylesheet" href="../css/login.css">
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="left">
+        <h1>ครูปุ๊ก<br>ติวเตอร์</h1>
+    </div>
+
+    <div class="right">
+
+        <div class="mobile-header">
+            <h1>ครูปุ๊กติวเตอร์</h1>
+        </div>
+
+        <div class="form-box">
+            <h2>ผู้ปกครองเข้าสู่ระบบ</h2>
+
+            <form id="parentLoginForm">
+
+                <div class="input-group">
+                    <i class="fa fa-id-card icon"></i>
+                    <input 
+                        type="text"
+                        id="citizenId"
+                        placeholder="กรอกเลขบัตรประชาชนของผู้เรียน"
+                        maxlength="13"
+                        required
+                    >
+                </div>
+
+                <button type="submit">เข้าสู่ระบบ</button>
+
+                <p class="link center">
+                    <a href="login.html" style="color: inherit; text-decoration: underline;">
+                        กลับไปหน้าเข้าสู่ระบบหลัก
+                    </a>
+                </p>
+
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<script src="../js/parent-login.js"></script>
+</body>
+</html>
