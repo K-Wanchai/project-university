@@ -6,7 +6,6 @@
     <title>ระบบจัดการผู้ดูแล - ครูปุ๊ก ติวเตอร์</title>
     <link rel="stylesheet" href="../css/standard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
 </head>
 <body>
     <div class="container">
@@ -18,7 +17,6 @@
             
             <ul class="nav-menu">
                 <li class="active"><a href="#"><i class="fas fa-home"></i> หน้าหลัก</a></li>
-                
                 
                 <li class="menu-header">การจัดการผู้ใช้</li>
                 <li><a href="#"><i class="fas fa-users"></i> ข้อมูลผู้ใช้งาน</a></li>
@@ -45,11 +43,12 @@
             <section class="dashboard-content">
                 <h3>สรุปการจัดการ</h3>
                 <div class="stats-grid">
+                    
                     <div class="stat-card">
                         <i class="fas fa-users-cog icon"></i>
                         <div class="stat-info">
                             <p>ผู้ใช้งานทั้งหมด</p>
-                            <span class="number">1,500</span>
+                            <span class="number" id="totalUsersCount">กำลังโหลด...</span>
                         </div>
                     </div>
 
@@ -57,14 +56,15 @@
                         <i class="fas fa-book-open icon"></i>
                         <div class="stat-info">
                             <p>คอร์สเรียนทั้งหมด</p>
-                            <span class="number">120</span>
+                            <span class="number" id="totalCoursesCount">120</span>
                         </div>
                     </div>
+                    
                     <div class="stat-card">
                         <i class="fas fa-star icon"></i>
                         <div class="stat-info">
                             <p>สถาบันสอบทั้งหมด</p>
-                            <span class="number">10</span>
+                            <span class="number" id="totalExamsCount">10</span>
                         </div>
                     </div>
                 </div>
@@ -80,6 +80,7 @@
             </section>
         </main>
     </div>
-    <script src="standard.js"></script>
+    
+    <script src="../js/standard.js"></script>
 </body>
 </html>
