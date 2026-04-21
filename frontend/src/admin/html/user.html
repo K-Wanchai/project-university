@@ -48,9 +48,7 @@
                         <i class="far fa-calendar"></i>
                         <input type="text" value="0 ม.ค. - 2567" readonly>
                     </div>
-                    <button class="btn-add" onclick="openModal('add')">
-                        <i class="fas fa-plus"></i> เพิ่มผู้ใช้งานใหม่
-                    </button>
+
                 </div>
 
                 <table class="user-table">
@@ -81,29 +79,6 @@
         </main>
     </div>
 
-    <div id="userModal" class="modal">
-        <div class="modal-content">
-            <h3 id="modalTitle">เพิ่มผู้ใช้งานใหม่</h3>
-            <form id="userForm">
-                <input type="text" id="fullname" placeholder="ชื่อ-นามสกุล *" required>
-                <input type="text" id="username" placeholder="ชื่อผู้ใช้ *" required>
-                <input type="email" id="email" placeholder="อีเมล *" required>
-                <input type="text" id="phone" placeholder="เบอร์โทรศัพท์">
-                <select id="role">
-                    <option value="นักเรียน">นักเรียน</option>
-                    <option value="ผู้ดูแลระบบ">ผู้ดูแลระบบ</option>
-                </select>
-                <select id="status">
-                    <option value="ปกติ">ปกติ</option>
-                    <option value="ปิดใช้งาน">ปิดใช้งาน</option>
-                </select>
-                <div class="modal-actions">
-                    <button type="button" onclick="closeModal()">ยกเลิก</button>
-                    <button type="button" class="btn-save" onclick="saveData()">บันทึก</button>
-                </div>
-            </form>
-        </div>
-    </div>
 
     <script src="../js/user.js"></script>
 </body>
