@@ -72,7 +72,7 @@ document.getElementById("submitBtn").addEventListener("click", function () {
     submitBtn.disabled = true;
   
     // 7. ส่งข้อมูลไปยัง Backend ด้วย Fetch API
-    fetch("http://localhost:8080/api/auth/register", {
+    fetch("http://172.20.10.2:8080/api/auth/register", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"

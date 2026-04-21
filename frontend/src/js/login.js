@@ -33,7 +33,7 @@ document.getElementById("loginForm").addEventListener("submit", function(e){
 
     // 3. ยิง Fetch API ไปเช็คกับ Backend 
     // (หมายเหตุ: ถ้าเปลี่ยน Wi-Fi อย่าลืมมาแก้เลข IP ตรงนี้นะครับ)
-    fetch("http://172.20.10.5:8080/api/auth/login", {
+    fetch("http://172.20.10.2:8080/api/auth/login", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
