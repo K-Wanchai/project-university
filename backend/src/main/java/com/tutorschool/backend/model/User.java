@@ -23,24 +23,33 @@ public class User {
     private String nationalId;     // เลขบัตรประจำตัวประชาชน
     private LocalDate dateOfBirth; // วัน/เดือน/ปีเกิด
     private String gender;         // เพศ (ชาย, หญิง)
-    private String role;           // สถานะ (นักเรียน, คุณครู)
+    private String role;           // บทบาท (คุณครู, แอดมิน, เจ้าหน้าที่, นักเรียน)
     private String gradeLevel;     // ระดับชั้น
 
     // 2. ข้อมูลการติดต่อ (Contact Info)
     private String phoneNumber;    // เบอร์โทรศัพท์
+    
     @Column(unique = true)
     private String email;          // อีเมล
+    
     private String address;        // ที่อยู่
 
     // 3. ข้อมูลบัญชีผู้ใช้ (Account Info)
     @Column(unique = true)
     private String username;       // ชื่อผู้ใช้
-    private String password;       // รหัสผ่าน (Should be hashed in production)
+    private String password;       // รหัสผ่าน
+
+    // 4. ข้อมูลสำหรับแอดมินจัดการ (Admin Info)
+    private String status;         // สถานะ (เช่น ใช้งานอยู่, ปิดใช้งาน, รอตรวจสอบ)
+    
+    @Column(columnDefinition = "TEXT")
+    private String remarks;        // บันทึกเพิ่มเติม
 
     // Constructors
     public User() {}
 
-    // Getters and Setters
+    // ================= Getters and Setters =================
+
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
@@ -79,4 +88,10 @@ public class User {
 
     public String getPassword() { return password; }
     public void setPassword(String password) { this.password = password; }
+
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+
+    public String getRemarks() { return remarks; }
+    public void setRemarks(String remarks) { this.remarks = remarks; }
 }
