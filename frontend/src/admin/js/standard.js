@@ -6,7 +6,7 @@ let currentEditId = null;
 // 1. ฟังก์ชันดึงจำนวนผู้ใช้งานทั้งหมด (โชว์ที่ Dashboard)
 // ==========================================
 function loadUserCount() {
-    fetch("http://localhost:8080/api/admin/users/count")
+    fetch("http://172.24.177.13:8080/api/admin/users/count")
         .then(response => {
             if (!response.ok) throw new Error("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้");
             return response.json();
@@ -23,7 +23,7 @@ function loadUserCount() {
 // 2. ฟังก์ชันดึงข้อมูลตารางผู้ใช้ทั้งหมด (Read)
 // ==========================================
 function loadUsersTable() {
-    fetch("http://localhost:8080/api/admin/users")
+    fetch("http://172.24.177.13:8080/api/admin/users")
         .then(response => {
             if (!response.ok) throw new Error("ไม่สามารถดึงข้อมูลตารางผู้ใช้ได้");
             return response.json();
