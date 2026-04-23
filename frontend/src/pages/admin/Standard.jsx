@@ -46,11 +46,9 @@ function Standard() {
           
           <li className="menu-header">การจัดการเนื้อหา</li>
           <li><a href="#"><i className="fas fa-book"></i> ข้อมูลคอร์สเรียน</a></li>
+          <li className="bottom-menu"><a href="#"><i className="fas fa-key"></i> เปลี่ยนรหัสผ่าน</a></li>
           
-          {/* แปลง <br> เป็น <br /> ให้ถูกหลัก JSX */}
-          <br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
-          
-          <li><a href="#"><i className="fas fa-key"></i> เปลี่ยนรหัสผ่าน</a></li>
+
         </ul>
       </nav>
 
