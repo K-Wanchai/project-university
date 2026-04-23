@@ -1,0 +1,128 @@
+.main-header {
+    background: #8c9ae9;
+    height: 80px;
+    padding: 0 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.04);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+/* ด้านซ้าย */
+.header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.breadcrumb {
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+.current-page {
+    color: #3b82f6;
+    font-weight: 500;
+}
+
+.header-title {
+    margin: 0;
+    font-size: 20px;
+    color: #1e293b;
+    font-weight: 700;
+}
+
+/* ด้านขวา */
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+}
+
+.header-datetime {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    border-right: 1px solid #e2e8f0;
+    padding-right: 20px;
+    font-family: 'monospace'; /* ให้ตัวเลขเวลาไม่ขยับไปมา */
+}
+
+.header-datetime .date {
+    font-size: 12px;
+    color: #64748b;
+}
+
+.header-datetime .time {
+    font-size: 14px;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.header-icon-btn {
+    background: #f8fafc;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    color: #64748b;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.header-icon-btn:hover {
+    background: #f1f5f9;
+    color: #3b82f6;
+}
+
+.notification-dot {
+    position: absolute;
+    top: 10px;
+    right: 11px;
+    width: 8px;
+    height: 8px;
+    background: #ef4444;
+    border-radius: 50%;
+    border: 2px solid #ffffff;
+}
+
+.header-user-profile {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.user-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.user-role {
+    font-size: 11px;
+    color: #050a11;
+}
+
+.user-avatar {
+    width: 42px;
+    height: 42px;
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2);
+}

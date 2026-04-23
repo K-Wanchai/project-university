@@ -12,12 +12,17 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        // ดึงที่อยู่ไฟล์แบบเต็ม (Absolute Path) จากเครื่องคอมพิวเตอร์ของคุณ
-        Path uploadDir = Paths.get("uploads/profiles");
-        String uploadPath = uploadDir.toFile().getAbsolutePath();
-
-        // ตั้งค่าให้เข้าถึงรูปภาพได้ โดยใช้ file: ตามด้วย Path เต็มของเครื่อง
+        
+        // 1. อนุญาตให้เข้าถึงรูปโปรไฟล์ผู้ใช้งาน
+        Path profileUploadDir = Paths.get("uploads/profiles");
+        String profileUploadPath = profileUploadDir.toFile().getAbsolutePath();
         registry.addResourceHandler("/uploads/profiles/**")
-                .addResourceLocations("file:" + uploadPath + "/");
+                .addResourceLocations("file:" + profileUploadPath + "/");
+
+        // 🌟 2. อนุญาตให้เข้าถึงรูปคอร์สเรียน (เพิ่มใหม่) 🌟
+        Path courseUploadDir = Paths.get("uploads/courses");
+        String courseUploadPath = courseUploadDir.toFile().getAbsolutePath();
+        registry.addResourceHandler("/uploads/courses/**")
+                .addResourceLocations("file:" + courseUploadPath + "/");
     }
 }
