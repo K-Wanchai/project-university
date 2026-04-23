@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
 import './SchoolInfo.css'; 
+import Sidebar from '../../components/Sidebar'; 
+// SchoolInfo.jsx (เพิ่มบรรทัดนี้ที่ด้านบน)
+import { Link } from 'react-router-dom';
 
 function SchoolInfo() {
   const [schoolData, setSchoolData] = useState({
@@ -13,10 +16,13 @@ function SchoolInfo() {
     accountName: "บจก. โรงเรียนกวดวิชาใจดี",
   });
 
-  return (
-    <div className="school-info-container">
-      <main className="main-content-full">
-        <header className="page-header">
+ return (
+  <div className="container" style={{ display: 'flex' }}>
+    <Sidebar />
+    
+    {/* เพิ่ม style หรือ class เพื่อดันเนื้อหาออกไป 260px */}
+    <main className="main-content" style={{ marginLeft: '260px', width: '100%' }}>
+      <header className="content-header">
           <h2><i className="fas fa-school"></i> ข้อมูลโรงเรียนกวดวิชา</h2>
           <Link to="/edit-school-info" className="btn-edit-school">
             <i className="fas fa-edit"></i> แก้ไขข้อมูล
