@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import './Editcourse.css'; // ใช้ CSS ที่ล้อตาม Newuser.css
+import './Editcourse.css'; 
+import Sidebar from '../../components/Sidebar'; 
 
 function Editcourse() {
   const navigate = useNavigate();
-  const { id } = useParams(); // รับ ID คอร์สจาก URL
+  const { id } = useParams(); 
 
   const [formData, setFormData] = useState({
     courseName: '',
@@ -14,17 +15,15 @@ function Editcourse() {
     status: 'เปิดรับสมัคร',
     statusType: 'open',
     price: '',
-    startDate: '', // เพิ่มใหม่: วันที่เริ่มสอน
-    totalHours: '', // เพิ่มใหม่: ชั่วโมงเรียนทั้งหมด
+    startDate: '', 
+    totalHours: '', 
     description: ''
   });
 
   const [isLoading, setIsLoading] = useState(false);
 
-  // จำลองการดึงข้อมูลเดิมมาแสดง
   useEffect(() => {
     if (id) {
-      // ในสถานการณ์จริง ข้อมูลเหล่านี้จะมาจาก API
       setFormData({
         courseName: 'คณิตศาสตร์ ม.ปลาย',
         category: 'วิทยาศาสตร์',
@@ -33,7 +32,7 @@ function Editcourse() {
         status: 'เปิดรับสมัคร',
         statusType: 'open',
         price: '3500',
-        startDate: '2026-05-24', // ตัวอย่าง Format YYYY-MM-DD สำหรับ input type="date"
+        startDate: '2026-05-24', 
         totalHours: '20',
         description: 'เน้นตะลุยโจทย์ PAT1 และวิชาสามัญ'
       });
@@ -48,45 +47,47 @@ function Editcourse() {
   const handleSubmit = (e) => {
     e.preventDefault();
     setIsLoading(true);
-    
-    // Logic การส่งข้อมูลไปยัง API
     console.log("บันทึกข้อมูลคอร์ส:", formData);
     
     setTimeout(() => {
       setIsLoading(false);
       alert('บันทึกข้อมูลเรียบร้อยแล้ว');
-      navigate('/course'); // กลับไปหน้าคอร์สเรียน
+      navigate('/course'); 
     }, 1000);
   };
 
   return (
-    <div className="editcourse-container">
-      <main className="main-content">
-        <header className="content-header">
-          <h1><i className="fas fa-edit"></i> แก้ไขข้อมูลคอร์สเรียน (ID: {id})</h1>
+     <div className="container" style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8fafc' }}>
+      
+      <Sidebar />
+
+      {/* 🌟 จุดที่แก้ไข: ดันเนื้อหาหนี Sidebar 260px 🌟 */}
+      <main className="main-content" style={{ flex: 1, marginLeft: '260px', padding: '30px' }}>
+        <header className="content-header" style={{ marginBottom: '20px' }}>
+          <h1 style={{ color: '#1e293b' }}><i className="fas fa-edit"></i> แก้ไขข้อมูลคอร์สเรียน (ID: {id})</h1>
         </header>
 
-        <section className="form-card">
+        <section className="form-card" style={{ background: '#fff', padding: '30px', borderRadius: '12px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
           <form onSubmit={handleSubmit}>
-            <div className="form-layout">
-              {/* ส่วนรูปไอคอนคอร์ส */}
-              <div className="profile-upload-section">
-                <div className="profile-placeholder">
+            <div className="form-layout" style={{ display: 'flex', gap: '40px', flexWrap: 'wrap' }}>
+              
+              <div className="profile-upload-section" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '200px' }}>
+                <div className="profile-placeholder" style={{ width: '150px', height: '150px', background: '#f1f5f9', borderRadius: '12px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                   <i className="fas fa-book-open" style={{fontSize: '50px', color: '#cbd5e1'}}></i>
                 </div>
-                <button type="button" className="btn-upload">เปลี่ยนรูปคอร์ส</button>
+                <button type="button" className="btn-upload" style={{ marginTop: '15px', width: '100%', padding: '10px', background: '#f1f5f9', border: 'none', borderRadius: '8px', fontWeight: 'bold', color: '#475569', cursor: 'pointer' }}>เปลี่ยนรูปคอร์ส</button>
               </div>
 
-              <div className="form-fields">
-                <div className="form-grid">
+              <div className="form-fields" style={{ flex: 1, minWidth: '300px' }}>
+                <div className="form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                   <div className="form-group">
-                    <label>ชื่อคอร์สเรียน <span>*</span></label>
-                    <input type="text" id="courseName" value={formData.courseName} onChange={handleInputChange} required />
+                    <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>ชื่อคอร์สเรียน <span style={{ color: 'red' }}>*</span></label>
+                    <input type="text" id="courseName" value={formData.courseName} onChange={handleInputChange} required style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
                   </div>
 
                   <div className="form-group">
-                    <label>หมวดหมู่ <span>*</span></label>
-                    <select id="category" value={formData.category} onChange={handleInputChange}>
+                    <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>หมวดหมู่ <span style={{ color: 'red' }}>*</span></label>
+                    <select id="category" value={formData.category} onChange={handleInputChange} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1' }}>
                       <option value="วิทยาศาสตร์">วิทยาศาสตร์</option>
                       <option value="คณิตศาสตร์">คณิตศาสตร์</option>
                       <option value="ภาษาไทย">ภาษาไทย</option>
@@ -96,35 +97,33 @@ function Editcourse() {
                   </div>
 
                   <div className="form-group">
-                    <label>วัน-เวลาเรียน <span>*</span></label>
-                    <input type="text" id="time" value={formData.time} onChange={handleInputChange} placeholder="เช่น จ.-ศ. 18:00-20:00" />
+                    <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>วัน-เวลาเรียน <span style={{ color: 'red' }}>*</span></label>
+                    <input type="text" id="time" value={formData.time} onChange={handleInputChange} placeholder="เช่น จ.-ศ. 18:00-20:00" style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
                   </div>
 
                   <div className="form-group">
-                    <label>อาจารย์ผู้สอน <span>*</span></label>
-                    <input type="text" id="tutor" value={formData.tutor} onChange={handleInputChange} />
+                    <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>อาจารย์ผู้สอน <span style={{ color: 'red' }}>*</span></label>
+                    <input type="text" id="tutor" value={formData.tutor} onChange={handleInputChange} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
                   </div>
 
                   <div className="form-group">
-                    <label>ราคา (บาท)</label>
-                    <input type="number" id="price" value={formData.price} onChange={handleInputChange} />
-                  </div>
-
-                  {/* เพิ่มใหม่: วันที่เริ่มสอน */}
-                  <div className="form-group">
-                    <label>วันที่เริ่มสอน</label>
-                    <input type="date" id="startDate" value={formData.startDate} onChange={handleInputChange} />
-                  </div>
-
-                  {/* เพิ่มใหม่: ชั่วโมงเรียนทั้งหมด */}
-                  <div className="form-group">
-                    <label>ชั่วโมงเรียนทั้งหมด</label>
-                    <input type="number" id="totalHours" value={formData.totalHours} onChange={handleInputChange} placeholder="เช่น 20" />
+                    <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>ราคา (บาท)</label>
+                    <input type="number" id="price" value={formData.price} onChange={handleInputChange} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
                   </div>
 
                   <div className="form-group">
-                    <label>สถานะคอร์ส</label>
-                    <select id="status" value={formData.status} onChange={handleInputChange}>
+                    <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>วันที่เริ่มสอน</label>
+                    <input type="date" id="startDate" value={formData.startDate} onChange={handleInputChange} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
+                  </div>
+
+                  <div className="form-group">
+                    <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>ชั่วโมงเรียนทั้งหมด</label>
+                    <input type="number" id="totalHours" value={formData.totalHours} onChange={handleInputChange} placeholder="เช่น 20" style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
+                  </div>
+
+                  <div className="form-group">
+                    <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>สถานะคอร์ส</label>
+                    <select id="status" value={formData.status} onChange={handleInputChange} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1' }}>
                       <option value="เปิดรับสมัคร">เปิดรับสมัคร</option>
                       <option value="กำลังสอน">กำลังสอน</option>
                       <option value="จบแล้ว">จบแล้ว</option>
@@ -132,16 +131,16 @@ function Editcourse() {
                   </div>
                 </div>
 
-                <div className="form-group-full remarks-group">
-                  <label>รายละเอียดคอร์สเพิ่มเติม</label>
-                  <textarea id="description" value={formData.description} onChange={handleInputChange} rows="4"></textarea>
+                <div className="form-group-full remarks-group" style={{ marginTop: '20px' }}>
+                  <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>รายละเอียดคอร์สเพิ่มเติม</label>
+                  <textarea id="description" value={formData.description} onChange={handleInputChange} rows="4" style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1' }}></textarea>
                 </div>
 
-                <div className="form-actions">
-                  <button type="submit" className="btn-save" disabled={isLoading}>
+                <div className="form-actions" style={{ marginTop: '30px', display: 'flex', gap: '15px' }}>
+                  <button type="submit" className="btn-save" disabled={isLoading} style={{ background: '#10b981', color: 'white', padding: '12px 24px', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
                     <i className="fas fa-save"></i> {isLoading ? 'กำลังบันทึก...' : 'บันทึกการเปลี่ยนแปลง'}
                   </button>
-                  <button type="button" className="btn-cancel" onClick={() => navigate('/course')}>
+                  <button type="button" className="btn-cancel" onClick={() => navigate('/course')} style={{ background: '#94a3b8', color: 'white', padding: '12px 24px', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
                     <i className="fas fa-times"></i> ยกเลิก
                   </button>
                 </div>

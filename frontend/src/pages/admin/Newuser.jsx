@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react'; // เพิ่ม useRef เข้ามา
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import Sidebar from '../../components/Sidebar';
 import './Newuser.css';
 
@@ -10,14 +10,20 @@ function Newuser() {
   const [searchParams] = useSearchParams();
   const userId = searchParams.get('id');
 
-  // 1. สร้าง State สำหรับเก็บไฟล์รูปและ Preview รูป
-  const [profileImage, setProfileImage] = useState(null); // เก็บตัวไฟล์จริงๆ เพื่อส่งให้ Backend
-  const [previewImage, setPreviewImage] = useState(null); // เก็บ URL สำหรับโชว์รูปบนหน้าจอ
-  const fileInputRef = useRef(null); // ตัวอ้างอิงไปที่ปุ่มเลือกไฟล์ที่ถูกซ่อนไว้
+  const [profileImage, setProfileImage] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
+  const fileInputRef = useRef(null);
 
   const [formData, setFormData] = useState({
-    fullName: '', username: '', password: '', confirmPassword: '',
-    phone: '', email: '', role: 'ติวเตอร์', status: 'ใช้งานอยู่', remarks: ''
+    fullName: '',
+    username: '',
+    password: '',
+    confirmPassword: '',
+    phone: '',
+    email: '',
+    role: 'ติวเตอร์', // ค่าเริ่มต้นสำหรับสร้างผู้ใช้ใหม่
+    status: 'ใช้งานอยู่',
+    remarks: ''
   });
 
   const [isLoading, setIsLoading] = useState(false);
@@ -32,17 +38,17 @@ function Newuser() {
           setFormData({
             fullName: `${u.firstName || ''} ${u.lastName || ''}`.trim(),
             username: u.username || '',
-            password: '', confirmPassword: '', 
+            password: '',
+            confirmPassword: '',
             phone: u.phoneNumber || '',
             email: u.email || '',
-            role: u.role || 'ติวเตอร์',
+            role: u.role ? u.role.trim() : 'ติวเตอร์',
             status: u.status || 'ใช้งานอยู่',
             remarks: u.remarks || ''
           });
-          
-          // ถ้ามีรูปเดิมจากฐานข้อมูล ให้เอามาโชว์ (สมมติว่า backend ส่ง URL รูปมาในฟิลด์ profileImageUrl)
-          if (u.profileImageUrl) {
-            setPreviewImage(u.profileImageUrl);
+
+          if (u.profileImage) {
+            setPreviewImage(`http://localhost:8080/uploads/profiles/${u.profileImage}`);
           }
         })
         .catch(err => console.error("Error loading user:", err));
@@ -54,23 +60,21 @@ function Newuser() {
     setFormData(prev => ({ ...prev, [id]: value }));
   };
 
-  // 2. ฟังก์ชันจัดการเมื่อผู้ใช้เลือกรูปภาพ
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setProfileImage(file); // เก็บไฟล์ลง State
-      setPreviewImage(URL.createObjectURL(file)); // สร้าง URL จำลองเพื่อแสดง Preview
+      setProfileImage(file);
+      setPreviewImage(URL.createObjectURL(file));
     }
   };
 
-  // 3. ฟังก์ชันสั่งให้ปุ่ม "อัปโหลดรูป" ไปกด <input type="file"> ที่ซ่อนอยู่
   const handleUploadClick = () => {
     fileInputRef.current.click();
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (formData.password || formData.confirmPassword) {
       if (formData.password !== formData.confirmPassword) {
         return alert("รหัสผ่านและยืนยันรหัสผ่านไม่ตรงกัน");
@@ -78,8 +82,7 @@ function Newuser() {
     }
 
     const [fName, ...lName] = formData.fullName.trim().split(' ');
-    
-    // 4. เปลี่ยนจากการสร้าง JSON เป็นการใช้ FormData แทน
+
     const submitData = new FormData();
     submitData.append('firstName', fName || '');
     submitData.append('lastName', lName.join(' ') || '');
@@ -91,22 +94,15 @@ function Newuser() {
     submitData.append('remarks', formData.remarks);
 
     if (formData.password) submitData.append('password', formData.password);
-    
-    // แนบไฟล์รูปไปด้วย (ถ้ามีการเลือกรูปใหม่)
-    if (profileImage) {
-      submitData.append('profileImage', profileImage); 
-      // ชื่อ 'profileImage' ตรงนี้ ฝั่ง Backend ต้องตั้งชื่อรับให้ตรงกันนะครับ
-    }
+    if (profileImage) submitData.append('profileImage', profileImage);
 
     setIsLoading(true);
     try {
       const res = await fetch(userId ? `${API_URL}/${userId}` : API_URL, {
         method: userId ? 'PUT' : 'POST',
-        // ⚠️ ข้อควรระวัง: ห้ามใส่ headers: { 'Content-Type': 'application/json' } เด็ดขาด! 
-        // เบราว์เซอร์จะจัดการตั้งค่า Content-Type เป็น multipart/form-data ให้เองอัตโนมัติเมื่อเราส่ง FormData
         body: submitData
       });
-      
+
       if (!res.ok) throw new Error("บันทึกไม่สำเร็จ");
       alert(userId ? "อัปเดตข้อมูลสำเร็จ!" : "สร้างผู้ใช้งานใหม่สำเร็จ!");
       navigate('/user');
@@ -118,46 +114,83 @@ function Newuser() {
   };
 
   return (
+    <div className="newuser-page-container">
+      <Sidebar />
+      <main className="newuser-main-content">
+        
+        <header className="newuser-header" style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+          <button 
+            type="button" 
+            onClick={() => navigate('/user')} 
+            className="btn-back-header"
+            title="ย้อนกลับไปหน้าผู้ใช้งาน"
+          >
+            <i className="fas fa-arrow-left"></i>
+            <span>ย้อนกลับ</span>
+          </button>
+          <h1 style={{ margin: 0 }}>{userId ? "แก้ไขข้อมูลผู้ใช้งาน" : "เพิ่มผู้ใช้งานใหม่"}</h1>
         </header>
 
         <section className="newuser-form-card">
           <form onSubmit={handleSubmit}>
             <div className="newuser-form-layout">
-              
-              {/* --- 5. ส่วนแสดงผลการอัปโหลดรูปภาพ --- */}
               <div className="newuser-profile-section">
                 <div className="newuser-avatar-box" style={{ overflow: 'hidden' }}>
-                  {/* ถ้ามีรูป Preview ให้โชว์รูป ถ้าไม่มีโชว์ไอคอนสีเทา */}
                   {previewImage ? (
                     <img src={previewImage} alt="Profile Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   ) : (
                     <i className="fas fa-user"></i>
                   )}
                 </div>
-                
-                {/* ปุ่มหลอก สำหรับกดเพื่อทริกเกอร์ input จริง */}
                 <button type="button" className="newuser-btn-upload" onClick={handleUploadClick}>
                   อัปโหลดรูปโปรไฟล์
                 </button>
-
-                {/* Input เลือกไฟล์ของจริง (ซ่อนไว้ไม่ให้มองเห็น เพราะมันไม่สวย) */}
-                <input 
-                  type="file" 
-                  accept="image/png, image/jpeg, image/jpg" 
-                  ref={fileInputRef} 
-                  onChange={handleImageChange} 
-                  style={{ display: 'none' }} 
+                <input
+                  type="file"
+                  accept="image/png, image/jpeg, image/jpg"
+                  ref={fileInputRef}
+                  onChange={handleImageChange}
+                  style={{ display: 'none' }}
                 />
               </div>
 
-              {/* ... (ส่วนฟอร์มกรอกข้อมูลที่เหลือเหมือนเดิมเป๊ะครับ) ... */}
               <div className="newuser-fields-section">
+                
+                {/* 🌟 จุดที่แก้ไข: แสดงเป็นข้อความถ้านักเรียน, แสดง Dropdown ถ้าเป็นคนอื่น 🌟 */}
                 <div className="newuser-form-group full-width">
                   <label>บทบาท <span>*</span></label>
-                  <select id="role" value={formData.role} onChange={handleInputChange}>
-                    <option value="ติวเตอร์">ติวเตอร์</option>
-                    <option value="ผู้ดูแลระบบ">ผู้ดูแลระบบ</option>
-                  </select>
+                  
+                  {formData.role === 'นักเรียน' ? (
+                    <div style={{
+                      padding: '12px 14px',
+                      backgroundColor: '#f8fafc',
+                      border: '1px solid #cbd5e1',
+                      borderRadius: '8px',
+                      color: '#475569',
+                      fontSize: '15px',
+                      fontWeight: 'bold',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px'
+                    }}>
+                      <i className="fas fa-user-graduate" style={{ color: '#3b82f6' }}></i> นักเรียน
+                    </div>
+                  ) : (
+                    <select 
+                      id="role" 
+                      value={formData.role} 
+                      onChange={handleInputChange}
+                    >
+                      <option value="ติวเตอร์">ติวเตอร์</option>
+                      <option value="ผู้ดูแลระบบ">ผู้ดูแลระบบ</option>
+                    </select>
+                  )}
+
+                  {userId && formData.role === 'นักเรียน' && (
+                    <small style={{ color: '#64748b', marginTop: '5px', display: 'block' }}>
+                      * บัญชีนี้เป็นนักเรียน ไม่สามารถแก้ไขบทบาทได้
+                    </small>
+                  )}
                 </div>
 
                 <div className="newuser-input-grid">
@@ -165,7 +198,7 @@ function Newuser() {
                     <label>ชื่อ-นามสกุล <span>*</span></label>
                     <input type="text" id="fullName" value={formData.fullName} onChange={handleInputChange} required placeholder="นายปิติ สุขสมบูรณ์" />
                   </div>
-                  
+
                   <div className="newuser-form-group">
                     <label>ชื่อผู้ใช้ <span>*</span></label>
                     <input type="text" id="username" value={formData.username} onChange={handleInputChange} required disabled={!!userId} className={userId ? "input-disabled" : ""} />
@@ -193,7 +226,8 @@ function Newuser() {
                     <input type="email" id="email" value={formData.email} onChange={handleInputChange} required placeholder="example@krupuk.com" />
                   </div>
 
-                  {userId && (
+                  {/* ซ่อนสถานะหากบทบาทเป็นนักเรียน */}
+                  {userId && formData.role !== 'นักเรียน' && (
                     <div className="newuser-form-group">
                       <label>สถานะ</label>
                       <select id="status" value={formData.status} onChange={handleInputChange}>
@@ -218,7 +252,6 @@ function Newuser() {
                   </button>
                 </div>
               </div>
-
             </div>
           </form>
         </section>

@@ -242,3 +242,45 @@
 .btn-back-link i {
     font-size: 12px;
 }
+
+/* ปุ่มย้อนกลับแบบมีข้อความ */
+.btn-back-header {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px; /* เปลี่ยนจากวงกลม 50% เป็นขอบมนธรรมดา */
+    padding: 8px 16px; /* ใช้ padding แทนการล็อกขนาดความกว้าง */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px; /* ระยะห่างระหว่างไอคอนกับตัวหนังสือ */
+    cursor: pointer;
+    color: #64748b;
+    font-size: 16px;
+    font-weight: 400; /* ทำให้ข้อความดูหนาขึ้นนิดนึง */
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+/* เอฟเฟกต์ตอนเอาเมาส์ไปชี้ (Hover) */
+.btn-back-header:hover {
+    background-color: #f8fafc;
+    color: #0f172a;
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    transform: translateY(-1px);
+}
+
+/* เอฟเฟกต์ขยับเฉพาะไอคอนลูกศรตอน Hover */
+.btn-back-header i {
+    transition: transform 0.3s ease;
+}
+
+.btn-back-header:hover i {
+    transform: translateX(-4px); /* ลูกศรเด้งไปทางซ้ายเบาๆ */
+}
+
+/* เอฟเฟกต์ตอนกดคลิก (Active) */
+.btn-back-header:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+}

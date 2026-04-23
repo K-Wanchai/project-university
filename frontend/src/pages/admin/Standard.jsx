@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import './Standard.css'; // นำเข้า CSS เดิมของคุณ
+import './Standard.css'; 
 import { Link } from 'react-router-dom'; 
 import Sidebar from '../../components/Sidebar';
 
@@ -7,7 +7,8 @@ function Standard() {
   const [totalUsersCount, setTotalUsersCount] = useState('กำลังโหลด...');
 
   useEffect(() => {
-
+    // โค้ดตรงนี้แหละครับที่มักจะเผลอลบคำว่า fetch() ออกไป
+    fetch("http://localhost:8080/api/admin/users/count")
       .then(response => {
         if (!response.ok) throw new Error("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้");
         return response.json();
@@ -22,10 +23,17 @@ function Standard() {
   }, []);
 
   return (
+    <div className="container" style={{ display: 'flex' }}>
+      
+      {/* เรียกใช้งาน Sidebar Component */}
+      <Sidebar />
 
+      {/* ดันเนื้อหาหลักออกไป 260px เพื่อไม่ให้ Sidebar ทับ */}
+      <main className="main-content" style={{ flex: 1, marginLeft: '260px' }}>
         <header className="top-bar">
           <div className="user-info">
-            <img src="https://via.placeholder.com/40" alt="Admin Avatar" className="avatar" />
+            {/* ดึงรูป Avatar จำลองมาใส่ให้ดูสวยงามขึ้น */}
+            <img src="https://ui-avatars.com/api/?name=Admin&background=0D8ABC&color=fff" alt="Admin Avatar" className="avatar" style={{ borderRadius: '50%', width: '40px' }} />
             <span>สวัสดี, <strong>ผู้ดูแลระบบ</strong></span>
           </div>
         </header>

@@ -3,6 +3,7 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'; 
 
 import Standard from "./pages/admin/Standard.jsx";
+import User from "./pages/admin/User.jsx";
 import Newuser from "./pages/admin/Newuser.jsx";
 import Course from "./pages/admin/Course.jsx";
 import Editcourse from "./pages/admin/Editcourse.jsx"; 
@@ -18,6 +19,7 @@ function App() {
         <Route path="/" element={<Navigate to="/standard" />} />
         
         <Route path="/standard" element={<Standard />} />
+        <Route path="/user" element={<User />} />
         <Route path="/newuser" element={<Newuser />} />
         <Route path="/course" element={<Course />} />
         <Route path="/edit-course/:id" element={<Editcourse />} />

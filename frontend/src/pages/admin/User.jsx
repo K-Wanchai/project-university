@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import Sidebar from '../../components/Sidebar'; // นำเข้า Sidebar (ตรวจสอบ Path ให้ตรงกับโฟลเดอร์ของคุณ)
+import Sidebar from '../../components/Sidebar'; 
 import './User.css'; 
 
-const API_BASE_URL = "http://172.24.177.40:8080/api/admin/users";
+// กำหนด IP ของ Backend ไว้ที่เดียวเพื่อให้จัดการง่าย
+const API_IP = "172.24.177.40";
+const API_BASE_URL = `http://${API_IP}:8080/api/admin/users`;
 
 function User() {
-  // 1. State สำหรับตารางและการค้นหา (ลบ State ของ Modal ออกหมดแล้ว)
+  // 1. State สำหรับตารางและการค้นหา
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
@@ -40,16 +42,27 @@ function User() {
     }
   };
 
+  // 🌟 4. เพิ่ม Logic การกรองข้อมูล (เพื่อแก้ปัญหา filteredUsers is not defined)
+  const filteredUsers = users.filter(user => {
+    // กรองด้วยชื่อ-นามสกุล หรือชื่อผู้ใช้ (แปลงเป็นตัวเล็กเพื่อให้ค้นหาง่าย)
+    const matchesSearch = 
+      (user.firstName?.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (user.lastName?.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (user.username?.toLowerCase().includes(searchTerm.toLowerCase()));
+    
+    // กรองด้วยบทบาท
+    const matchesRole = roleFilter === '' || user.role === roleFilter;
 
+    return matchesSearch && matchesRole;
+  });
 
   return (
-    // เพิ่ม display: flex เพื่อจัดเรียง Sidebar กับ Main Content ให้อยู่ซ้าย-ขวา
     <div className="container" style={{ display: 'flex' }}>
       
-      {/* เรียกใช้งาน Sidebar Component บรรทัดเดียวจบ! */}
+      {/* Sidebar Component */}
       <Sidebar />
 
-      {/* เพิ่ม marginLeft: 260px เพื่อดันเนื้อหาหนี Sidebar ที่ fix ไว้ด้านซ้าย */}
+      {/* Main Content */}
       <main className="main-content" style={{ flex: 1, marginLeft: '260px', padding: '20px' }}>
         <header className="content-header">
           <h1>การจัดการข้อมูลผู้ใช้งาน</h1>
@@ -79,7 +92,6 @@ function User() {
               <option value="นักเรียน">นักเรียน</option>
             </select>
 
-            {/* ปุ่มเพิ่มผู้ใช้ ลิงก์ไปหน้า Newuser */}
             <Link to="/newuser" className="btn-add">
                 <i className="fas fa-plus"></i> เพิ่มผู้ใช้งานใหม่
             </Link>
@@ -105,16 +117,14 @@ function User() {
                   let statusText = user.status || 'รอตรวจสอบ';
                   const statusClass = statusText === 'ระงับการใช้งาน' ? 'status-suspended' : 'status-active';
                   
-                  // 🌟 เพิ่มเงื่อนไขเช็ครูปตรงนี้ 🌟
-                  // ถ้า user มีรูป (user.profileImage) ให้ไปดึงจาก Backend ถ้าไม่มีให้ใช้รูปสุ่มตัวอักษร
+                  // ปรับ URL รูปภาพให้ใช้ IP เดียวกับ API
                   const imageUrl = user.profileImage 
-                      ? `http://localhost:8080/uploads/profiles/${user.profileImage}` 
+                      ? `http://${API_IP}:8080/uploads/profiles/${user.profileImage}` 
                       : `https://ui-avatars.com/api/?name=${user.firstName || 'U'}&background=random`;
 
                   return (
                     <tr key={user.id}>
                       <td>
-                        {/* 🌟 นำตัวแปร imageUrl มาใส่ใน src 🌟 */}
                         <img 
                           src={imageUrl} 
                           alt="avatar"
