@@ -98,20 +98,25 @@ function Newuser() {
 
   return (
     <div className="newuser-container">
-      <nav className="sidebar">
+  <nav className="sidebar">
         <div className="logo-section">
           <div className="logo-icon"><i className="fas fa-brain"></i></div>
           <h2>ครูปุ๊ก ติวเตอร์</h2>
         </div>
         <ul className="nav-menu">
-          <li><Link to="/"><i className="fas fa-home"></i> หน้าหลัก</Link></li>
+          <li>
+          <Link to="/"><i className="fas fa-home"></i> หน้าหลัก</Link></li>
+
           <li className="menu-header">การจัดการผู้ใช้</li>
-          <li className="active"><Link to="/user"><i className="fas fa-users"></i> ข้อมูลผู้ใช้งาน</Link></li>
+          <li className="active"><a href="/user"><i className="fas fa-users"></i> ข้อมูลผู้ใช้งาน</a></li>
+
           <li className="menu-header">การจัดการสถาบัน</li>
           <li><a href="#"><i className="fas fa-school"></i> ข้อมูลโรงเรียนกวดวิชา</a></li>
           <li><a href="#"><i className="fas fa-map-marker-alt"></i> ข้อมูลสถาบันที่จัดสอบ</a></li>
+
           <li className="menu-header">การจัดการเนื้อหา</li>
-          <li><a href="#"><i className="fas fa-book"></i> ข้อมูลคอร์สเรียน</a></li>
+          <li><Link to="/course"><i className="fas fa-course"></i> ข้อมูลคอร์สเรียน</Link></li>
+          <li className="bottom-menu"><a href="#"><i className="fas fa-key"></i> เปลี่ยนรหัสผ่าน</a></li>
         </ul>
       </nav>
 

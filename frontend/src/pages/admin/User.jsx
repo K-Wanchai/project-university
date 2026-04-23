@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './User.css'; // 
 import { Link } from 'react-router-dom';
 
-const API_BASE_URL = "http://localhost:8080/api/admin/users";
+const API_BASE_URL = "http://172.24.177.40:8080/api/admin/users";
 
 function User() {
   // 1. สร้าง State สำหรับเก็บข้อมูลต่างๆ
@@ -164,7 +164,7 @@ function User() {
           <li><a href="#"><i className="fas fa-map-marker-alt"></i> ข้อมูลสถาบันที่จัดสอบ</a></li>
 
           <li className="menu-header">การจัดการเนื้อหา</li>
-          <li><a href="#"><i className="fas fa-book"></i> ข้อมูลคอร์สเรียน</a></li>
+          <li><Link to="/course"><i className="fas fa-course"></i> ข้อมูลคอร์สเรียน</Link></li>
           <li className="bottom-menu"><a href="#"><i className="fas fa-key"></i> เปลี่ยนรหัสผ่าน</a></li>
         </ul>
       </nav>
