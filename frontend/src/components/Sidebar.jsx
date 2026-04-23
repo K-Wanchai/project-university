@@ -42,8 +42,8 @@ function Sidebar() {
 
           <li className="menu-header">การจัดการสถาบัน</li>
           <li>
-            <NavLink to="/school" className={({ isActive }) => isActive ? "menu-item active" : "menu-item"}>
-              <i className="fas fa-school"></i> <span>ข้อมูลโรงเรียนกวดวิชา</span>
+            <NavLink to="/schoolinfo" className={({ isActive }) => isActive ? "menu-item active" : "menu-item"}>
+              <i className="fas fa-schoolinfo"></i> <span>ข้อมูลโรงเรียนกวดวิชา</span>
             </NavLink>
           </li>
           <li>
