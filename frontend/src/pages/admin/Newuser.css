@@ -1,174 +1,201 @@
-/* Container หลัก */
-.newuser-container {
+.newuser-page-container {
     display: flex;
     min-height: 100vh;
     background-color: #f8fafc;
 }
 
-/* ส่วนหัวข้อ */
-.content-header {
-    margin-bottom: 20px;
-    border-bottom: 2px solid #e5e7eb;
+.newuser-main-content {
+    flex: 1;
+    margin-left: 260px; /* ดันเนื้อหาหนี Sidebar */
+    padding: 30px;
+}
+
+.newuser-header {
+    margin-bottom: 25px;
+    border-bottom: 2px solid #e2e8f0;
     padding-bottom: 10px;
 }
 
-.content-header h1 {
+.newuser-header h1 {
     font-size: 24px;
-    margin: 0;
     color: #1e293b;
+    margin: 0;
 }
 
-/* การ์ดฟอร์ม */
-.form-card {
+.newuser-form-card {
     background: #ffffff;
-    padding: 30px;
-    border-radius: 12px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
-.form-layout {
+.newuser-form-layout {
     display: flex;
-    gap: 40px;
+    gap: 50px;
     flex-wrap: wrap;
 }
 
-/* ส่วนอัปโหลดรูป */
-.profile-upload-section {
+/* Profile Section */
+.newuser-profile-section {
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 200px;
 }
 
-.profile-placeholder {
-    width: 150px;
-    height: 150px;
+.newuser-avatar-box {
+    width: 160px;
+    height: 160px;
+    background: #f1f5f9;
     border-radius: 12px;
-    background: #e2e8f0;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-bottom: 15px;
-    overflow: hidden;
+    font-size: 80px;
+    color: #cbd5e1;
+    margin-bottom: 20px;
+    border: 2px dashed #e2e8f0;
 }
 
-.profile-placeholder i {
-    font-size: 70px;
-    color: #94a3b8;
-}
-
-.btn-upload {
-    background: #e2e8f0;
-    color: #475569;
-    border: none;
-    padding: 10px 15px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
+.newuser-btn-upload {
     width: 100%;
+    padding: 10px;
+    background: #f1f5f9;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
     transition: background 0.2s;
 }
 
-.btn-upload:hover {
-    background: #cbd5e1;
+.newuser-btn-upload:hover {
+    background: #e2e8f0;
 }
 
-/* ส่วนช่องกรอกข้อมูล */
-.form-fields-section {
+/* Form Fields */
+.newuser-fields-section {
     flex: 1;
-    min-width: 300px;
+    min-width: 400px;
 }
 
-.form-group, .form-group-full {
-    margin-bottom: 15px;
+.newuser-form-group {
+    margin-bottom: 20px;
 }
 
-.form-group label, .form-group-full label {
+.newuser-form-group label {
     display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
+    font-weight: 600;
     color: #334155;
+    margin-bottom: 8px;
+    font-size: 14px;
 }
 
-.form-group label span {
+.newuser-form-group label span {
     color: #ef4444;
 }
 
-.form-grid {
+.newuser-input-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 20px;
+    gap: 24px;
 }
 
-input, select, textarea {
+.newuser-form-group input, 
+.newuser-form-group select, 
+.newuser-form-group textarea {
     width: 100%;
-    padding: 10px;
-    border-radius: 6px;
+    padding: 12px 14px;
+    border-radius: 8px;
     border: 1px solid #cbd5e1;
-    font-size: 14px;
-    box-sizing: border-box;
+    font-size: 15px;
+    color: #1e293b;
+    transition: border-color 0.2s, box-shadow 0.2s;
 }
 
-input:focus, select:focus, textarea:focus {
+.newuser-form-group input:focus, 
+.newuser-form-group select:focus, 
+.newuser-form-group textarea:focus {
     outline: none;
     border-color: #3b82f6;
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 }
 
-/* ช่องรหัสผ่านมีดวงตา */
-.password-field {
+.input-disabled {
+    background-color: #f8fafc;
+    cursor: not-allowed;
+    color: #64748b;
+}
+
+/* Password Eye Icon */
+.password-wrap {
     position: relative;
 }
 
-.password-field i {
+.password-wrap i {
     position: absolute;
     right: 15px;
-    top: 38px;
+    top: 40px;
     cursor: pointer;
     color: #94a3b8;
+    padding: 5px;
 }
 
-/* ปุ่มกดด้านล่าง */
-.form-actions {
+.password-wrap i:hover {
+    color: #64748b;
+}
+
+/* Remarks Area */
+.remarks-area {
+    margin-top: 10px;
+}
+
+.remarks-area textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+/* Actions */
+.newuser-form-actions {
+    margin-top: 40px;
     display: flex;
-    gap: 15px;
-    margin-top: 30px;
+    gap: 16px;
+    justify-content: flex-start;
 }
 
 .btn-save {
-    background: #22c55e;
+    background: #10b981;
     color: white;
-    padding: 12px 24px;
+    padding: 12px 28px;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
+    font-weight: 700;
     cursor: pointer;
-    font-weight: bold;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+    font-size: 16px;
     transition: background 0.2s;
 }
 
 .btn-save:hover {
-    background: #16a34a;
+    background: #059669;
 }
 
 .btn-save:disabled {
-    background: #86efac;
+    opacity: 0.6;
     cursor: not-allowed;
 }
 
 .btn-cancel {
     background: #94a3b8;
     color: white;
-    padding: 12px 24px;
+    padding: 12px 28px;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
+    font-weight: 700;
     cursor: pointer;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    font-size: 16px;
     transition: background 0.2s;
 }
 
@@ -176,16 +203,42 @@ input:focus, select:focus, textarea:focus {
     background: #64748b;
 }
 
-/* หน้าจอเล็ก */
-@media (max-width: 768px) {
-    .form-grid {
+/* Responsive */
+@media (max-width: 1024px) {
+    .newuser-input-grid {
         grid-template-columns: 1fr;
     }
-    .form-layout {
+    .newuser-form-layout {
         flex-direction: column;
         align-items: center;
     }
-    .profile-upload-section {
+    .newuser-fields-section {
         width: 100%;
+        min-width: unset;
     }
+}
+
+/* สไตล์ปุ่มย้อนกลับในหัวข้อ */
+.btn-back-link {
+    background: none;
+    border: none;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0;
+    margin-bottom: 10px;
+    transition: color 0.2s;
+}
+
+.btn-back-link:hover {
+    color: #1e293b;
+    text-decoration: underline;
+}
+
+.btn-back-link i {
+    font-size: 12px;
 }

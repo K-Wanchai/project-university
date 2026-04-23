@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react'; // เพิ่ม useRef เข้ามา
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import Sidebar from '../../components/Sidebar';
 import './Newuser.css';
 
 const API_URL = "http://localhost:8080/api/admin/users";
@@ -9,43 +10,42 @@ function Newuser() {
   const [searchParams] = useSearchParams();
   const userId = searchParams.get('id');
 
+  // 1. สร้าง State สำหรับเก็บไฟล์รูปและ Preview รูป
+  const [profileImage, setProfileImage] = useState(null); // เก็บตัวไฟล์จริงๆ เพื่อส่งให้ Backend
+  const [previewImage, setPreviewImage] = useState(null); // เก็บ URL สำหรับโชว์รูปบนหน้าจอ
+  const fileInputRef = useRef(null); // ตัวอ้างอิงไปที่ปุ่มเลือกไฟล์ที่ถูกซ่อนไว้
+
   const [formData, setFormData] = useState({
-    fullName: '',
-    username: '',
-    password: '',
-    confirmPassword: '',
-    phone: '',
-    email: '',
-    role: 'ติวเตอร์',
-    status: 'ใช้งานอยู่',
-    remarks: ''
+    fullName: '', username: '', password: '', confirmPassword: '',
+    phone: '', email: '', role: 'ติวเตอร์', status: 'ใช้งานอยู่', remarks: ''
   });
 
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showPwd, setShowPwd] = useState(false);
+  const [showConfirmPwd, setShowConfirmPwd] = useState(false);
 
   useEffect(() => {
     if (userId) {
       fetch(`${API_URL}/${userId}`)
         .then(res => res.json())
-        .then(user => {
+        .then(u => {
           setFormData({
-            fullName: `${user.firstName || ''} ${user.lastName || ''}`.trim(),
-            username: user.username || '',
-            password: '',
-            confirmPassword: '',
-            phone: user.phoneNumber || '',
-            email: user.email || '',
-            role: user.role || 'ติวเตอร์',
-            status: user.status || 'ใช้งานอยู่',
-            remarks: user.remarks || ''
+            fullName: `${u.firstName || ''} ${u.lastName || ''}`.trim(),
+            username: u.username || '',
+            password: '', confirmPassword: '', 
+            phone: u.phoneNumber || '',
+            email: u.email || '',
+            role: u.role || 'ติวเตอร์',
+            status: u.status || 'ใช้งานอยู่',
+            remarks: u.remarks || ''
           });
+          
+          // ถ้ามีรูปเดิมจากฐานข้อมูล ให้เอามาโชว์ (สมมติว่า backend ส่ง URL รูปมาในฟิลด์ profileImageUrl)
+          if (u.profileImageUrl) {
+            setPreviewImage(u.profileImageUrl);
+          }
         })
-        .catch(err => {
-          console.error(err);
-          alert("ไม่สามารถดึงข้อมูลผู้ใช้ได้");
-        });
+        .catch(err => console.error("Error loading user:", err));
     }
   }, [userId]);
 
@@ -54,88 +54,110 @@ function Newuser() {
     setFormData(prev => ({ ...prev, [id]: value }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  // 2. ฟังก์ชันจัดการเมื่อผู้ใช้เลือกรูปภาพ
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setProfileImage(file); // เก็บไฟล์ลง State
+      setPreviewImage(URL.createObjectURL(file)); // สร้าง URL จำลองเพื่อแสดง Preview
+    }
+  };
 
-    if (formData.password !== formData.confirmPassword) {
-      alert("รหัสผ่านและยืนยันรหัสผ่านไม่ตรงกัน");
-      return;
+  // 3. ฟังก์ชันสั่งให้ปุ่ม "อัปโหลดรูป" ไปกด <input type="file"> ที่ซ่อนอยู่
+  const handleUploadClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    if (formData.password || formData.confirmPassword) {
+      if (formData.password !== formData.confirmPassword) {
+        return alert("รหัสผ่านและยืนยันรหัสผ่านไม่ตรงกัน");
+      }
     }
 
-    const nameParts = formData.fullName.trim().split(' ');
-    const firstName = nameParts[0] || '';
-    const lastName = nameParts.slice(1).join(' ') || '';
+    const [fName, ...lName] = formData.fullName.trim().split(' ');
+    
+    // 4. เปลี่ยนจากการสร้าง JSON เป็นการใช้ FormData แทน
+    const submitData = new FormData();
+    submitData.append('firstName', fName || '');
+    submitData.append('lastName', lName.join(' ') || '');
+    submitData.append('username', formData.username);
+    submitData.append('phoneNumber', formData.phone);
+    submitData.append('email', formData.email);
+    submitData.append('role', formData.role);
+    submitData.append('status', userId ? formData.status : 'ใช้งานอยู่');
+    submitData.append('remarks', formData.remarks);
 
-    const payload = {
-      firstName,
-      lastName,
-      username: formData.username,
-      password: formData.password,
-      phoneNumber: formData.phone,
-      email: formData.email,
-      role: formData.role,
-      status: formData.status,
-      remarks: formData.remarks
-    };
+    if (formData.password) submitData.append('password', formData.password);
+    
+    // แนบไฟล์รูปไปด้วย (ถ้ามีการเลือกรูปใหม่)
+    if (profileImage) {
+      submitData.append('profileImage', profileImage); 
+      // ชื่อ 'profileImage' ตรงนี้ ฝั่ง Backend ต้องตั้งชื่อรับให้ตรงกันนะครับ
+    }
 
     setIsLoading(true);
-    const method = userId ? "PUT" : "POST";
-    const finalUrl = userId ? `${API_URL}/${userId}` : API_URL;
-
-    fetch(finalUrl, {
-      method,
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload)
-    })
-    .then(res => {
-      if (!res.ok) throw new Error("เกิดข้อผิดพลาดในการบันทึก");
-      alert(userId ? "แก้ไขข้อมูลสำเร็จ!" : "สร้างผู้ใช้งานใหม่สำเร็จ!");
-      navigate('/user'); 
-    })
-    .catch(err => alert(err.message))
-    .finally(() => setIsLoading(false));
+    try {
+      const res = await fetch(userId ? `${API_URL}/${userId}` : API_URL, {
+        method: userId ? 'PUT' : 'POST',
+        // ⚠️ ข้อควรระวัง: ห้ามใส่ headers: { 'Content-Type': 'application/json' } เด็ดขาด! 
+        // เบราว์เซอร์จะจัดการตั้งค่า Content-Type เป็น multipart/form-data ให้เองอัตโนมัติเมื่อเราส่ง FormData
+        body: submitData
+      });
+      
+      if (!res.ok) throw new Error("บันทึกไม่สำเร็จ");
+      alert(userId ? "อัปเดตข้อมูลสำเร็จ!" : "สร้างผู้ใช้งานใหม่สำเร็จ!");
+      navigate('/user');
+    } catch (err) {
+      alert("เกิดข้อผิดพลาดในการบันทึก");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <div className="newuser-container">
-      <nav className="sidebar">
-        <div className="logo-section">
-          <div className="logo-icon"><i className="fas fa-brain"></i></div>
-          <h2>ครูปุ๊ก ติวเตอร์</h2>
-        </div>
-        <ul className="nav-menu">
-          <li><Link to="/"><i className="fas fa-home"></i> หน้าหลัก</Link></li>
-          <li className="menu-header">การจัดการผู้ใช้</li>
-          <li className="active"><Link to="/user"><i className="fas fa-users"></i> ข้อมูลผู้ใช้งาน</Link></li>
-          <li className="menu-header">การจัดการสถาบัน</li>
-          <li><a href="#"><i className="fas fa-school"></i> ข้อมูลโรงเรียนกวดวิชา</a></li>
-          <li><a href="#"><i className="fas fa-map-marker-alt"></i> ข้อมูลสถาบันที่จัดสอบ</a></li>
-          <li className="menu-header">การจัดการเนื้อหา</li>
-          <li><a href="#"><i className="fas fa-book"></i> ข้อมูลคอร์สเรียน</a></li>
-        </ul>
-      </nav>
-
-      <main className="main-content">
-        <header className="content-header">
-          <h1>{userId ? "แก้ไขข้อมูลผู้ใช้งาน" : "เพิ่มผู้ใช้งานใหม่"}</h1>
+    <div className="newuser-page-container">
+      <Sidebar />
+      <main className="newuser-main-content">
+        <header className="newuser-header">
+          <h1>{userId ? "แก้ไขข้อมูลส่วนตัว" : "เพิ่มผู้ใช้งานใหม่"}</h1>
         </header>
 
-        <section className="form-card">
-          <form id="userForm" onSubmit={handleSubmit}>
-            <div className="form-layout">
-              {/* ส่วนรูปโปรไฟล์ */}
-              <div className="profile-upload-section">
-                <div className="profile-placeholder">
-                  <i className="fas fa-user"></i>
+        <section className="newuser-form-card">
+          <form onSubmit={handleSubmit}>
+            <div className="newuser-form-layout">
+              
+              {/* --- 5. ส่วนแสดงผลการอัปโหลดรูปภาพ --- */}
+              <div className="newuser-profile-section">
+                <div className="newuser-avatar-box" style={{ overflow: 'hidden' }}>
+                  {/* ถ้ามีรูป Preview ให้โชว์รูป ถ้าไม่มีโชว์ไอคอนสีเทา */}
+                  {previewImage ? (
+                    <img src={previewImage} alt="Profile Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    <i className="fas fa-user"></i>
+                  )}
                 </div>
-                <button type="button" className="btn-upload">
+                
+                {/* ปุ่มหลอก สำหรับกดเพื่อทริกเกอร์ input จริง */}
+                <button type="button" className="newuser-btn-upload" onClick={handleUploadClick}>
                   อัปโหลดรูปโปรไฟล์
                 </button>
+
+                {/* Input เลือกไฟล์ของจริง (ซ่อนไว้ไม่ให้มองเห็น เพราะมันไม่สวย) */}
+                <input 
+                  type="file" 
+                  accept="image/png, image/jpeg, image/jpg" 
+                  ref={fileInputRef} 
+                  onChange={handleImageChange} 
+                  style={{ display: 'none' }} 
+                />
               </div>
 
-              {/* ส่วนข้อมูลฟอร์ม */}
-              <div className="form-fields-section">
-                <div className="form-group-full">
+              {/* ... (ส่วนฟอร์มกรอกข้อมูลที่เหลือเหมือนเดิมเป๊ะครับ) ... */}
+              <div className="newuser-fields-section">
+                <div className="newuser-form-group full-width">
                   <label>บทบาท <span>*</span></label>
                   <select id="role" value={formData.role} onChange={handleInputChange}>
                     <option value="ติวเตอร์">ติวเตอร์</option>
@@ -143,55 +165,65 @@ function Newuser() {
                   </select>
                 </div>
 
-                <div className="form-grid">
-                  <div className="form-group">
+                <div className="newuser-input-grid">
+                  <div className="newuser-form-group">
                     <label>ชื่อ-นามสกุล <span>*</span></label>
                     <input type="text" id="fullName" value={formData.fullName} onChange={handleInputChange} required placeholder="นายปิติ สุขสมบูรณ์" />
                   </div>
-
-                  <div className="form-group">
-                    <label>อีเมล <span>*</span></label>
-                    <input type="email" id="email" value={formData.email} onChange={handleInputChange} required placeholder="piti.s@krupuk.com" />
-                  </div>
                   
-                  <div className="form-group">
+                  <div className="newuser-form-group">
                     <label>ชื่อผู้ใช้ <span>*</span></label>
-                    <input type="text" id="username" value={formData.username} onChange={handleInputChange} required placeholder="piti_s" />
+                    <input type="text" id="username" value={formData.username} onChange={handleInputChange} required disabled={!!userId} className={userId ? "input-disabled" : ""} />
                   </div>
 
-                  <div className="form-group password-field">
-                    <label>รหัสผ่าน <span>*</span></label>
-                    <input type={showPassword ? "text" : "password"} id="password" value={formData.password} onChange={handleInputChange} required={!userId} placeholder="รหัสผ่าน" />
-                    <i className={`fas ${showPassword ? 'fa-eye-slash' : 'fa-eye'}`} onClick={() => setShowPassword(!showPassword)}></i>
+                  <div className="newuser-form-group password-wrap">
+                    <label>{userId ? "รหัสผ่านใหม่ (เว้นว่างได้)" : "รหัสผ่าน *"} </label>
+                    <input type={showPwd ? "text" : "password"} id="password" value={formData.password} onChange={handleInputChange} required={!userId} />
+                    <i className={`fas ${showPwd ? 'fa-eye-slash' : 'fa-eye'}`} onClick={() => setShowPwd(!showPwd)}></i>
                   </div>
 
-                  <div className="form-group password-field">
-                    <label>ยืนยันรหัสผ่าน <span>*</span></label>
-                    <input type={showConfirmPassword ? "text" : "password"} id="confirmPassword" value={formData.confirmPassword} onChange={handleInputChange} required={!userId} placeholder="ยืนยันรหัสผ่าน" />
-                    <i className={`fas ${showConfirmPassword ? 'fa-eye-slash' : 'fa-eye'}`} onClick={() => setShowConfirmPassword(!showConfirmPassword)}></i>
+                  <div className="newuser-form-group password-wrap">
+                    <label>{userId ? "ยืนยันรหัสผ่านใหม่" : "ยืนยันรหัสผ่าน *"}</label>
+                    <input type={showConfirmPwd ? "text" : "password"} id="confirmPassword" value={formData.confirmPassword} onChange={handleInputChange} required={!userId} />
+                    <i className={`fas ${showConfirmPwd ? 'fa-eye-slash' : 'fa-eye'}`} onClick={() => setShowConfirmPwd(!showConfirmPwd)}></i>
                   </div>
 
-                  <div className="form-group">
+                  <div className="newuser-form-group">
                     <label>เบอร์โทรศัพท์ <span>*</span></label>
-                    <input type="text" id="phone" value={formData.phone} onChange={handleInputChange} required placeholder="082-987-6543" />
+                    <input type="text" id="phone" value={formData.phone} onChange={handleInputChange} required placeholder="08x-xxxxxxx" />
                   </div>
 
+                  <div className="newuser-form-group">
+                    <label>อีเมล <span>*</span></label>
+                    <input type="email" id="email" value={formData.email} onChange={handleInputChange} required placeholder="example@krupuk.com" />
+                  </div>
+
+                  {userId && (
+                    <div className="newuser-form-group">
+                      <label>สถานะ</label>
+                      <select id="status" value={formData.status} onChange={handleInputChange}>
+                        <option value="ใช้งานอยู่">ใช้งานอยู่</option>
+                        <option value="ระงับการใช้งาน">ระงับการใช้งาน</option>
+                      </select>
+                    </div>
+                  )}
                 </div>
 
-                <div className="form-group-full remarks-group">
+                <div className="newuser-form-group full-width remarks-area">
                   <label>บันทึกเพิ่มเติม (Remarks)</label>
-                  <textarea id="remarks" value={formData.remarks} onChange={handleInputChange} rows="3" placeholder="พิมพ์ข้อความเพิ่มเติม (optional)"></textarea>
+                  <textarea id="remarks" value={formData.remarks} onChange={handleInputChange} rows="3" placeholder="พิมพ์ข้อความเพิ่มเติม (ถ้ามี)"></textarea>
                 </div>
 
-                <div className="form-actions">
+                <div className="newuser-form-actions">
                   <button type="submit" className="btn-save" disabled={isLoading}>
-                    <i className="fas fa-check"></i> {isLoading ? 'กำลังบันทึก...' : 'สร้างผู้ใช้งาน'}
+                    <i className="fas fa-check"></i> {isLoading ? 'กำลังบันทึก...' : 'บันทึกข้อมูล'}
                   </button>
                   <button type="button" className="btn-cancel" onClick={() => navigate('/user')}>
-                    <i className="fas fa-times"></i> ยกเลิก
+                    ยกเลิก
                   </button>
                 </div>
               </div>
+
             </div>
           </form>
         </section>
