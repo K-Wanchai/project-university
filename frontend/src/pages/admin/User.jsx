@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import Sidebar from '../../components/Sidebar'; // นำเข้า Sidebar (ตรวจสอบ Path ให้ตรงกับโฟลเดอร์ของคุณ)
 import './User.css'; 
 
-const API_BASE_URL = "http://localhost:8080/api/admin/users";
+const API_BASE_URL = "http://172.24.177.40:8080/api/admin/users";
 
 function User() {
   // 1. State สำหรับตารางและการค้นหา (ลบ State ของ Modal ออกหมดแล้ว)
@@ -40,16 +40,7 @@ function User() {
     }
   };
 
-  // 4. ฟังก์ชันกรองข้อมูล
-  const filteredUsers = users.filter(user => {
-    const fullName = `${user.firstName || ''} ${user.lastName || ''}`.toLowerCase();
-    const username = (user.username || '').toLowerCase();
-    
-    const matchesSearch = fullName.includes(searchTerm.toLowerCase()) || username.includes(searchTerm.toLowerCase());
-    const matchesRole = roleFilter === "" || user.role === roleFilter;
-    
-    return matchesSearch && matchesRole;
-  });
+
 
   return (
     // เพิ่ม display: flex เพื่อจัดเรียง Sidebar กับ Main Content ให้อยู่ซ้าย-ขวา

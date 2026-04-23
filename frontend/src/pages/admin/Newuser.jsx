@@ -118,11 +118,6 @@ function Newuser() {
   };
 
   return (
-    <div className="newuser-page-container">
-      <Sidebar />
-      <main className="newuser-main-content">
-        <header className="newuser-header">
-          <h1>{userId ? "แก้ไขข้อมูลส่วนตัว" : "เพิ่มผู้ใช้งานใหม่"}</h1>
         </header>
 
         <section className="newuser-form-card">

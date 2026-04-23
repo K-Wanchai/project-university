@@ -1,0 +1,123 @@
+/* นำพื้นฐานมาจาก Newuser.css */
+.editcourse-container {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f8fafc;
+}
+
+/* Sidebar Styling (ยึดตาม Standard.css) */
+.sidebar {
+    width: 260px;
+    background-color: #1a1a4b;
+    color: white;
+    padding: 20px 0;
+    height: 100vh;
+    position: sticky;
+    top: 0;
+}
+
+.main-content {
+    flex: 1;
+    padding: 30px;
+}
+
+.content-header {
+    margin-bottom: 25px;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 15px;
+}
+
+.content-header h1 {
+    font-size: 22px;
+    color: #1e293b;
+}
+
+/* Card และ Form */
+.form-card {
+    background: #ffffff;
+    padding: 35px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.form-layout {
+    display: flex;
+    gap: 40px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+}
+
+.form-group label span { color: #ef4444; }
+
+.form-group input, .form-group select, textarea {
+    padding: 10px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.form-group-full {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+/* Buttons */
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 30px;
+}
+
+.btn-save {
+    background: #22c55e;
+    color: white;
+    padding: 10px 25px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-save:hover { background: #16a34a; }
+
+.btn-cancel {
+    background: #94a3b8;
+    color: white;
+    padding: 10px 25px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* Profile Placeholder (สำหรับรูปคอร์ส) */
+.profile-placeholder {
+    width: 160px;
+    height: 160px;
+    background: #f1f5f9;
+    border: 2px dashed #cbd5e1;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 15px;
+}

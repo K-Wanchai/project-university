@@ -7,7 +7,7 @@ function Standard() {
   const [totalUsersCount, setTotalUsersCount] = useState('กำลังโหลด...');
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/admin/users/count")
+
       .then(response => {
         if (!response.ok) throw new Error("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้");
         return response.json();
@@ -22,15 +22,7 @@ function Standard() {
   }, []);
 
   return (
-    <div className="container" style={{ display: 'flex' }}>
-      
-      {/* เรียกใช้งาน Sidebar Component */}
-      <Sidebar />
 
-      {/* จุดที่แก้ไข: เพิ่ม style={{ flex: 1, marginLeft: '260px' }} 
-        เพื่อดันโครงสร้าง main-content เดิมของคุณให้ขยับหนีแถบ Sidebar 
-      */}
-      <main className="main-content" style={{ flex: 1, marginLeft: '260px' }}>
         <header className="top-bar">
           <div className="user-info">
             <img src="https://via.placeholder.com/40" alt="Admin Avatar" className="avatar" />
