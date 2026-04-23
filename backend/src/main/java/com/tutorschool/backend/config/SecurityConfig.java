@@ -17,8 +17,14 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
                 
-                // เปิดอนุญาตเส้นทางเหล่านี้ให้เข้าถึงได้โดยไม่ต้องล็อกอิน (เพื่อการทดสอบ)
-                .requestMatchers("/api/auth/**", "/api/admin/**", "/api/courses/**", "/error").permitAll()
+                // 🌟 เพิ่ม "/uploads/profiles/**" เข้าไปในบรรทัดนี้ เพื่ออนุญาตให้โหลดรูปภาพได้โดยไม่ต้องล็อกอิน
+                .requestMatchers(
+                    "/api/auth/**", 
+                    "/api/admin/**", 
+                    "/api/courses/**", 
+                    "/error",
+                    "/uploads/profiles/**" // <--- เส้นทางดูรูปภาพของเรา
+                ).permitAll()
                 
                 .anyRequest().authenticated()
             );
