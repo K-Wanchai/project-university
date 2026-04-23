@@ -42,13 +42,13 @@ function Sidebar() {
 
           <li className="menu-header">การจัดการสถาบัน</li>
           <li>
-            <NavLink to="/schoolinfo" className={({ isActive }) => isActive ? "menu-item active" : "menu-item"}>
-              <i className="fas fa-schoolinfo"></i> <span>ข้อมูลโรงเรียนกวดวิชา</span>
+            <NavLink to="/school-info" className={({ isActive }) => isActive ? "menu-item active" : "menu-item"}>
+              <i className="fas fa-school-info"></i> <span>ข้อมูลโรงเรียนกวดวิชา</span>
             </NavLink>
           </li>
           <li>
-            <NavLink to="/exam-center" className={({ isActive }) => isActive ? "menu-item active" : "menu-item"}>
-              <i className="fas fa-map-marker-alt"></i> <span>ข้อมูลสถาบันที่จัดสอบ</span>
+            <NavLink to="/examination" className={({ isActive }) => isActive ? "menu-item active" : "menu-item"}>
+              <i className="fas fa-examination"></i> <span>ข้อมูลสถาบันที่จัดสอบ</span>
             </NavLink>
           </li>
 

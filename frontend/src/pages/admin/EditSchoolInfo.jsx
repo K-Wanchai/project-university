@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './SchoolInfo.css'; // ใช้ CSS ร่วมกับหน้าหลักหรือแยกไฟล์ก็ได้
+import Sidebar from '../../components/Sidebar'; // เรียกใช้งาน Sidebar Component
 
 function EditSchoolInfo() {
   const navigate = useNavigate();
@@ -31,7 +32,8 @@ function EditSchoolInfo() {
   };
 
   return (
-    <div className="school-info-container">
+    <div className="container" style={{ display: 'flex' }}>
+    <Sidebar />
       <main className="main-content-full">
         <header className="page-header">
           <h2><i className="fas fa-edit"></i> แก้ไขข้อมูลโรงเรียน</h2>

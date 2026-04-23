@@ -1,0 +1,180 @@
+:root {
+  --primary-dark: #1a1a40;
+  --accent-teal: #17a2b8;
+  --bg-light: #f4f7f6;
+  --text-gray: #6c757d;
+}
+
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+  font-family: 'Sarabun', sans-serif;
+  background-color: var(--bg-light);
+}
+
+/* Sidebar Styling */
+.sidebar {
+  width: 260px;
+  background-color: var(--primary-dark);
+  color: white;
+  padding: 20px 0;
+}
+
+.logo-section {
+  text-align: center;
+  padding-bottom: 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.menu-item {
+  padding: 12px 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.9rem;
+}
+
+.menu-item.sub { padding-left: 40px; color: #adb5bd; }
+.menu-item.active { background-color: var(--accent-teal); color: white; }
+
+.menu-group-title {
+  padding: 15px 20px 5px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  color: #777;
+}
+
+/* Main Content Styling */
+.main-content {
+  flex: 1;
+  padding: 30px;
+  margin-left: 260px; /* ดันเนื้อหาไปทางขวาเท่ากับความกว้างของ Sidebar */
+  width: calc(100% - 260px); /* กำหนดความกว้างที่เหลือ */
+}
+
+.content-header h1 {
+  font-size: 1.8rem;
+  color: #333;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #dee2e6;
+  padding-bottom: 15px;
+}
+
+.table-card {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.table-controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  align-items: center;
+}
+
+.search-box {
+  position: relative;
+  flex: 1;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 8px 10px 8px 35px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.search-box svg {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+}
+
+.btn-add {
+  background-color: var(--accent-teal);
+  color: white;
+  border: none;
+  padding: 8px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Table Styling */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.data-table th {
+  background-color: #f8f9fa;
+  text-align: left;
+  padding: 12px;
+  border-bottom: 2px solid #eee;
+}
+
+.data-table td {
+  padding: 12px;
+  border-bottom: 1px solid #eee;
+}
+
+.inst-logo {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Status Badges */
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: white;
+}
+
+.status-green { background-color: #28a745; }
+.status-orange { background-color: #fd7e14; }
+.status-red { background-color: #dc3545; }
+.status-light-green { background-color: #20c997; }
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.edit-btn, .delete-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #666;
+}
+
+.pagination {
+  display: flex;
+  justify-content: flex-end;
+  gap: 5px;
+  margin-top: 20px;
+}
+
+.pagination button {
+  padding: 5px 12px;
+  border: 1px solid #ddd;
+  background: white;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.pagination button.active {
+  background-color: var(--accent-teal);
+  color: white;
+  border-color: var(--accent-teal);
+}
