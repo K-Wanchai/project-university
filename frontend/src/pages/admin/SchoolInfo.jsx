@@ -18,9 +18,9 @@ function SchoolInfo() {
       <main className="main-content-full">
         <header className="page-header">
           <h2><i className="fas fa-school"></i> ข้อมูลโรงเรียนกวดวิชา</h2>
-          <button className="btn-edit-school">
+          <Link to="/edit-school-info" className="btn-edit-school">
             <i className="fas fa-edit"></i> แก้ไขข้อมูล
-          </button>
+          </Link>
         </header>
 
         <div className="info-grid">

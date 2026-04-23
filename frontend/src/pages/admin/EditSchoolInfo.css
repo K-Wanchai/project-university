@@ -1,0 +1,169 @@
+/* EditSchoolInfo.css */
+
+.school-info-container {
+  padding: 20px;
+  background-color: #f4f7f6;
+  min-height: 100vh;
+  font-family: 'Sarabun', sans-serif;
+}
+
+.main-content-full {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* Header Styles */
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #ddd;
+}
+
+.page-header h2 {
+  font-size: 1.5rem;
+  color: #2c3e50;
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* Button Styles */
+.btn-save-school {
+  background-color: #27ae60;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s;
+}
+
+.btn-save-school:hover {
+  background-color: #219150;
+}
+
+.btn-cancel {
+  background-color: #95a5a6;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-cancel:hover {
+  background-color: #7f8c8d;
+}
+
+/* Form Grid & Cards */
+.info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* แบ่ง 2 คอลัมน์ */
+  gap: 20px;
+}
+
+.info-card {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.info-card h4 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #34495e;
+  border-left: 4px solid #3498db;
+  padding-left: 10px;
+  font-size: 1.1rem;
+}
+
+/* Form Controls */
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 600;
+  color: #555;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 14px;
+  box-sizing: border-box; /* สำคัญเพื่อให้ padding ไม่ล้น */
+  transition: border-color 0.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #3498db;
+  box-shadow: 0 0 5px rgba(52, 152, 219, 0.2);
+}
+
+.form-group-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
+
+/* QR Code Upload */
+.input-file {
+  padding: 5px 0;
+}
+
+/* Mobile Specific Actions */
+.form-actions-mobile {
+  display: none; /* ซ่อนไว้ในหน้าจอใหญ่ */
+  grid-column: span 2;
+  margin-top: 10px;
+}
+
+.btn-save-full {
+  width: 100%;
+  padding: 15px;
+  background-color: #27ae60;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .info-grid {
+    grid-template-columns: 1fr; /* ปรับเป็นคอลัมน์เดียวบนมือถือ */
+  }
+
+  .form-group-row {
+    grid-template-columns: 1fr;
+  }
+
+  .header-actions {
+    display: none; /* ซ่อนปุ่มด้านบนบนมือถือเพื่อลดความรก */
+  }
+
+  .form-actions-mobile {
+    display: block; /* แสดงปุ่มใหญ่ด้านล่างแทน */
+  }
+
+  .page-header h2 {
+    font-size: 1.2rem;
+  }
+}
