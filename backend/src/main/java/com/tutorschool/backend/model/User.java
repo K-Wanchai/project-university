@@ -25,6 +25,7 @@ public class User {
     private String gender;         // เพศ (ชาย, หญิง)
     private String role;           // บทบาท (คุณครู, แอดมิน, เจ้าหน้าที่, นักเรียน)
     private String gradeLevel;     // ระดับชั้น
+    private String profileImage;
 
     // 2. ข้อมูลการติดต่อ (Contact Info)
     private String phoneNumber;    // เบอร์โทรศัพท์
@@ -41,6 +42,7 @@ public class User {
 
     // 4. ข้อมูลสำหรับแอดมินจัดการ (Admin Info)
     private String status;         // สถานะ (เช่น ใช้งานอยู่, ปิดใช้งาน, รอตรวจสอบ)
+    
     
     @Column(columnDefinition = "TEXT")
     private String remarks;        // บันทึกเพิ่มเติม
@@ -94,4 +96,11 @@ public class User {
 
     public String getRemarks() { return remarks; }
     public void setRemarks(String remarks) { this.remarks = remarks; }
+
+    public String getProfileImage() {
+    return profileImage;
+}
+    public void setProfileImage(String profileImage) {
+    this.profileImage = profileImage;
+}
 }

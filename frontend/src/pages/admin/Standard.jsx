@@ -1,21 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import './Standard.css'; // นำเข้า CSS ของหน้านี้ (ตรวจสอบชื่อไฟล์ให้ตรงด้วยนะครับ)
-import { Link } from 'react-router-dom'; // ใช้ Link เพื่อสลับหน้าโดยไม่รีเฟรช
+import './Standard.css'; // นำเข้า CSS เดิมของคุณ
+import { Link } from 'react-router-dom'; 
+import Sidebar from '../../components/Sidebar';
 
 function Standard() {
-  // 1. สร้าง State ไว้เก็บตัวเลขจำนวนผู้ใช้
   const [totalUsersCount, setTotalUsersCount] = useState('กำลังโหลด...');
 
-  // 2. ดึงข้อมูลเมื่อโหลดหน้าเว็บ
   useEffect(() => {
-    // หมายเหตุ: ผมเปลี่ยน IP จาก 172.24.177.13 เป็น localhost ให้ตรงกับหน้า User.jsx เพื่อป้องกันปัญหาเชื่อมต่อข้ามเครื่องครับ
-    fetch("http://172.24.177.40:8080/api/admin/users/count")
+
       .then(response => {
         if (!response.ok) throw new Error("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้");
         return response.json();
       })
       .then(data => {
-        // อัปเดตตัวเลขลงใน State พร้อมใส่ลูกน้ำ (,)
         setTotalUsersCount(data.totalUsers.toLocaleString());
       })
       .catch(error => {
@@ -25,37 +22,7 @@ function Standard() {
   }, []);
 
   return (
-    <div className="container">
-      {/* Sidebar */}
-  <nav className="sidebar">
-        <div className="logo-section">
-          <div className="logo-icon"><i className="fas fa-brain"></i></div>
-          <h2>ครูปุ๊ก ติวเตอร์</h2>
-        </div>
-        <ul className="nav-menu">
-          <li>
-          <Link to="/"><i className="fas fa-home"></i> หน้าหลัก</Link></li>
 
-          <li className="menu-header">การจัดการผู้ใช้</li>
-          <li className="active"><a href="/user"><i className="fas fa-users"></i> ข้อมูลผู้ใช้งาน</a></li>
-
-          <li className="menu-header">การจัดการสถาบัน</li>
-          {/* แบบใหม่ที่ถูกต้อง */}
-<li>
-  <Link to="/school-info">
-    <i className="fas fa-school"></i> ข้อมูลโรงเรียนกวดวิชา
-  </Link>
-</li>
-          <li><a href="#"><i className="fas fa-map-marker-alt"></i> ข้อมูลสถาบันที่จัดสอบ</a></li>
-
-          <li className="menu-header">การจัดการเนื้อหา</li>
-          <li><Link to="/course"><i className="fas fa-course"></i> ข้อมูลคอร์สเรียน</Link></li>
-          <li className="bottom-menu"><a href="#"><i className="fas fa-key"></i> เปลี่ยนรหัสผ่าน</a></li>
-        </ul>
-      </nav>
-
-      {/* Main Content */}
-      <main className="main-content">
         <header className="top-bar">
           <div className="user-info">
             <img src="https://via.placeholder.com/40" alt="Admin Avatar" className="avatar" />
@@ -71,7 +38,6 @@ function Standard() {
               <i className="fas fa-users-cog icon"></i>
               <div className="stat-info">
                 <p>ผู้ใช้งานทั้งหมด</p>
-                {/* ดึงค่าจาก State มาแสดงที่นี่ */}
                 <span className="number">{totalUsersCount}</span>
               </div>
             </div>
