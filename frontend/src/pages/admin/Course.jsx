@@ -1,107 +1,203 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './Course.css';
 import Sidebar from '../../components/Sidebar';
+import Header from '../../components/Header';
+
+const API_URL = "http://localhost:8080/api/admin/courses";
 
 function Course() {
-  const [courses] = useState([
-    { id: 1, icon: '🧮', name: 'คณิตศาสตร์ ม.ปลาย', category: 'วิทยาศาสตร์', time: 'จ.-ศ. 18:00-20:00', tutor: 'ครูปุ๊ก', status: 'เปิดรับสมัคร', statusType: 'open' },
-    { id: 2, icon: '📜', name: 'ภาษาไทย ม.ต้น', category: 'ภาษาไทย', time: 'เสาร์ 09:00-12:00', tutor: 'ครูพี่วิน', status: 'กำลังสอน', statusType: 'ongoing' },
-    { id: 3, icon: '🧪', name: 'วิทยาศาสตร์ ม.ต้น', category: 'วิทยาศาสตร์', time: 'อาทิตย์ 13:00-16:00', tutor: 'ครูสมศรี', status: 'จบแล้ว', statusType: 'closed' },
-    { id: 4, icon: '🇬🇧', name: 'ภาษาอังกฤษ ม.ปลาย', category: 'ภาษาต่างประเทศ', time: 'พุธ 16:30-18:30', tutor: 'Mr. Johnson', status: 'จบแล้ว', statusType: 'closed' },
-    { id: 5, icon: '🎨', name: 'ศิลปะและออกแบบ', category: 'ศิลปะ', time: 'ศุกร์ 16:00-18:00', tutor: 'ครูวราภรณ์', status: 'จบแล้ว', statusType: 'closed' },
-  ]);
+  const [courses, setCourses] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const getStatusClass = (type) => {
-    if (type === 'open') return 'status-open';
-    if (type === 'ongoing') return 'status-ongoing';
-    return 'status-closed';
+  // 🌟 1. สร้าง State สำหรับเก็บค่าการค้นหาและตัวกรอง 🌟
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterCategory, setFilterCategory] = useState('');
+  const [filterStatus, setFilterStatus] = useState('');
+
+  useEffect(() => {
+    fetchCourses();
+  }, []);
+
+  const fetchCourses = async () => {
+    try {
+      const response = await fetch(API_URL);
+      if (!response.ok) {
+        throw new Error("ไม่สามารถดึงข้อมูลคอร์สเรียนได้");
+      }
+      const data = await response.json();
+      setCourses(data); 
+    } catch (err) {
+      console.error("Fetch error:", err);
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const getDotClass = (type) => {
-    if (type === 'open') return 'dot-green';
-    if (type === 'ongoing') return 'dot-yellow';
+  const handleDelete = async (id) => {
+    if (window.confirm("คุณแน่ใจหรือไม่ว่าต้องการลบคอร์สนี้?")) {
+      try {
+        const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
+        if (response.ok) {
+          setCourses(courses.filter(course => course.id !== id));
+          alert("ลบคอร์สเรียนสำเร็จ");
+        } else {
+          alert("เกิดข้อผิดพลาดในการลบข้อมูล");
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  };
+
+  const getStatusClass = (statusText) => {
+    if (statusText === 'เปิดรับสมัคร') return 'status-open';
+    if (statusText === 'กำลังสอน') return 'status-ongoing';
+    return 'status-closed'; 
+  };
+
+  const getDotClass = (statusText) => {
+    if (statusText === 'เปิดรับสมัคร') return 'dot-green';
+    if (statusText === 'กำลังสอน') return 'dot-yellow';
     return 'dot-gray';
   };
+
+  // 🌟 2. สร้างตัวแปรคัดกรองข้อมูล (Filter Logic) 🌟
+  // ระบบจะกรองจาก ชื่อคอร์ส, หมวดหมู่ และสถานะ พร้อมๆ กัน
+  const filteredCourses = courses.filter(course => {
+    const matchSearch = course.courseName.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchCategory = filterCategory === '' || course.subject === filterCategory;
+    const matchStatus = filterStatus === '' || course.status === filterStatus;
+    
+    return matchSearch && matchCategory && matchStatus;
+  });
 
   return (
     <div className="container" style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8fafc' }}>
       
-      {/* เรียกใช้งาน Sidebar Component */}
       <Sidebar />
       
-      {/* 🌟 จุดที่แก้ไข: ดันเนื้อหาหนี Sidebar 260px และจัดการไม่ให้ตารางล้นจอ 🌟 */}
       <main className="main-content" style={{ flex: 1, marginLeft: '260px', padding: '30px', overflowX: 'hidden' }}>
+        
+        <Header title="การจัดการคอร์สเรียน" /><br />
         <div className="info-bar" style={{ marginBottom: '20px', color: '#64748b' }}>
-          ข้อมูลสถาบัน : : สาขาหลัก กรุงเทพฯ (BKK001)
+          ข้อมูลสถาบัน : : สาขา ขอนแก่น KKC
         </div>
 
         <div className="course-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-          <h1 style={{ margin: 0, color: '#1e293b' }}>การจัดการคอร์สเรียน</h1>
+          <h1 style={{ margin: 0, color: '#1e293b' }}></h1>
           <Link to="/add-course" className="btn-add-course" style={{ background: '#1e1e4b', color: 'white', padding: '10px 20px', borderRadius: '8px', textDecoration: 'none' }}>
             <i className="fas fa-plus"></i> เพิ่มคอร์สใหม่
           </Link>
         </div>
 
+        {/* 🌟 3. อัปเดต UI ส่วนตัวกรอง ให้เชื่อมกับ State 🌟 */}
         <div className="filter-section" style={{ display: 'flex', gap: '15px', marginBottom: '20px' }}>
-          <input type="text" className="search-input" placeholder="ค้นหาคอร์ส..." style={{ padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', flex: 1 }} />
-          <select className="filter-select" style={{ padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1' }}>
-            <option>ตัวกรองประเภทคอร์ส</option>
+          <input 
+            type="text" 
+            className="search-input" 
+            placeholder="ค้นหาชื่อคอร์สเรียน..." 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1', flex: 1 }} 
+          />
+          <select 
+            className="filter-select" 
+            value={filterCategory}
+            onChange={(e) => setFilterCategory(e.target.value)}
+            style={{ padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1' }}
+          >
+            <option value="">ทุกหมวดหมู่</option>
+            <option value="วิทยาศาสตร์">วิทยาศาสตร์</option>
+            <option value="คณิตศาสตร์">คณิตศาสตร์</option>
+            <option value="ภาษาไทย">ภาษาไทย</option>
+            <option value="ภาษาต่างประเทศ">ภาษาต่างประเทศ</option>
+            <option value="ศิลปะ">ศิลปะ</option>
           </select>
-          <select className="filter-select" style={{ padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1' }}>
-            <option>ตัวกรองสถานะคอร์ส</option>
+          <select 
+            className="filter-select" 
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            style={{ padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1' }}
+          >
+            <option value="">ทุกสถานะ</option>
+            <option value="เปิดรับสมัคร">เปิดรับสมัคร</option>
+            <option value="กำลังสอน">กำลังสอน</option>
+            <option value="จบแล้ว">จบแล้ว</option>
+            <option value="ปิดปรับปรุง">ปิดปรับปรุง</option>
           </select>
         </div>
 
         <section className="course-card" style={{ background: 'white', padding: '20px', borderRadius: '12px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', overflowX: 'auto' }}>
           <h3 style={{ marginTop: 0, marginBottom: '20px' }}>รายการคอร์สเรียนทั้งหมด</h3>
-          <table className="course-table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-            <thead>
-              <tr style={{ borderBottom: '2px solid #e2e8f0' }}>
-                <th style={{ padding: '12px' }}>#</th>
-                <th style={{ padding: '12px' }}>โลโก้คอร์ส</th>
-                <th style={{ padding: '12px' }}>ชื่อคอร์ส</th>
-                <th style={{ padding: '12px' }}>วิชา/หมวดหมู่</th>
-                <th style={{ padding: '12px' }}>เวลาที่สอน</th>
-                <th style={{ padding: '12px' }}>ผู้สอน/วิทยากร</th>
-                <th style={{ padding: '12px' }}>สถานะ</th>
-                <th style={{ padding: '12px' }}>การจัดการ</th>
-              </tr>
-            </thead>
-            <tbody>
-              {courses.map((course, index) => (
-                <tr key={course.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                  <td style={{ padding: '12px' }}>{index + 1}</td>
-                  <td className="course-icon" style={{ padding: '12px', fontSize: '24px' }}>{course.icon}</td>
-                  <td style={{ padding: '12px' }}><strong>{course.name}</strong></td>
-                  <td style={{ padding: '12px' }}>{course.category}</td>
-                  <td style={{ padding: '12px' }}>{course.time}</td>
-                  <td style={{ padding: '12px' }}>{course.tutor}</td>
-                  <td style={{ padding: '12px' }}>
-                    <span className={`status-pill ${getStatusClass(course.statusType)}`}>
-                      <span className={`dot ${getDotClass(course.statusType)}`}></span>
-                      {course.status}
-                    </span>
-                  </td>
-                  <td style={{ padding: '12px' }}>
-                    <Link to={`/edit-course/${course.id}`} className="btn-edit-action" style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: 'bold' }}>
-                        <i className="fas fa-edit"></i> แก้ไข
-                    </Link>
-                  </td>
+          
+          {isLoading ? (
+            <div style={{ textAlign: 'center', padding: '20px', color: '#64748b' }}>กำลังโหลดข้อมูล...</div>
+          ) : error ? (
+            <div style={{ textAlign: 'center', padding: '20px', color: 'red' }}>{error}</div>
+          ) : (
+            <table className="course-table" style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+              <thead>
+                <tr style={{ borderBottom: '2px solid #e2e8f0' }}>
+                  <th style={{ padding: '12px' }}>#</th>
+                  <th style={{ padding: '12px', textAlign: 'center' }}>โลโก้คอร์ส</th>
+                  <th style={{ padding: '12px' }}>ชื่อคอร์ส</th>
+                  <th style={{ padding: '12px' }}>วิชา/หมวดหมู่</th>
+                  <th style={{ padding: '12px' }}>เวลาที่สอน</th>
+                  <th style={{ padding: '12px' }}>ผู้สอน/วิทยากร</th>
+                  <th style={{ padding: '12px' }}>สถานะ</th>
+                  <th style={{ padding: '12px' }}>การจัดการ</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {/* 🌟 4. เปลี่ยนมาใช้ตัวแปร filteredCourses แทน courses 🌟 */}
+                {filteredCourses.length === 0 ? (
+                  <tr>
+                    <td colSpan="8" style={{ textAlign: 'center', padding: '20px' }}>ไม่พบข้อมูลคอร์สเรียนที่ค้นหา</td>
+                  </tr>
+                ) : (
+                  filteredCourses.map((course, index) => (
+                    <tr key={course.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                      <td style={{ padding: '12px' }}>{index + 1}</td>
+                      <td className="course-icon" style={{ padding: '12px', textAlign: 'center' }}>
+                        {course.imageUrl && course.imageUrl.trim() !== '' ? (
+                           <img 
+                             src={`http://localhost:8080/uploads/courses/${course.imageUrl}`} 
+                             alt="Course" 
+                             style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #e2e8f0' }} 
+                           />
+                        ) : (
+                           <span style={{ fontSize: '24px' }}>📚</span>
+                        )}
+                      </td>
+                      <td style={{ padding: '12px' }}><strong>{course.courseName}</strong></td>
+                      <td style={{ padding: '12px' }}>{course.subject}</td>
+                      <td style={{ padding: '12px' }}>{course.learningChannel}</td>
+                      <td style={{ padding: '12px' }}>{course.instructor}</td>
+                      <td style={{ padding: '12px' }}>
+                        <span className={`status-pill ${getStatusClass(course.status)}`}>
+                          <span className={`dot ${getDotClass(course.status)}`}></span>
+                          {course.status}
+                        </span>
+                      </td>
+                      <td style={{ padding: '12px', display: 'flex', gap: '10px' }}>
+                        <Link to={`/edit-course/${course.id}`} className="btn-edit-action" style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: 'bold' }}>
+                            <i className="fas fa-edit"></i> แก้ไข
+                        </Link>
+                        <button onClick={() => handleDelete(course.id)} style={{ color: '#ef4444', background: 'none', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}>
+                          <i className="fas fa-trash"></i> ลบ
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          )}
         </section>
 
-        {/* Footer News Section */}
-        <div className="activity-section" style={{marginTop: '20px', background: 'white', padding: '20px', borderRadius: '12px', boxShadow: '0 2px 4px rgba(0,0,0,0.05)' }}>
-            <h4 style={{ marginTop: 0 }}><i className="fas fa-globe"></i> กิจกรรมล่าสุด & ข่าวสาร</h4>
-            <ul className="activity-list" style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-              <li style={{ padding: '10px 0', borderBottom: '1px solid #f1f5f9', display: 'flex', justifyContent: 'space-between' }}><span>• เพิ่มคอร์สใหม่: เคมี ม.ต้น (โดยแอดมินคุณกมล)</span> <small style={{ color: '#64748b' }}>เมื่อ 5 นาที</small></li>
-              <li style={{ padding: '10px 0', display: 'flex', justifyContent: 'space-between' }}><span>• อัปเดตข้อมูลคอร์ส: ภาษาไทย ม.6</span> <small style={{ color: '#64748b' }}>เมื่อ 2 ชั่วโมง</small></li>
-            </ul>
-        </div>
       </main>
     </div>
   );

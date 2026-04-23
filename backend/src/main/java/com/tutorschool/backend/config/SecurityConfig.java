@@ -16,14 +16,15 @@ public class SecurityConfig {
         http
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(auth -> auth
-                
-                // 🌟 เพิ่ม "/uploads/profiles/**" เข้าไปในบรรทัดนี้ เพื่ออนุญาตให้โหลดรูปภาพได้โดยไม่ต้องล็อกอิน
+
+                // 🌟 เพิ่ม "/uploads/courses/**" เพื่ออนุญาตให้โหลดรูปภาพคอร์สได้
                 .requestMatchers(
                     "/api/auth/**", 
                     "/api/admin/**", 
                     "/api/courses/**", 
                     "/error",
-                    "/uploads/profiles/**" // <--- เส้นทางดูรูปภาพของเรา
+                    "/uploads/profiles/**",   // รูปผู้ใช้งาน
+                    "/uploads/courses/**"     // 🌟 รูปคอร์สเรียน
                 ).permitAll()
                 
                 .anyRequest().authenticated()

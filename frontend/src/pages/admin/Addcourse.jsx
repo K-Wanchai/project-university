@@ -1,11 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Addcourse.css'; 
 import Sidebar from '../../components/Sidebar';
+import Header from '../../components/Header';
+
+// 🌟 URL สำหรับยิงข้อมูลไปหา Spring Boot
+const API_URL = "http://localhost:8080/api/admin/courses";
 
 function Addcourse() {
   const navigate = useNavigate();
+  const fileInputRef = useRef(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [courseImage, setCourseImage] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null);
 
   const [formData, setFormData] = useState({
     courseName: '',
@@ -13,7 +20,6 @@ function Addcourse() {
     courseTime: '',
     tutorName: '',
     status: 'เปิดรับสมัคร',
-    courseIcon: '📚',
     startDate: '',       
     totalHours: '',      
     price: '',           
@@ -26,47 +32,92 @@ function Addcourse() {
     setFormData(prev => ({ ...prev, [id]: value }));
   };
 
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setCourseImage(file);
+      setPreviewImage(URL.createObjectURL(file));
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    console.log("Course Data:", formData);
-    setTimeout(() => {
-      setIsLoading(false);
+
+    const submitData = new FormData();
+    submitData.append('courseName', formData.courseName);
+    submitData.append('subject', formData.category);
+    submitData.append('instructor', formData.tutorName);
+    submitData.append('learningChannel', formData.courseTime);
+    submitData.append('startDate', formData.startDate);
+    submitData.append('hours', formData.totalHours);
+    submitData.append('price', formData.price);
+    submitData.append('status', formData.status);
+    submitData.append('description', formData.description);
+
+    if (courseImage) {
+      submitData.append('courseImage', courseImage);
+    }
+
+    try {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        body: submitData 
+      });
+
+      if (!response.ok) throw new Error("ไม่สามารถบันทึกคอร์สเรียนได้");
+
+      alert('เพิ่มคอร์สเรียนใหม่สำเร็จ!');
       navigate('/course');
-    }, 1000);
+    } catch (error) {
+      alert("เกิดข้อผิดพลาด: " + error.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
    <div className="container" style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8fafc' }}>
-      
       <Sidebar />
-      
-      {/* 🌟 จุดที่แก้ไข: ดันเนื้อหาหนี Sidebar 260px 🌟 */}
       <main className="main-content" style={{ flex: 1, marginLeft: '260px', padding: '30px' }}>
-        <section className="content-header" style={{ marginBottom: '20px' }}>
+        <header className="content-header" style={{ marginBottom: '20px' }}>
           <h1 style={{ color: '#1e293b' }}><i className="fas fa-book-medical"></i> เพิ่มคอร์สเรียนใหม่</h1>
-        </section>
+        </header>
 
         <section className="form-card" style={{ background: '#fff', padding: '30px', borderRadius: '12px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
           <form onSubmit={handleSubmit}>
             <div className="form-layout" style={{ display: 'flex', gap: '40px', flexWrap: 'wrap' }}>
               
+              {/* ส่วนอัปโหลดรูปภาพ */}
               <div className="profile-upload-section" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '200px' }}>
-                <div className="profile-placeholder" style={{ width: '150px', height: '150px', background: '#f1f5f9', borderRadius: '12px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                  <span style={{ fontSize: '60px' }}>{formData.courseIcon}</span>
+                <div className="profile-placeholder" style={{ width: '150px', height: '150px', background: '#f1f5f9', borderRadius: '12px', display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}>
+                  {previewImage ? (
+                    <img src={previewImage} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    <i className="fas fa-book-open" style={{ fontSize: '50px', color: '#cbd5e1' }}></i>
+                  )}
                 </div>
-                <label style={{ marginTop: '10px', fontSize: '14px', color: '#64748b' }}>ไอคอนคอร์ส</label>
-                <select id="courseIcon" value={formData.courseIcon} onChange={handleInputChange} className="form-control" style={{ marginTop: '10px', width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1' }}>
-                  <option value="📚">📚 ทั่วไป</option>
-                  <option value="🧮">🧮 คณิตศาสตร์</option>
-                  <option value="🧪">🧪 วิทยาศาสตร์</option>
-                  <option value="🇬🇧">🇬🇧 ภาษาอังกฤษ</option>
-                  <option value="🎨">🎨 ศิลปะ</option>
-                </select>
+                <button 
+                  type="button" 
+                  className="btn-upload" 
+                  onClick={() => fileInputRef.current.click()}
+                  style={{ marginTop: '15px', padding: '8px 15px', background: '#f1f5f9', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', color: '#475569', width: '100%' }}
+                >
+                  เลือกรูปภาพคอร์ส
+                </button>
+                <input 
+                  type="file" 
+                  ref={fileInputRef} 
+                  onChange={handleImageChange} 
+                  style={{ display: 'none' }} 
+                  accept="image/*"
+                />
               </div>
 
+              {/* ส่วนกรอกข้อมูล */}
               <div className="form-fields" style={{ flex: 1, minWidth: '300px' }}>
                 <div className="form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                  
                   <div className="form-group">
                     <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>ชื่อคอร์สเรียน <span style={{ color: 'red' }}>*</span></label>
                     <input type="text" id="courseName" value={formData.courseName} onChange={handleInputChange} required placeholder="เช่น ฟิสิกส์ ม.4 เทอม 1" style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1' }} />

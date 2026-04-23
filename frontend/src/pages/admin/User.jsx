@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import Sidebar from '../../components/Sidebar'; 
 import './User.css'; 
+import Header from '../../components/Header';
+
 
 // กำหนด IP ของ Backend ไว้ที่เดียวเพื่อให้จัดการง่าย
 const API_IP = "172.24.177.40";
@@ -64,10 +66,7 @@ function User() {
 
       {/* Main Content */}
       <main className="main-content" style={{ flex: 1, marginLeft: '260px', padding: '20px' }}>
-        <header className="content-header">
-          <h1>การจัดการข้อมูลผู้ใช้งาน</h1>
-          <hr />
-        </header>
+        <Header title="ข้อมูลผู้ใช้งาน" /> 
 
         <section className="table-container">
           <div className="table-controls">
