@@ -186,22 +186,9 @@ function User() {
                 onChange={(e) => setSearchTerm(e.target.value)} 
               />
             </div>
-            <select 
-              value={roleFilter} 
-              onChange={(e) => setRoleFilter(e.target.value)}
-            >
-              <option value="">ตัวกรองบทบาท</option>
-              <option value="ผู้ดูแลระบบ">ผู้ดูแลระบบ</option>
-              <option value="นักเรียน">นักเรียน</option>
-            </select>
-            <div className="date-picker">
-              <i className="far fa-calendar"></i>
-              <input type="text" value="0 ม.ค. - 2567" readOnly />
-            </div>
-
-            <button className="btn-add" onClick={() => openModal('add')}>
-              <i className="fas fa-plus"></i> เพิ่มผู้ใช้งานใหม่
-            </button>
+            <Link to="/newuser" className="btn-add">
+                <i className="fas fa-plus"></i> เพิ่มผู้ใช้งานใหม่
+            </Link>
           </div>
           
           <table className="user-table">
