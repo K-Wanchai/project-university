@@ -1,11 +1,13 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import User from "./pages/admin/User.jsx";
+import Standard from "./pages/admin/Standard.jsx"; 
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* เดี๋ยวเราจะมาเพิ่มหน้าต่างๆ ของ 14 Process ตรงนี้ครับ */}
-        <Route path="/" element={<h1>ระบบจัดการโรงเรียนกวดวิชา</h1>} />
+        <Route path="/" element={<Standard />} />
+        <Route path="/user" element={<User />} /> 
       </Routes>
     </BrowserRouter>
   );
