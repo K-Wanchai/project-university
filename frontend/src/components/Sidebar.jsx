@@ -1,79 +1,112 @@
 import React from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import './Sidebar.css';
 
-function Sidebar() {
+const menuGroups = [
+  {
+    label: 'ภาพรวม',
+    items: [
+      { to: '/', icon: 'fas fa-house', label: 'หน้าหลัก', end: true },
+    ],
+  },
+  {
+    label: 'การจัดการผู้ใช้',
+    items: [
+      { to: '/user', icon: 'fas fa-users', label: 'ข้อมูลผู้ใช้งาน', badge: 'ใหม่' },
+      { to: '/money', icon: 'fas fa-credit-card', label: 'ข้อมูลการชำระเงิน' },
+    ],
+  },
+  {
+    label: 'การจัดการสถาบัน',
+    items: [
+      { to: '/school-info', icon: 'fas fa-school', label: 'ข้อมูลโรงเรียนกวดวิชา' },
+      { to: '/examination', icon: 'fas fa-building-columns', label: 'ข้อมูลสถาบันที่จัดสอบ' },
+    ],
+  },
+  {
+    label: 'การจัดการเนื้อหา',
+    items: [
+      { to: '/course', icon: 'fas fa-book-open', label: 'ข้อมูลคอร์สเรียน' },
+    ],
+  },
+];
+
+function Sidebar({ collapsed = false }) {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
-    if (window.confirm("คุณต้องการออกจากระบบใช่หรือไม่?")) {
-      // ล้างข้อมูลการล็อกอิน (ถ้ามี)
+    if (window.confirm('คุณต้องการออกจากระบบใช่หรือไม่?')) {
       localStorage.removeItem('token');
-      // นำทางไปยังหน้า Login
       navigate('/login');
     }
   };
 
+  const activeLabel = menuGroups
+    .flatMap((group) => group.items)
+    .find((item) => {
+      if (item.end) return location.pathname === item.to;
+      return location.pathname.startsWith(item.to);
+    })?.label || 'หน้าหลัก';
+
   return (
-    <nav className="sidebar-container">
+    <nav className={`sidebar-container ${collapsed ? 'is-collapsed' : ''}`} aria-label="เมนูหลัก">
       <div className="sidebar-logo">
-        <div className="logo-icon"><i className="fas fa-brain"></i></div>
-        <h2>ครูปุ๊ก ติวเตอร์</h2>
+        <div className="logo-icon"><i className="fas fa-brain" /></div>
+        <div className="logo-text">
+          <h2>ครูปุ๊ก ติวเตอร์</h2>
+          <span>Admin Console</span>
+        </div>
+      </div>
+
+      <div className="sidebar-status-card">
+        <div className="status-dot" />
+        <div>
+          <strong>ระบบพร้อมใช้งาน</strong>
+          <span>หน้าปัจจุบัน: {activeLabel}</span>
+        </div>
       </div>
 
       <div className="sidebar-scrollable">
         <ul className="sidebar-menu">
-<li>
-            <NavLink to="/" className={({ isActive }) => isActive ? "menu-item active" : "menu-item"} end>
-              {/* ขยายขนาดรูปบ้านเป็น 22px */}
-              <i className="fas fa-home" style={{ fontSize: '22px' }}></i> 
-              
-              {/* ขยายขนาดตัวหนังสือเป็น 18px และทำตัวหนา (bold) */}
-              <span style={{ fontSize: '18px', fontWeight: 'bold' }}>🏠หน้าหลัก</span>
-            </NavLink>
-          </li>
-
-          <li className="menu-header">การจัดการผู้ใช้</li>
-          <li>
-            <NavLink to="/user" className={({ isActive }) => isActive ? "menu-item active" : "menu-item"}>
-              <i className="fas fa-users"></i> <span>ข้อมูลผู้ใช้งาน</span>
-            </NavLink>
-          </li>
-           <li>
-            <NavLink to="/money" className={({ isActive }) => isActive ? "menu-item active" : "menu-item"}>
-              <i className="fas fa-money"></i> <span>ข้อมูลการชำระเงิน</span>
-            </NavLink>
-          </li>
-
-          <li className="menu-header">การจัดการสถาบัน</li>
-          <li>
-            <NavLink to="/school-info" className={({ isActive }) => isActive ? "menu-item active" : "menu-item"}>
-              <i className="fas fa-school-info"></i> <span>ข้อมูลโรงเรียนกวดวิชา</span>
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to="/examination" className={({ isActive }) => isActive ? "menu-item active" : "menu-item"}>
-              <i className="fas fa-examination"></i> <span>ข้อมูลสถาบันที่จัดสอบ</span>
-            </NavLink>
-          </li>
-
-          <li className="menu-header">การจัดการเนื้อหา</li>
-          <li>
-            <NavLink to="/course" className={({ isActive }) => isActive ? "menu-item active" : "menu-item"}>
-              <i className="fas fa-book"></i> <span>ข้อมูลคอร์สเรียน</span>
-            </NavLink>
-          </li>
+          {menuGroups.map((group) => (
+            <React.Fragment key={group.label}>
+              <li className="menu-header">{group.label}</li>
+              {group.items.map((item) => (
+                <li key={item.to}>
+                  <NavLink
+                    to={item.to}
+                    end={item.end}
+                    className={({ isActive }) => (isActive ? 'menu-item active' : 'menu-item')}
+                    title={item.label}
+                  >
+                    <i className={item.icon} />
+                    <span className="menu-label">{item.label}</span>
+                    {item.badge && <span className="menu-badge">{item.badge}</span>}
+                  </NavLink>
+                </li>
+              ))}
+            </React.Fragment>
+          ))}
         </ul>
       </div>
 
       <div className="sidebar-footer">
-        <NavLink to="/change-password" className={({ isActive }) => isActive ? "menu-item active" : "menu-item"}>
-          <i className="fas fa-key"></i> <span>เปลี่ยนรหัสผ่าน</span>
-        </NavLink>
-        <div className="menu-item logout-btn" onClick={handleLogout} style={{ cursor: 'pointer', color: '#ef4444' }}>
-          <i className="fas fa-sign-out-alt"></i> <span>ออกจากระบบ</span>
-        </div>
-      </div>
+  <NavLink
+    to="/change-password"
+    className={({ isActive }) => (isActive ? 'menu-item active' : 'menu-item')}
+  >
+    <i className="fas fa-key" />
+    <span className="menu-label">เปลี่ยนรหัสผ่าน</span>
+  </NavLink>
+</div>
+
+<div className="sidebar-logout-layer">
+  <button type="button" className="logout-layer-btn" onClick={handleLogout}>
+    <i className="fas fa-right-from-bracket" />
+    <span>ออกจากระบบ</span>
+  </button>
+</div>
     </nav>
   );
 }
