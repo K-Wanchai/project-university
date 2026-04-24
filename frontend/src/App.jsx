@@ -35,6 +35,7 @@ function App() {
         <Route path="/edit-examination/:id" element={<EditExamination />} />
         <Route path="/add-examination" element={<AddExamination />} />
         <Route path="/admissionDashboard" element={<AdmissionDashboard />} />
+         <Route path="/money" element={<Money />} />
       </Routes>
     </Router>
   );
