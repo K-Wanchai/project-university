@@ -22,6 +22,7 @@ public class SecurityConfig {
                     "/api/auth/**", 
                     "/api/admin/**", 
                     "/api/courses/**", 
+                    "/api/examinations/**",
                     "/error",
                     "/uploads/profiles/**",   // รูปผู้ใช้งาน
                     "/uploads/courses/**"     // 🌟 รูปคอร์สเรียน
