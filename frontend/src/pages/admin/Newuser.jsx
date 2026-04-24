@@ -3,7 +3,9 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import Sidebar from '../../components/Sidebar';
 import './Newuser.css';
 
-const API_URL = "http://localhost:8080/api/admin/users";
+// 🌟 1. Import จากศูนย์กลาง
+import apiService from '../../services/apiService';
+import { SERVER_URL } from '../../config';
 
 function Newuser() {
   const navigate = useNavigate();
@@ -21,7 +23,7 @@ function Newuser() {
     confirmPassword: '',
     phone: '',
     email: '',
-    role: 'ติวเตอร์', // ค่าเริ่มต้นสำหรับสร้างผู้ใช้ใหม่
+    role: 'ติวเตอร์', 
     status: 'ใช้งานอยู่',
     remarks: ''
   });
@@ -30,10 +32,10 @@ function Newuser() {
   const [showPwd, setShowPwd] = useState(false);
   const [showConfirmPwd, setShowConfirmPwd] = useState(false);
 
+  // 🌟 2. โหลดข้อมูลโดยใช้ apiService
   useEffect(() => {
     if (userId) {
-      fetch(`${API_URL}/${userId}`)
-        .then(res => res.json())
+      apiService.getUserById(userId)
         .then(u => {
           setFormData({
             fullName: `${u.firstName || ''} ${u.lastName || ''}`.trim(),
@@ -48,7 +50,7 @@ function Newuser() {
           });
 
           if (u.profileImage) {
-            setPreviewImage(`http://localhost:8080/uploads/profiles/${u.profileImage}`);
+            setPreviewImage(`${SERVER_URL}/uploads/profiles/${u.profileImage}`);
           }
         })
         .catch(err => console.error("Error loading user:", err));
@@ -98,10 +100,13 @@ function Newuser() {
 
     setIsLoading(true);
     try {
-      const res = await fetch(userId ? `${API_URL}/${userId}` : API_URL, {
-        method: userId ? 'PUT' : 'POST',
-        body: submitData
-      });
+      // 🌟 3. บันทึกข้อมูลผ่าน apiService
+      let res;
+      if (userId) {
+        res = await apiService.updateUser(userId, submitData);
+      } else {
+        res = await apiService.createUser(submitData);
+      }
 
       if (!res.ok) throw new Error("บันทึกไม่สำเร็จ");
       alert(userId ? "อัปเดตข้อมูลสำเร็จ!" : "สร้างผู้ใช้งานใหม่สำเร็จ!");
@@ -156,7 +161,6 @@ function Newuser() {
 
               <div className="newuser-fields-section">
                 
-                {/* 🌟 จุดที่แก้ไข: แสดงเป็นข้อความถ้านักเรียน, แสดง Dropdown ถ้าเป็นคนอื่น 🌟 */}
                 <div className="newuser-form-group full-width">
                   <label>บทบาท <span>*</span></label>
                   
@@ -226,7 +230,6 @@ function Newuser() {
                     <input type="email" id="email" value={formData.email} onChange={handleInputChange} required placeholder="example@krupuk.com" />
                   </div>
 
-                  {/* ซ่อนสถานะหากบทบาทเป็นนักเรียน */}
                   {userId && formData.role !== 'นักเรียน' && (
                     <div className="newuser-form-group">
                       <label>สถานะ</label>

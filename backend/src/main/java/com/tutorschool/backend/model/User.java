@@ -1,6 +1,9 @@
 package com.tutorschool.backend.model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.CreationTimestamp;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -25,7 +28,7 @@ public class User {
     private String gender;         // เพศ (ชาย, หญิง)
     private String role;           // บทบาท (คุณครู, แอดมิน, เจ้าหน้าที่, นักเรียน)
     private String gradeLevel;     // ระดับชั้น
-    private String profileImage;
+    private String profileImage;   // รูปโปรไฟล์
 
     // 2. ข้อมูลการติดต่อ (Contact Info)
     private String phoneNumber;    // เบอร์โทรศัพท์
@@ -43,9 +46,12 @@ public class User {
     // 4. ข้อมูลสำหรับแอดมินจัดการ (Admin Info)
     private String status;         // สถานะ (เช่น ใช้งานอยู่, ปิดใช้งาน, รอตรวจสอบ)
     
-    
     @Column(columnDefinition = "TEXT")
     private String remarks;        // บันทึกเพิ่มเติม
+
+    // 🌟 ระบบเก็บเวลาอัตโนมัติ
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
     // Constructors
     public User() {}
@@ -97,10 +103,10 @@ public class User {
     public String getRemarks() { return remarks; }
     public void setRemarks(String remarks) { this.remarks = remarks; }
 
-    public String getProfileImage() {
-    return profileImage;
-}
-    public void setProfileImage(String profileImage) {
-    this.profileImage = profileImage;
-}
+    public String getProfileImage() { return profileImage; }
+    public void setProfileImage(String profileImage) { this.profileImage = profileImage; }
+
+    // 🌟 Getter/Setter สำหรับเวลาที่สร้าง
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 }
