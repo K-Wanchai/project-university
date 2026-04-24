@@ -4,38 +4,36 @@ import Sidebar from '../../components/Sidebar';
 import './User.css'; 
 import Header from '../../components/Header';
 
-
-// กำหนด IP ของ Backend ไว้ที่เดียวเพื่อให้จัดการง่าย
-const API_IP = "172.24.177.40";
-const API_BASE_URL = `http://${API_IP}:8080/api/admin/users`;
+// 🌟 1. Import apiService และ SERVER_URL จากศูนย์กลาง
+import apiService from '../../services/apiService';
+import { SERVER_URL } from '../../config';
 
 function User() {
-  // 1. State สำหรับตารางและการค้นหา
   const [users, setUsers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('');
 
-  // 2. ดึงข้อมูลตอนโหลดหน้า
   useEffect(() => {
     loadUsersTable();
   }, []);
 
   const loadUsersTable = async () => {
     try {
-      const res = await fetch(API_BASE_URL);
-      if (!res.ok) throw new Error("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้");
-      const data = await res.json();
+      // 🌟 2. ใช้ apiService ดึงข้อมูลแทนการใช้ fetch ตรงๆ
+      const data = await apiService.getAllUsers();
       setUsers(data);
     } catch (err) {
-      console.error("Error:", err);
+      console.error("Error loading users:", err);
     }
   };
 
-  // 3. ฟังก์ชันลบข้อมูล
   const deleteUser = async (id) => {
     if (window.confirm("คุณแน่ใจหรือไม่ว่าต้องการลบผู้ใช้งานนี้?")) {
       try {
-        await fetch(`${API_BASE_URL}/${id}`, { method: 'DELETE' });
+        // 🌟 3. ใช้ apiService ลบข้อมูล
+        const res = await apiService.deleteUser(id);
+        if (!res.ok) throw new Error("ลบไม่สำเร็จ");
+        
         alert("ลบผู้ใช้งานเรียบร้อยแล้ว");
         loadUsersTable();
       } catch (err) {
@@ -44,15 +42,12 @@ function User() {
     }
   };
 
-  // 🌟 4. เพิ่ม Logic การกรองข้อมูล (เพื่อแก้ปัญหา filteredUsers is not defined)
   const filteredUsers = users.filter(user => {
-    // กรองด้วยชื่อ-นามสกุล หรือชื่อผู้ใช้ (แปลงเป็นตัวเล็กเพื่อให้ค้นหาง่าย)
     const matchesSearch = 
       (user.firstName?.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (user.lastName?.toLowerCase().includes(searchTerm.toLowerCase())) ||
       (user.username?.toLowerCase().includes(searchTerm.toLowerCase()));
     
-    // กรองด้วยบทบาท
     const matchesRole = roleFilter === '' || user.role === roleFilter;
 
     return matchesSearch && matchesRole;
@@ -60,11 +55,8 @@ function User() {
 
   return (
     <div className="container" style={{ display: 'flex' }}>
-      
-      {/* Sidebar Component */}
       <Sidebar />
 
-      {/* Main Content */}
       <main className="main-content" style={{ flex: 1, marginLeft: '260px', padding: '20px' }}>
         <Header title="ข้อมูลผู้ใช้งาน" /> 
 
@@ -116,9 +108,9 @@ function User() {
                   let statusText = user.status || 'รอตรวจสอบ';
                   const statusClass = statusText === 'ระงับการใช้งาน' ? 'status-suspended' : 'status-active';
                   
-                  // ปรับ URL รูปภาพให้ใช้ IP เดียวกับ API
+                  // 🌟 4. ปรับ URL รูปภาพให้ดึง SERVER_URL มาจาก config.js
                   const imageUrl = user.profileImage 
-                      ? `http://${API_IP}:8080/uploads/profiles/${user.profileImage}` 
+                      ? `${SERVER_URL}/uploads/profiles/${user.profileImage}` 
                       : `https://ui-avatars.com/api/?name=${user.firstName || 'U'}&background=random`;
 
                   return (

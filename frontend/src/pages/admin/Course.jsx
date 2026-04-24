@@ -4,14 +4,15 @@ import './Course.css';
 import Sidebar from '../../components/Sidebar';
 import Header from '../../components/Header';
 
-const API_URL = "http://localhost:8080/api/admin/courses";
+// 🌟 Import จากศูนย์กลาง
+import apiService from '../../services/apiService';
+import { SERVER_URL } from '../../config';
 
 function Course() {
   const [courses, setCourses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // 🌟 1. สร้าง State สำหรับเก็บค่าการค้นหาและตัวกรอง 🌟
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
@@ -22,15 +23,12 @@ function Course() {
 
   const fetchCourses = async () => {
     try {
-      const response = await fetch(API_URL);
-      if (!response.ok) {
-        throw new Error("ไม่สามารถดึงข้อมูลคอร์สเรียนได้");
-      }
-      const data = await response.json();
+      // 🌟 ใช้ apiService แทน fetch ตรงๆ
+      const data = await apiService.getCourses();
       setCourses(data); 
     } catch (err) {
       console.error("Fetch error:", err);
-      setError(err.message);
+      setError("ไม่สามารถดึงข้อมูลคอร์สเรียนได้");
     } finally {
       setIsLoading(false);
     }
@@ -39,15 +37,13 @@ function Course() {
   const handleDelete = async (id) => {
     if (window.confirm("คุณแน่ใจหรือไม่ว่าต้องการลบคอร์สนี้?")) {
       try {
-        const response = await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-        if (response.ok) {
-          setCourses(courses.filter(course => course.id !== id));
-          alert("ลบคอร์สเรียนสำเร็จ");
-        } else {
-          alert("เกิดข้อผิดพลาดในการลบข้อมูล");
-        }
+        // 🌟 ใช้ apiService ลบข้อมูล
+        await apiService.deleteCourse(id);
+        setCourses(courses.filter(course => course.id !== id));
+        alert("ลบคอร์สเรียนสำเร็จ");
       } catch (err) {
         console.error(err);
+        alert("เกิดข้อผิดพลาดในการลบข้อมูล");
       }
     }
   };
@@ -64,8 +60,6 @@ function Course() {
     return 'dot-gray';
   };
 
-  // 🌟 2. สร้างตัวแปรคัดกรองข้อมูล (Filter Logic) 🌟
-  // ระบบจะกรองจาก ชื่อคอร์ส, หมวดหมู่ และสถานะ พร้อมๆ กัน
   const filteredCourses = courses.filter(course => {
     const matchSearch = course.courseName.toLowerCase().includes(searchTerm.toLowerCase());
     const matchCategory = filterCategory === '' || course.subject === filterCategory;
@@ -93,7 +87,6 @@ function Course() {
           </Link>
         </div>
 
-        {/* 🌟 3. อัปเดต UI ส่วนตัวกรอง ให้เชื่อมกับ State 🌟 */}
         <div className="filter-section" style={{ display: 'flex', gap: '15px', marginBottom: '20px' }}>
           <input 
             type="text" 
@@ -152,7 +145,6 @@ function Course() {
                 </tr>
               </thead>
               <tbody>
-                {/* 🌟 4. เปลี่ยนมาใช้ตัวแปร filteredCourses แทน courses 🌟 */}
                 {filteredCourses.length === 0 ? (
                   <tr>
                     <td colSpan="8" style={{ textAlign: 'center', padding: '20px' }}>ไม่พบข้อมูลคอร์สเรียนที่ค้นหา</td>
@@ -164,7 +156,7 @@ function Course() {
                       <td className="course-icon" style={{ padding: '12px', textAlign: 'center' }}>
                         {course.imageUrl && course.imageUrl.trim() !== '' ? (
                            <img 
-                             src={`http://localhost:8080/uploads/courses/${course.imageUrl}`} 
+                             src={`${SERVER_URL}/uploads/courses/${course.imageUrl}`} // 🌟 ใช้ SERVER_URL
                              alt="Course" 
                              style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '6px', border: '1px solid #e2e8f0' }} 
                            />

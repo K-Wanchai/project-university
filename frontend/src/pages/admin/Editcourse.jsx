@@ -4,7 +4,9 @@ import './Editcourse.css';
 import Sidebar from '../../components/Sidebar'; 
 import Header from '../../components/Header';
 
-const API_URL = "http://localhost:8080/api/admin/courses";
+// 🌟 Import จากศูนย์กลาง
+import apiService from '../../services/apiService';
+import { SERVER_URL } from '../../config';
 
 function Editcourse() {
   const navigate = useNavigate();
@@ -12,8 +14,8 @@ function Editcourse() {
   const fileInputRef = useRef(null);
 
   const [isLoading, setIsLoading] = useState(false);
-  const [courseImage, setCourseImage] = useState(null); // ไฟล์รูปใหม่ที่เลือก
-  const [previewImage, setPreviewImage] = useState(null); // URL รูปสำหรับโชว์
+  const [courseImage, setCourseImage] = useState(null);
+  const [previewImage, setPreviewImage] = useState(null); 
 
   const [formData, setFormData] = useState({
     courseName: '',
@@ -27,11 +29,10 @@ function Editcourse() {
     description: ''
   });
 
-  // 🌟 ดึงข้อมูลคอร์สเดิมจากฐานข้อมูลมาแสดง 🌟
   useEffect(() => {
     if (id) {
-      fetch(`${API_URL}/${id}`)
-        .then(res => res.json())
+      // 🌟 ใช้ apiService โหลดข้อมูล
+      apiService.getCourseById(id)
         .then(data => {
           setFormData({
             courseName: data.courseName || '',
@@ -40,14 +41,14 @@ function Editcourse() {
             tutorName: data.instructor || '',
             status: data.status || 'เปิดรับสมัคร',
             price: data.price || '',
-            startDate: data.startDate ? data.startDate.split('T')[0] : '', // ตัดเวลาออกให้เหลือแต่วันที่
+            startDate: data.startDate ? data.startDate.split('T')[0] : '', 
             totalHours: data.hours || '',
             description: data.description || ''
           });
 
-          // ถ้ามีรูปเดิม ให้ดึงมาแสดงพรีวิว
           if (data.imageUrl && data.imageUrl.trim() !== '') {
-            setPreviewImage(`http://localhost:8080/uploads/courses/${data.imageUrl}`);
+            // 🌟 อิง URL ภาพจาก config กลาง
+            setPreviewImage(`${SERVER_URL}/uploads/courses/${data.imageUrl}`);
           }
         })
         .catch(err => console.error("Error fetching course:", err));
@@ -63,7 +64,7 @@ function Editcourse() {
     const file = e.target.files[0];
     if (file) {
       setCourseImage(file);
-      setPreviewImage(URL.createObjectURL(file)); // โชว์รูปใหม่ทันทีที่เลือก
+      setPreviewImage(URL.createObjectURL(file)); 
     }
   };
 
@@ -71,7 +72,6 @@ function Editcourse() {
     e.preventDefault();
     setIsLoading(true);
 
-    // 🌟 ใช้ FormData เพื่อให้แนบไฟล์รูปไปได้ 🌟
     const submitData = new FormData();
     submitData.append('courseName', formData.courseName);
     submitData.append('subject', formData.category);
@@ -83,19 +83,14 @@ function Editcourse() {
     submitData.append('status', formData.status);
     submitData.append('description', formData.description);
 
-    // ส่งรูปไปเฉพาะตอนที่มีการเลือกรูปใหม่เท่านั้น
     if (courseImage) {
       submitData.append('courseImage', courseImage);
     }
 
     try {
-      const response = await fetch(`${API_URL}/${id}`, {
-        method: 'PUT',
-        body: submitData 
-      });
-
-      if (!response.ok) throw new Error("แก้ไขข้อมูลไม่สำเร็จ");
-
+      // 🌟 บันทึกข้อมูลแก้ไขผ่าน apiService
+      const response = await apiService.updateCourse(id, submitData);
+      
       alert('อัปเดตข้อมูลคอร์สเรียนเรียบร้อยแล้ว!');
       navigate('/course'); 
     } catch (error) {
@@ -109,11 +104,9 @@ function Editcourse() {
      <div className="container" style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8fafc' }}>
       <Sidebar />
       <main className="main-content" style={{ flex: 1, marginLeft: '260px', padding: '30px' }}>
-        <header className="content-header" style={{ marginBottom: '20px' }}>
-          <h1 style={{ color: '#1e293b' }}><i className="fas fa-edit"></i> แก้ไขข้อมูลคอร์สเรียน (ID: {id})</h1>
-        </header>
+        <Header title={`แก้ไขข้อมูลคอร์สเรียน (ID: ${id})`} />
 
-        <section className="form-card" style={{ background: '#fff', padding: '30px', borderRadius: '12px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
+        <section className="form-card" style={{ background: '#fff', padding: '30px', borderRadius: '12px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)', marginTop: '20px' }}>
           <form onSubmit={handleSubmit}>
             <div className="form-layout" style={{ display: 'flex', gap: '40px', flexWrap: 'wrap' }}>
               

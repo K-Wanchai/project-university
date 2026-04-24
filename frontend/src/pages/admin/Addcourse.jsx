@@ -4,8 +4,8 @@ import './Addcourse.css';
 import Sidebar from '../../components/Sidebar';
 import Header from '../../components/Header';
 
-// 🌟 URL สำหรับยิงข้อมูลไปหา Spring Boot
-const API_URL = "http://localhost:8080/api/admin/courses";
+// 🌟 Import apiService
+import apiService from '../../services/apiService';
 
 function Addcourse() {
   const navigate = useNavigate();
@@ -60,13 +60,9 @@ function Addcourse() {
     }
 
     try {
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        body: submitData 
-      });
-
-      if (!response.ok) throw new Error("ไม่สามารถบันทึกคอร์สเรียนได้");
-
+      // 🌟 ใช้ apiService สร้างคอร์ส
+      await apiService.createCourse(submitData);
+      
       alert('เพิ่มคอร์สเรียนใหม่สำเร็จ!');
       navigate('/course');
     } catch (error) {
@@ -80,15 +76,12 @@ function Addcourse() {
    <div className="container" style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8fafc' }}>
       <Sidebar />
       <main className="main-content" style={{ flex: 1, marginLeft: '260px', padding: '30px' }}>
-        <header className="content-header" style={{ marginBottom: '20px' }}>
-          <h1 style={{ color: '#1e293b' }}><i className="fas fa-book-medical"></i> เพิ่มคอร์สเรียนใหม่</h1>
-        </header>
+        <Header title="เพิ่มคอร์สเรียนใหม่" />
 
-        <section className="form-card" style={{ background: '#fff', padding: '30px', borderRadius: '12px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)' }}>
+        <section className="form-card" style={{ background: '#fff', padding: '30px', borderRadius: '12px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)', marginTop: '20px' }}>
           <form onSubmit={handleSubmit}>
             <div className="form-layout" style={{ display: 'flex', gap: '40px', flexWrap: 'wrap' }}>
               
-              {/* ส่วนอัปโหลดรูปภาพ */}
               <div className="profile-upload-section" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '200px' }}>
                 <div className="profile-placeholder" style={{ width: '150px', height: '150px', background: '#f1f5f9', borderRadius: '12px', display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}>
                   {previewImage ? (
@@ -114,7 +107,6 @@ function Addcourse() {
                 />
               </div>
 
-              {/* ส่วนกรอกข้อมูล */}
               <div className="form-fields" style={{ flex: 1, minWidth: '300px' }}>
                 <div className="form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
                   
