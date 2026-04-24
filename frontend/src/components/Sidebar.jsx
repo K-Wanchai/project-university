@@ -39,6 +39,11 @@ function Sidebar() {
               <i className="fas fa-users"></i> <span>ข้อมูลผู้ใช้งาน</span>
             </NavLink>
           </li>
+           <li>
+            <NavLink to="/money" className={({ isActive }) => isActive ? "menu-item active" : "menu-item"}>
+              <i className="fas fa-money"></i> <span>ข้อมูลการชำระเงิน</span>
+            </NavLink>
+          </li>
 
           <li className="menu-header">การจัดการสถาบัน</li>
           <li>
