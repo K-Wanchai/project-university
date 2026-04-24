@@ -54,6 +54,72 @@
     padding-left: 10px;
 }
 
+/* New: Image Upload Section Styling */
+.image-upload-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 25px;
+    padding-bottom: 20px;
+    border-bottom: 1px dashed #e5e7eb;
+}
+
+.image-preview-container {
+    width: 120px;
+    height: 120px;
+    border-radius: 12px;
+    border: 2px dashed #d1d5db;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background-color: #f3f4f6;
+}
+
+.image-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.image-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #9ca3af;
+    font-size: 12px;
+    gap: 5px;
+}
+
+.image-upload-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.btn-upload {
+    background-color: #ffffff;
+    border: 1px solid #2563eb;
+    color: #2563eb;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.btn-upload:hover {
+    background-color: #eff6ff;
+}
+
+.upload-hint {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+/* Form Grid Styling */
 .form-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
