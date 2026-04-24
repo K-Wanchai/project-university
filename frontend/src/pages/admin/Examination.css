@@ -285,9 +285,12 @@ button {
   align-items: center;
   gap: 14px;
   padding: 22px;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .stat-icon {
+  flex: 0 0 58px;
   width: 58px;
   height: 58px;
   display: grid;
@@ -304,17 +307,22 @@ button {
 .stat-card p,
 .stat-card h2 {
   margin: 0;
+  min-width: 0;
 }
 
 .stat-card p {
   color: #344054;
   font-weight: 700;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 .stat-card h2 {
   margin-top: 2px;
-  font-size: 30px;
+  font-size: clamp(24px, 2.6vw, 30px);
+  line-height: 1.1;
   letter-spacing: -0.03em;
+  white-space: nowrap;
 }
 
 .stat-card a,
@@ -325,6 +333,17 @@ button {
   font-weight: 700;
   font-size: 13px;
   text-decoration: none;
+}
+
+
+.stat-content {
+  min-width: 0;
+  flex: 1;
+}
+
+.stat-card a,
+.activity-card a {
+  overflow-wrap: anywhere;
 }
 
 .filter-panel {
@@ -606,6 +625,10 @@ tr:hover td {
     grid-template-columns: 1fr;
   }
 
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .insight-column {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -631,7 +654,6 @@ tr:hover td {
     display: none;
   }
 
-  .stats-grid,
   .filter-grid,
   .insight-column {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -665,5 +687,24 @@ tr:hover td {
   .heading-actions,
   .pagination {
     flex-wrap: wrap;
+  }
+}
+
+
+@media (max-width: 420px) {
+  .stat-card {
+    align-items: flex-start;
+    padding: 18px;
+  }
+
+  .stat-icon {
+    flex-basis: 48px;
+    width: 48px;
+    height: 48px;
+    font-size: 22px;
+  }
+
+  .stat-card h2 {
+    font-size: 24px;
   }
 }

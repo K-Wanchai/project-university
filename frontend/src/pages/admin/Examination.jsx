@@ -72,8 +72,6 @@ const institutions = [
 
 const statCards = [
   { label: 'สถาบันทั้งหมด', value: '1,248', icon: '🏫', tone: 'blue' },
-  { label: 'เปิดใช้งาน', value: '1,102', icon: '🛡️', tone: 'green' },
-  { label: 'รอการตรวจสอบ', value: '86', icon: '⏱️', tone: 'orange' },
   { label: 'ผู้สมัครศึกษาต่อ', value: '156,789', icon: '👥', tone: 'purple' },
 ];
 
@@ -135,6 +133,7 @@ export default function AdminInstitutionDashboard() {
       keyword: '',
     });
   };
+  const navigate = useNavigate();
 
   return (
      <div className="container" style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8fafc' }}>
@@ -191,8 +190,14 @@ export default function AdminInstitutionDashboard() {
                 <p>ระบบเตรียมพร้อมสำหรับการรองรับข้อมูลจากฐานข้อมูลในอนาคต</p>
               </div>
               <div className="heading-actions">
-                <button className="primary-button">+ เพิ่มสถาบัน</button>
-                <button className="secondary-button">⇧ ส่งออกข้อมูล</button>
+                <button
+  type="button"
+  className="primary-button"
+  onClick={() => navigate('/add-examination')}
+>
+  + เพิ่มสถาบัน
+</button>
+          
               </div>
             </div>
 
@@ -200,7 +205,7 @@ export default function AdminInstitutionDashboard() {
               {statCards.map((card) => (
                 <article className="stat-card" key={card.label}>
                   <div className={`stat-icon ${card.tone}`}>{card.icon}</div>
-                  <div>
+                  <div className="stat-content">
                     <p>{card.label}</p>
                     <h2>{card.value}</h2>
                     <a href="#details">ดูรายละเอียด ›</a>
