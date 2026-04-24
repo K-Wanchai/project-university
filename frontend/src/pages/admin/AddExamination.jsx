@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/Sidebar';
+import apiService from "../../services/apiService";
 import {
   FaArrowLeft,
   FaSave,
@@ -81,14 +82,50 @@ const AddExamination = () => {
     setImagePreview(null);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    console.log('บันทึกข้อมูล:', formData);
-    alert('บันทึกข้อมูลสถาบันสอบเรียบร้อยแล้ว');
-    navigate('/examination');
-  };
+  try {
+    const sendData = new FormData();
 
+    sendData.append(
+      "data",
+      JSON.stringify({
+        nameTh: formData.nameTh,
+        nameEn: formData.nameEn,
+        code: formData.code,
+        type: formData.type,
+        status: formData.status,
+
+        address: formData.road,
+        district: formData.subDistrict,
+        amphoe: formData.district,
+        province: formData.province,
+        zipcode: formData.zipcode,
+
+        contactName: formData.contactName,
+        regDate: new Date().toISOString().split("T")[0],
+        totalSeats: formData.capacity ? Number(formData.capacity) : 0,
+      })
+    );
+
+    if (formData.image) {
+      sendData.append("image", formData.image);
+    }
+
+    const res = await apiService.createExamination(sendData);
+
+    if (!res.ok) {
+      throw new Error("บันทึกไม่สำเร็จ");
+    }
+
+    alert("เพิ่มข้อมูลสถาบันสอบสำเร็จ");
+    navigate("/examination");
+  } catch (err) {
+    console.error(err);
+    alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+  }
+};
   return (
     <div className="add-exam-shell">
       <Sidebar />

@@ -12,4 +12,5 @@ export const ENDPOINTS = {
     ADMIN_USERS_COUNT: `${API_BASE_URL}/admin/users/count`,
     ADMIN_COURSES: `${API_BASE_URL}/admin/courses`,
     ADMIN_INSTITUTES: `${API_BASE_URL}/admin/institutes`,
+    EXAMINATIONS: `${API_BASE_URL}/examinations`,
 };

@@ -2,8 +2,13 @@ package com.tutorschool.backend.config;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -12,17 +17,35 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
-        
-        // 1. อนุญาตให้เข้าถึงรูปโปรไฟล์ผู้ใช้งาน
         Path profileUploadDir = Paths.get("uploads/profiles");
-        String profileUploadPath = profileUploadDir.toFile().getAbsolutePath();
         registry.addResourceHandler("/uploads/profiles/**")
-                .addResourceLocations("file:" + profileUploadPath + "/");
+                .addResourceLocations("file:" + profileUploadDir.toFile().getAbsolutePath() + "/");
 
-        // 🌟 2. อนุญาตให้เข้าถึงรูปคอร์สเรียน (เพิ่มใหม่) 🌟
         Path courseUploadDir = Paths.get("uploads/courses");
-        String courseUploadPath = courseUploadDir.toFile().getAbsolutePath();
         registry.addResourceHandler("/uploads/courses/**")
-                .addResourceLocations("file:" + courseUploadPath + "/");
+                .addResourceLocations("file:" + courseUploadDir.toFile().getAbsolutePath() + "/");
+
+        Path examUploadDir = Paths.get("uploads/examinations");
+        registry.addResourceHandler("/uploads/examinations/**")
+                .addResourceLocations("file:" + examUploadDir.toFile().getAbsolutePath() + "/");
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration config = new CorsConfiguration();
+
+        config.setAllowedOrigins(List.of(
+                "http://localhost:5173",
+                "http://localhost:5174"
+        ));
+        
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        config.setAllowedHeaders(List.of("*"));
+        config.setAllowCredentials(false);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", config);
+
+        return source;
     }
 }

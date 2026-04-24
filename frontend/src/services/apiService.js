@@ -23,8 +23,13 @@ const apiService = {
 
     // ==========================================
     // 3. หมวดหมู่สถาบันจัดสอบ (Institutes)
-    // ==========================================
     getInstitutes: () => fetch(ENDPOINTS.ADMIN_INSTITUTES).then(res => res.json()),
+    // ==========================================
+    getExaminations: () => fetch(ENDPOINTS.EXAMINATIONS).then(res => res.json()),
+    getExaminationById: (id) => fetch(`${ENDPOINTS.EXAMINATIONS}/${id}`).then(res => res.json()),
+    createExamination: (formData) => fetch(ENDPOINTS.EXAMINATIONS, { method: 'POST', body: formData }),
+    updateExamination: (id, formData) => fetch(`${ENDPOINTS.EXAMINATIONS}/${id}`, { method: 'PUT', body: formData }),
+    deleteExamination: (id) => fetch(`${ENDPOINTS.EXAMINATIONS}/${id}`, { method: 'DELETE' }),
 };
 
 export default apiService;
