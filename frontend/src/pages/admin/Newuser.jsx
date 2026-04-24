@@ -120,9 +120,9 @@ function Newuser() {
     const fullName = formData.fullName.trim();
     const phoneRegex = /^[0-9+\-\s()]{8,20}$/;
 
-    if (!fullName || fullName.split(' ').filter(Boolean).length < 2) {
-      return 'กรุณากรอกชื่อและนามสกุลให้ครบถ้วน';
-    }
+    if (!fullName) {
+  return 'กรุณากรอกชื่อผู้ใช้งาน';
+}
 
     if (!formData.username.trim()) return 'กรุณากรอกชื่อผู้ใช้';
     if (!phoneRegex.test(formData.phone.trim())) return 'กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง';

@@ -21,11 +21,11 @@ function Standard() {
     try {
       // 1. ดึงสถิติตัวเลขต่างๆ ด้านบน
       const usersData = await apiService.getUsersCount().catch(() => ({ totalUsers: 0 }));
-      setTotalUsersCount(usersData.totalUsers.toLocaleString());
+      setTotalUsersCount((usersData.totalUsers || 0).toLocaleString());
 
       const [coursesData, institutesData] = await Promise.all([
         apiService.getCourses().catch(() => []), 
-        apiService.getInstitutes().catch(() => []) 
+        apiService.getExaminations().catch(() => []) 
       ]);
 
       setTotalCoursesCount(coursesData.length.toLocaleString());
