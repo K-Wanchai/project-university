@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/Sidebar';
-import { FaArrowLeft, FaSave } from 'react-icons/fa';
+import { FaArrowLeft, FaSave, FaCamera } from 'react-icons/fa';
 import './AddExamination.css';
 
 const AddExamination = () => {
   const navigate = useNavigate();
+  const [imagePreview, setImagePreview] = useState(null);
   const [formData, setFormData] = useState({
     nameTh: '',
     nameEn: '',
@@ -18,12 +19,25 @@ const AddExamination = () => {
     zipcode: '',
     contactName: '',
     phone: '',
-    email: ''
+    email: '',
+    image: null
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData(prev => ({ ...prev, image: file }));
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = (e) => {
@@ -35,12 +49,8 @@ const AddExamination = () => {
 
   return (
     <div className="container" style={{ display: 'flex' }}>
-      
-      {/* เรียกใช้งาน Sidebar Component */}
       <Sidebar />
 
-      {/* ดันเนื้อหาหลักออกไป 260px เพื่อไม่ให้ Sidebar ทับ */}
-      
       <main className="main-content" style={{ marginLeft: '260px', width: '100%' }}>
         <header className="content-header-add">
           <button className="btn-back" onClick={() => navigate('/examination')}>
@@ -53,6 +63,34 @@ const AddExamination = () => {
           {/* Card 1: ข้อมูลสถาบัน */}
           <div className="form-card">
             <h2 className="card-title">1. ข้อมูลสถาบัน</h2>
+            
+            {/* ส่วนอัปโหลดรูปภาพ */}
+            <div className="image-upload-section">
+              <div className="image-preview-container">
+                {imagePreview ? (
+                  <img src={imagePreview} alt="Preview" className="image-preview" />
+                ) : (
+                  <div className="image-placeholder">
+                    <FaCamera size={30} />
+                    <span>รูปภาพสถาบัน</span>
+                  </div>
+                )}
+              </div>
+              <div className="image-upload-controls">
+                <label htmlFor="image-input" className="btn-upload">
+                  เลือกรูปภาพสถาบัน
+                </label>
+                <input 
+                  id="image-input"
+                  type="file" 
+                  accept="image/*" 
+                  onChange={handleFileChange}
+                  style={{ display: 'none' }}
+                />
+                <p className="upload-hint">รองรับไฟล์ JPG, PNG (ขนาดไม่เกิน 2MB)</p>
+              </div>
+            </div>
+
             <div className="form-grid">
               <div className="form-group">
                 <label>ชื่อสถาบันที่จัดสอบ (ภาษาไทย)</label>
@@ -72,17 +110,6 @@ const AddExamination = () => {
                   <option value="มหาวิทยาลัย">มหาวิทยาลัย</option>
                   <option value="มัธยมศึกษา">มัธยมศึกษา</option>
                 </select>
-              </div>
-              <div className="form-group full-width">
-                <label>สถานะ</label>
-                <div className="radio-group">
-                  <label>
-                    <input type="radio" name="status" value="กำลังเปิดรับสมัคร" checked={formData.status === "กำลังเปิดรับสมัคร"} onChange={handleChange} /> กำลังเปิดรับสมัคร
-                  </label>
-                  <label>
-                    <input type="radio" name="status" value="ปิดการรับสมัคร" checked={formData.status === "ปิดการรับสมัคร"} onChange={handleChange} /> ปิดการรับสมัคร
-                  </label>
-                </div>
               </div>
             </div>
           </div>

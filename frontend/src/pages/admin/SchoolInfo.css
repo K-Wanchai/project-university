@@ -1,19 +1,59 @@
-.school-info-container {
-  padding: 25px;
+.main-content {
+  padding: 30px;
   background-color: #f8faff;
   min-height: 100vh;
   font-family: 'Kanit', sans-serif;
-}
-.main-content-full {
-  flex: 1;
-  padding: 30px;
-  margin-left: 260px; /* ดันเนื้อหาออกไป */
-  width: calc(100% - 260px);
+  box-sizing: border-box;
 }
 
+/* ส่วนหัวของหน้า - จัดวางหัวข้อซ้าย ปุ่มขวา */
+.content-header {
+  display: flex;
+  justify-content: space-between; /* ผลัก h2 ไปซ้าย ปุ่มไปขวา */
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid #edf2f7;
+}
+
+.content-header h2 {
+  font-size: 1.6rem;
+  color: #2b3674;
+  margin: 0;
+}
+
+/* ปุ่มแก้ไขข้อมูล - ปรับให้พอดีกับข้อความ */
+.btn-edit-school {
+  display: inline-flex; /* ใช้ inline-flex เพื่อให้กว้างเท่าเนื้อหา */
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 20px; /* ลด padding ลงเล็กน้อยเพื่อให้ดูสมส่วน */
+  border-radius: 12px;
+  background: linear-gradient(135deg, #4facfe, #00c6ff);
+  color: #fff;
+  font-weight: 600;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 198, 255, 0.3);
+  white-space: nowrap; /* ป้องกันข้อความตัดบรรทัด */
+}
+
+.btn-edit-school:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 198, 255, 0.4);
+  filter: brightness(1.05);
+}
+
+.btn-edit-school:active {
+  transform: scale(0.98);
+}
+
+/* การจัดวาง Grid */
 .info-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr; /* แบ่ง 2 คอลัมน์ */
+  grid-template-columns: 1fr 1fr;
   gap: 25px;
 }
 
@@ -36,7 +76,7 @@ h4 {
   padding-bottom: 10px;
 }
 
-/* เกี่ยวกับสถาบัน */
+/* รายละเอียดสถาบัน */
 .content-detail p {
   margin: 12px 0;
   color: #4a5568;
@@ -63,10 +103,6 @@ h4 {
   align-items: center;
 }
 
-.bank-info p {
-  margin: 10px 0;
-}
-
 .acc-num {
   font-size: 1.2rem;
   font-weight: bold;
@@ -81,26 +117,19 @@ h4 {
 }
 
 .qr-placeholder {
-  width: 120px;
-  height: 120px;
+  width: 110px;
+  height: 110px;
   background: #f7fafc;
   border: 1px solid #e2e8f0;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   border-radius: 8px;
 }
 
 .qr-placeholder i {
-  font-size: 3rem;
+  font-size: 2.5rem;
   color: #2d3748;
-}
-
-.qr-label {
-  font-size: 0.85rem;
-  margin-top: 8px;
-  color: #718096;
 }
 
 /* แผนที่ */
@@ -112,54 +141,6 @@ h4 {
   align-items: center;
   justify-content: center;
   color: #a0aec0;
-}
-/* ส่วนหัวของหน้า */
-.page-header {
-  display: flex;
-  justify-content: space-between; /* ผลักหัวข้อไปซ้าย ปุ่มไปขวา */
-  align-items: center; /* จัดให้อยู่ตรงกลางแนวนอน */
-  margin-bottom: 25px;
-  padding-bottom: 15px;
-  border-bottom: 2px solid #edf2f7;
-}
-
-.page-header h2 {
-  font-size: 1.4rem; /* ขนาดหัวข้อหลัก */
-  color: #2b3674;
-  margin: 0;
-}
-
-/* ปุ่มแก้ไขข้อมูล */
-.btn-edit-school {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 24px; /* เพิ่ม padding ให้ปุ่มดูใหญ่ขึ้น */
-  border: none;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #4facfe, #00c6ff); /* สีเดิมที่คุณเลือก */
-  color: #fff;
-  font-weight: 600;
-  font-size: 1.1rem; /* ปรับขนาดฟอนต์ให้ใหญ่กว่าหัวข้อในการ์ดเล็กน้อย */
-  text-decoration: none; /* เอาเส้นใต้ของ Link ออก */
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 198, 255, 0.3);
-}
-
-.btn-edit-school i {
-  font-size: 1.2rem; /* ขยายไอคอนให้ใหญ่ขึ้นตามตัวหนังสือ */
-}
-
-/* เอฟเฟกต์ตอน Hover */
-.btn-edit-school:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(0, 198, 255, 0.4);
-  background: linear-gradient(135deg, #43e97b, #38f9d7);
-}
-
-/* Click */
-.btn-edit-school:active {
-  transform: scale(0.96);
 }
 
 /* Responsive */

@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './SchoolInfo.css'; // ใช้ CSS ร่วมกับหน้าหลักหรือแยกไฟล์ก็ได้
-import Sidebar from '../../components/Sidebar'; // เรียกใช้งาน Sidebar Component
+import './EditSchoolInfo.css'; // แนะนำให้แยกไฟล์ CSS หรือใช้ SchoolInfo.css ที่ปรับปรุงแล้ว
+import Sidebar from '../../components/Sidebar'; 
 
 function EditSchoolInfo() {
   const navigate = useNavigate();
 
-  // กำหนด State เริ่มต้นตามโครงสร้างใน SchoolInfo.jsx
   const [formData, setFormData] = useState({
     name: "ชื่อโรงเรียนกวดวิชาของคุณ",
     address: "123/45 ถนนมิตรภาพ ตำบลในเมือง อำเภอเมือง จังหวัดขอนแก่น 40000",
@@ -26,22 +25,22 @@ function EditSchoolInfo() {
   const handleSubmit = (e) => {
     e.preventDefault();
     console.log("ข้อมูลที่ถูกบันทึก:", formData);
-    // เพิ่ม Logic การส่งข้อมูลไปยัง API ที่นี่ในอนาคต
     alert("บันทึกข้อมูลเรียบร้อยแล้ว");
-    navigate('/school-info'); // บันทึกเสร็จแล้วกลับหน้าเดิม
+    navigate('/school-info'); 
   };
 
   return (
     <div className="container" style={{ display: 'flex' }}>
-    <Sidebar />
-      <main className="main-content-full">
-        <header className="page-header">
+      <Sidebar />
+      {/* เพิ่ม marginLeft: '260px' เพื่อไม่ให้ Sidebar บังเนื้อหา */}
+      <main className="main-content" style={{ marginLeft: '260px', width: '100%', minHeight: '100vh' }}>
+        <header className="content-header">
           <h2><i className="fas fa-edit"></i> แก้ไขข้อมูลโรงเรียน</h2>
           <div className="header-actions">
-            <button className="btn-cancel" onClick={() => navigate('/school-info')}>
+            <button type="button" className="btn-cancel" onClick={() => navigate('/school-info')}>
               ยกเลิก
             </button>
-            <button className="btn-save-school" onClick={handleSubmit}>
+            <button type="submit" className="btn-save-school" onClick={handleSubmit}>
               <i className="fas fa-save"></i> บันทึกข้อมูล
             </button>
           </div>
@@ -101,11 +100,10 @@ function EditSchoolInfo() {
             </div>
           </div>
 
-          {/* ปุ่มบันทึกด้านล่าง (กรณีหน้าจอมือถือ) */}
+          {/* ปุ่มบันทึกสำหรับมือถือ */}
           <div className="form-actions-mobile">
              <button type="submit" className="btn-save-full">บันทึกข้อมูลทั้งหมด</button>
           </div>
-
         </form>
       </main>
     </div>

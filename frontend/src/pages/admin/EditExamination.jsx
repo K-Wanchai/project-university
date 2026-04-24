@@ -3,7 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar from '../../components/Sidebar';
 import './EditExamination.css';
 import { 
-  FaArrowLeft, 
   FaSave, 
   FaUndo, 
   FaCamera, 
@@ -12,14 +11,41 @@ import {
 
 const EditExamination = () => {
   const navigate = useNavigate();
+  const [imagePreview, setImagePreview] = useState("https://upload.wikimedia.org/wikipedia/th/thumb/1/11/Khon_Kaen_University_Logo.svg/1200px-Khon_Kaen_University_Logo.svg.png");
   
-  // State สำหรับเก็บข้อมูลฟอร์ม (จำลองข้อมูลเริ่มต้นจากรูปภาพ)
+  // State สำหรับเก็บข้อมูลฟอร์ม
   const [formData, setFormData] = useState({
+    nameTh: 'มหาวิทยาลัยขอนแก่น',
+    nameEn: 'KKU',
+    code: 'EXAM-001',
+    type: 'มหาวิทยาลัย',
+    status: 'กำลังเปิดรับสมัครสอบ',
+    address: '123 ถนนมิตรภาพ',
+    district: 'ในเมือง',
+    amphoe: 'เมือง',
+    province: 'ขอนแก่น',
+    zipcode: '40002',
+    contactName: 'สมชาย ใจดี',
+    regDate: '2023-10-01',
+    totalSeats: 500,
+    image: null
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData(prev => ({ ...prev, image: file }));
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   return (
@@ -28,7 +54,7 @@ const EditExamination = () => {
       
       <main className="main-content" style={{ marginLeft: '260px', width: '100%', padding: '20px' }}>
         <header className="content-header">
-          <h1>แก้ไขข้อมูลสถาบันสอบ (มหาวิทยาลัยขอนแก่น)</h1>
+          <h1>แก้ไขข้อมูลสถาบันสอบ ({formData.nameTh})</h1>
         </header>
 
         <section className="form-card">
@@ -38,12 +64,31 @@ const EditExamination = () => {
           </div>
 
           <div className="form-grid-top">
-            {/* ส่วนโลโก้ */}
-            <div className="logo-section">
-              <div className="logo-placeholder">
-                <img src="https://upload.wikimedia.org/wikipedia/th/thumb/1/11/Khon_Kaen_University_Logo.svg/1200px-Khon_Kaen_University_Logo.svg.png" alt="KKU Logo" />
+            {/* ส่วนอัปโหลดรูปภาพ (แบบเดียวกับ AddExamination) */}
+            <div className="image-upload-section">
+              <div className="image-preview-container">
+                {imagePreview ? (
+                  <img src={imagePreview} alt="Preview" className="image-preview" />
+                ) : (
+                  <div className="image-placeholder">
+                    <FaCamera size={30} />
+                    <span>รูปภาพสถาบัน</span>
+                  </div>
+                )}
               </div>
-              <button className="btn-upload"><FaCamera /> อัปโหลดโลโก้ใหม่</button>
+              <div className="image-upload-controls">
+                <label htmlFor="image-input" className="btn-upload-label">
+                  <FaCamera /> อัปโหลดโลโก้ใหม่
+                </label>
+                <input 
+                  id="image-input"
+                  type="file" 
+                  accept="image/*" 
+                  onChange={handleFileChange}
+                  style={{ display: 'none' }}
+                />
+                <p className="upload-hint">รองรับไฟล์ JPG, PNG (ไม่เกิน 2MB)</p>
+              </div>
             </div>
 
             {/* ข้อมูลพื้นฐาน */}
@@ -62,31 +107,20 @@ const EditExamination = () => {
               <div className="input-row">
                 <div className="input-field">
                   <label>รหัสสถาบัน</label>
-                  <input type="text" className="input" value={formData.code} onChange={handleChange} />
+                  <input type="text" name="code" value={formData.code} onChange={handleChange} />
                 </div>
                 <div className="input-field">
-                  <label>&nbsp;</label>
-                  
+                   <label>&nbsp;</label>
                 </div>
               </div>
 
               <div className="input-row">
                 <div className="input-field">
                   <label>ประเภทสถาบัน</label>
-                  <div className="select-wrapper">
+                  <div className="select">
                     <select name="type" value={formData.type} onChange={handleChange}>
                       <option value="มหาวิทยาลัย">มหาวิทยาลัย</option>
                       <option value="โรงเรียน">โรงเรียน</option>
-                    </select>
-                    <FaChevronDown className="select-icon" />
-                  </div>
-                </div>
-                <div className="input-field">
-                  <label>สถานะ</label>
-                  <div className={`status-select-wrapper ${formData.status === 'กำลังเปิดรับสมัครสอบ' ? 'active-status' : ''}`}>
-                    <select name="status" value={formData.status} onChange={handleChange}>
-                      <option value="กำลังเปิดรับสมัครสอบ">กำลังเปิดรับสมัครสอบ</option>
-                      <option value="ปิดรับสมัคร">ปิดรับสมัคร</option>
                     </select>
                     <FaChevronDown className="select-icon" />
                   </div>
@@ -96,53 +130,49 @@ const EditExamination = () => {
           </div>
 
           <div className="form-grid-bottom">
-            {/* ส่วนที่อยู่ */}
-            <div className="sub-card address-card">
+            <div className="sub-card">
               <h3>ที่อยู่</h3>
-              <div className="sub-input-row">
-                <label>ถนน</label>
-                <input type="text" name="address" value={formData.address} onChange={handleChange} />
-              </div>
-              <div className="sub-input-row">
-                <label>ตำบล</label>
-                <input type="text" name="district" value={formData.district} onChange={handleChange} />
-              </div>
-              <div className="sub-input-row">
-                <label>อำเภอ</label>
-                <select name="amphoe"><option>อำเภอ</option></select>
-              </div>
-              <div className="sub-input-row">
-                <label>จังหวัด</label>
-                <select name="province"><option>จังหวัด</option></select>
-              </div>
-              <div className="sub-input-row">
-                <label>รหัสไปรษณีย์</label>
-                <input type="text" name="zipcode" value={formData.zipcode} onChange={handleChange} />
-              </div>
-            </div>
-
-            {/* ส่วนผู้ติดต่อ & ที่นั่ง */}
-            <div className="right-column">
-              <div className="sub-card">
-                <h3>ผู้ติดต่อ</h3>
-                <div className="sub-input-row">
-                  <label>ชื่อผู้ติดต่อ</label>
-                  <input type="text" name="contactName" value={formData.contactName} onChange={handleChange} />
+              <div className="input-row">
+                <div className="input-field">
+                  <label>ถนน / ที่ตั้ง</label>
+                  <input type="text" name="address" value={formData.address} onChange={handleChange} />
                 </div>
-                <div className="sub-input-row">
-                  <label>วันที่ลงทะเบียน</label>
-                  <div className="date-input-wrapper">
-                    <input type="date" name="regDate" value={formData.regDate} onChange={handleChange} />
+                <div className="input-field">
+                  <label>ตำบล / แขวง</label>
+                  <div className="select">
+                    <select name="district" value={formData.district} onChange={handleChange}>
+                      <option value="ในเมือง">ในเมือง</option>
+                    </select>
+                    <FaChevronDown className="select-icon" />
                   </div>
                 </div>
               </div>
-
-              <div className="sub-card mt-20">
-                <h3>ที่นั่งสอบ</h3>
-                <div className="sub-input-row">
-                  <label>จำนวนที่นั่งรวม</label>
-                  <input type="number" name="totalSeats" value={formData.totalSeats} onChange={handleChange} />
+              <div className="input-row">
+                <div className="input-field">
+                  <label>อำเภอ / เขต</label>
+                  <div className="select">
+                    <select name="amphoe" value={formData.amphoe} onChange={handleChange}>
+                      <option value="เมือง">เมือง</option>
+                    </select>
+                    <FaChevronDown className="select-icon" />
+                  </div>
                 </div>
+                <div className="input-field">
+                  <label>จังหวัด</label>
+                  <div className="select">
+                    <select name="province" value={formData.province} onChange={handleChange}>
+                      <option value="ขอนแก่น">ขอนแก่น</option>
+                    </select>
+                    <FaChevronDown className="select-icon" />
+                  </div>
+                </div>
+              </div>
+              <div className="input-row">
+                <div className="input-field">
+                  <label>รหัสไปรษณีย์</label>
+                  <input type="text" name="zipcode" value={formData.zipcode} onChange={handleChange} />
+                </div>
+                <div className="input-field"></div>
               </div>
             </div>
           </div>

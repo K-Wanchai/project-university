@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import './SchoolInfo.css'; 
 import Sidebar from '../../components/Sidebar'; 
-// SchoolInfo.jsx (เพิ่มบรรทัดนี้ที่ด้านบน)
 import { Link } from 'react-router-dom';
 
 function SchoolInfo() {
@@ -20,7 +19,6 @@ function SchoolInfo() {
   <div className="container" style={{ display: 'flex' }}>
     <Sidebar />
     
-    {/* เพิ่ม style หรือ class เพื่อดันเนื้อหาออกไป 260px */}
     <main className="main-content" style={{ marginLeft: '260px', width: '100%' }}>
       <header className="content-header">
           <h2><i className="fas fa-school"></i> ข้อมูลโรงเรียนกวดวิชา</h2>
@@ -63,7 +61,7 @@ function SchoolInfo() {
             </div>
           </div>
 
-          {/* แผนที่ (แสดงด้านล่าง) */}
+          {/* แผนที่ */}
           <div className="info-card map-section full-width">
             <h4><i className="fas fa-map"></i> ตำแหน่งที่ตั้งสถาบัน</h4>
             <div className="map-placeholder">
