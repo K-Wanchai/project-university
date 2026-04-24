@@ -12,7 +12,8 @@ import SchoolInfo from "./pages/admin/SchoolInfo.jsx";
 import EditSchoolInfo from "./pages/admin/EditSchoolInfo.jsx";
 import Examination from "./pages/admin/Examination.jsx";
 import EditExamination from "./pages/admin/EditExamination.jsx";
-import AddExamination from "./pages/admin/AddExamination.jsx"; // Import ไฟล์ใหม่
+import AddExamination from "./pages/admin/AddExamination.jsx";
+import Money from "./pages/admin/Money.jsx"; 
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
         <Route path="/examination" element={<Examination />} />
         <Route path="/edit-examination/:id" element={<EditExamination />} />
         <Route path="/add-examination" element={<AddExamination />} />
+         <Route path="/money" element={<Money />} />
       </Routes>
     </Router>
   );
