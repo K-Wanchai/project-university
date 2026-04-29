@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useLayoutEffect, useRef } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import './Sidebar.css';
+
+const SIDEBAR_SCROLL_KEY = 'admin-sidebar-scroll-top';
 
 const menuGroups = [
   {
@@ -34,6 +36,29 @@ const menuGroups = [
 function Sidebar({ collapsed = false }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const scrollableRef = useRef(null);
+
+  useLayoutEffect(() => {
+    const scrollElement = scrollableRef.current;
+    if (!scrollElement) return;
+
+    const savedScrollTop = sessionStorage.getItem(SIDEBAR_SCROLL_KEY);
+
+    if (savedScrollTop !== null) {
+      scrollElement.scrollTop = Number(savedScrollTop);
+    }
+
+    const handleScroll = () => {
+      sessionStorage.setItem(SIDEBAR_SCROLL_KEY, String(scrollElement.scrollTop));
+    };
+
+    scrollElement.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      sessionStorage.setItem(SIDEBAR_SCROLL_KEY, String(scrollElement.scrollTop));
+      scrollElement.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
 
   const handleLogout = () => {
     if (window.confirm('คุณต้องการออกจากระบบใช่หรือไม่?')) {
@@ -42,17 +67,21 @@ function Sidebar({ collapsed = false }) {
     }
   };
 
-  const activeLabel = menuGroups
-    .flatMap((group) => group.items)
-    .find((item) => {
-      if (item.end) return location.pathname === item.to;
-      return location.pathname.startsWith(item.to);
-    })?.label || 'หน้าหลัก';
+  const activeLabel =
+    menuGroups
+      .flatMap((group) => group.items)
+      .find((item) => {
+        if (item.end) return location.pathname === item.to;
+        return location.pathname.startsWith(item.to);
+      })?.label || 'หน้าหลัก';
 
   return (
     <nav className={`sidebar-container ${collapsed ? 'is-collapsed' : ''}`} aria-label="เมนูหลัก">
       <div className="sidebar-logo">
-        <div className="logo-icon"><i className="fas fa-brain" /></div>
+        <div className="logo-icon">
+          <i className="fas fa-brain" />
+        </div>
+
         <div className="logo-text">
           <h2>ครูปุ๊ก ติวเตอร์</h2>
           <span>Admin Console</span>
@@ -67,11 +96,12 @@ function Sidebar({ collapsed = false }) {
         </div>
       </div>
 
-      <div className="sidebar-scrollable">
+      <div className="sidebar-scrollable" ref={scrollableRef}>
         <ul className="sidebar-menu">
           {menuGroups.map((group) => (
             <React.Fragment key={group.label}>
               <li className="menu-header">{group.label}</li>
+
               {group.items.map((item) => (
                 <li key={item.to}>
                   <NavLink
@@ -92,21 +122,21 @@ function Sidebar({ collapsed = false }) {
       </div>
 
       <div className="sidebar-footer">
-  <NavLink
-    to="/change-password"
-    className={({ isActive }) => (isActive ? 'menu-item active' : 'menu-item')}
-  >
-    <i className="fas fa-key" />
-    <span className="menu-label">เปลี่ยนรหัสผ่าน</span>
-  </NavLink>
-</div>
+        <NavLink
+          to="/change-password"
+          className={({ isActive }) => (isActive ? 'menu-item active' : 'menu-item')}
+        >
+          <i className="fas fa-key" />
+          <span className="menu-label">เปลี่ยนรหัสผ่าน</span>
+        </NavLink>
+      </div>
 
-<div className="sidebar-logout-layer">
-  <button type="button" className="logout-layer-btn" onClick={handleLogout}>
-    <i className="fas fa-right-from-bracket" />
-    <span>ออกจากระบบ</span>
-  </button>
-</div>
+      <div className="sidebar-logout-layer">
+        <button type="button" className="logout-layer-btn" onClick={handleLogout}>
+          <i className="fas fa-right-from-bracket" />
+          <span>ออกจากระบบ</span>
+        </button>
+      </div>
     </nav>
   );
 }
