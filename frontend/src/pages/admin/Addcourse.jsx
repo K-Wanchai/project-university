@@ -1,48 +1,54 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Addcourse.css'; 
-import Sidebar from '../../components/Sidebar';
-import Header from '../../components/Header';
-
-// 🌟 Import apiService
+import './Addcourse.css';
 import apiService from '../../services/apiService';
+
+const INITIAL_FORM = {
+  courseName: '',
+  category: 'วิทยาศาสตร์',
+  courseTime: '',
+  tutorName: '',
+  status: 'เปิดรับสมัคร',
+  startDate: '',
+  totalHours: '',
+  price: '',
+  capacity: '',
+  description: '',
+};
 
 function Addcourse() {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
-  const [isLoading, setIsLoading] = useState(false);
+
+  const [formData, setFormData] = useState(INITIAL_FORM);
   const [courseImage, setCourseImage] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
-
-  const [formData, setFormData] = useState({
-    courseName: '',
-    category: 'วิทยาศาสตร์',
-    courseTime: '',
-    tutorName: '',
-    status: 'เปิดรับสมัคร',
-    startDate: '',       
-    totalHours: '',      
-    price: '',           
-    capacity: '',        
-    description: ''
-  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleInputChange = (e) => {
     const { id, value } = e.target;
-    setFormData(prev => ({ ...prev, [id]: value }));
+    setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
   const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setCourseImage(file);
-      setPreviewImage(URL.createObjectURL(file));
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      alert('ขนาดไฟล์รูปคอร์สต้องไม่เกิน 2MB');
+      e.target.value = '';
+      return;
     }
+
+    setCourseImage(file);
+    setPreviewImage(URL.createObjectURL(file));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setErrorMessage('');
 
     const submitData = new FormData();
     submitData.append('courseName', formData.courseName);
@@ -52,6 +58,7 @@ function Addcourse() {
     submitData.append('startDate', formData.startDate);
     submitData.append('hours', formData.totalHours);
     submitData.append('price', formData.price);
+    submitData.append('capacity', formData.capacity);
     submitData.append('status', formData.status);
     submitData.append('description', formData.description);
 
@@ -60,64 +67,106 @@ function Addcourse() {
     }
 
     try {
-      // 🌟 ใช้ apiService สร้างคอร์ส
       await apiService.createCourse(submitData);
-      
       alert('เพิ่มคอร์สเรียนใหม่สำเร็จ!');
       navigate('/course');
     } catch (error) {
-      alert("เกิดข้อผิดพลาด: " + error.message);
+      setErrorMessage(error.message || 'เกิดข้อผิดพลาดในการบันทึกข้อมูล');
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-   <div className="container" style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8fafc' }}>
-      <Sidebar />
-      <main className="main-content" style={{ flex: 1, marginLeft: '260px', padding: '30px' }}>
-        <Header title="เพิ่มคอร์สเรียนใหม่" />
+    <div className="add-course-page-container">
+      <main className="add-course-main-content">
+        <header className="add-course-header">
+          <button
+            type="button"
+            onClick={() => navigate('/course')}
+            className="btn-back-header"
+          >
+            ◀️ย้อนกลับ
+          </button>
 
-        <section className="form-card" style={{ background: '#fff', padding: '30px', borderRadius: '12px', boxShadow: '0 2px 10px rgba(0,0,0,0.05)', marginTop: '20px' }}>
+          <div>
+            <p className="add-course-eyebrow">COURSE FORM</p>
+            <h1>เพิ่มคอร์สเรียนใหม่</h1>
+            <p>สร้างคอร์สใหม่พร้อมกำหนดหมวดหมู่ ผู้สอน เวลาเรียน และรายละเอียดราคา</p>
+          </div>
+        </header>
+
+        {errorMessage && (
+          <div className="add-course-alert error-alert">
+            {errorMessage}
+          </div>
+        )}
+
+        <section className="add-course-form-card">
           <form onSubmit={handleSubmit}>
-            <div className="form-layout" style={{ display: 'flex', gap: '40px', flexWrap: 'wrap' }}>
-              
-              <div className="profile-upload-section" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', width: '200px' }}>
-                <div className="profile-placeholder" style={{ width: '150px', height: '150px', background: '#f1f5f9', borderRadius: '12px', display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}>
+            <div className="add-course-form-layout">
+              <aside className="add-course-image-section">
+                <div className="add-course-image-box">
                   {previewImage ? (
-                    <img src={previewImage} alt="Preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <img src={previewImage} alt="Course preview" />
                   ) : (
-                    <i className="fas fa-book-open" style={{ fontSize: '50px', color: '#cbd5e1' }}></i>
+                    <i className="fas fa-book-open" />
                   )}
                 </div>
-                <button 
-                  type="button" 
-                  className="btn-upload" 
-                  onClick={() => fileInputRef.current.click()}
-                  style={{ marginTop: '15px', padding: '8px 15px', background: '#f1f5f9', border: 'none', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold', color: '#475569', width: '100%' }}
-                >
-                  เลือกรูปภาพคอร์ส
-                </button>
-                <input 
-                  type="file" 
-                  ref={fileInputRef} 
-                  onChange={handleImageChange} 
-                  style={{ display: 'none' }} 
-                  accept="image/*"
-                />
-              </div>
 
-              <div className="form-fields" style={{ flex: 1, minWidth: '300px' }}>
-                <div className="form-grid" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                  
-                  <div className="form-group">
-                    <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>ชื่อคอร์สเรียน <span style={{ color: 'red' }}>*</span></label>
-                    <input type="text" id="courseName" value={formData.courseName} onChange={handleInputChange} required placeholder="เช่น ฟิสิกส์ ม.4 เทอม 1" style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
+                <button
+                  type="button"
+                  className="add-course-btn-upload"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  อัปโหลดรูปคอร์ส
+                </button>
+
+                <p className="upload-hint">รองรับ JPG/PNG ขนาดไม่เกิน 2MB</p>
+
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={fileInputRef}
+                  onChange={handleImageChange}
+                  className="hidden-file-input"
+                />
+
+                <div className="form-tip-card">
+                  <p>
+                    ตรวจสอบชื่อคอร์ส ผู้สอน ราคา และวันเวลาเรียนก่อนบันทึก
+                    เพื่อป้องกันข้อมูลผิดพลาด
+                  </p>
+                </div>
+              </aside>
+
+              <div className="add-course-fields-section">
+                <div className="form-section-title">
+                  <span>
+                    <i className="fas fa-book" />
+                  </span>
+                  <div>
+                    <h2>ข้อมูลคอร์สเรียน</h2>
+                    <p>ข้อมูลหลักสำหรับแสดงในหน้ารายการคอร์สเรียน</p>
+                  </div>
+                </div>
+
+                <div className="add-course-input-grid">
+                  <div className="add-course-form-group">
+                    <label htmlFor="courseName">ชื่อคอร์สเรียน <span>*</span></label>
+                    <input
+                      type="text"
+                      id="courseName"
+                      value={formData.courseName}
+                      onChange={handleInputChange}
+                      required
+                      placeholder="เช่น ฟิสิกส์ ม.4 เทอม 1"
+                    />
                   </div>
 
-                  <div className="form-group">
-                    <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>หมวดหมู่ <span style={{ color: 'red' }}>*</span></label>
-                    <select id="category" value={formData.category} onChange={handleInputChange} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1' }}>
+                  <div className="add-course-form-group">
+                    <label htmlFor="category">หมวดหมู่ <span>*</span></label>
+                    <select id="category" value={formData.category} onChange={handleInputChange}>
                       <option value="วิทยาศาสตร์">วิทยาศาสตร์</option>
                       <option value="คณิตศาสตร์">คณิตศาสตร์</option>
                       <option value="ภาษาไทย">ภาษาไทย</option>
@@ -126,58 +175,101 @@ function Addcourse() {
                     </select>
                   </div>
 
-                  <div className="form-group">
-                    <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>ชื่อผู้สอน (Tutor) <span style={{ color: 'red' }}>*</span></label>
-                    <input type="text" id="tutorName" value={formData.tutorName} onChange={handleInputChange} required placeholder="ชื่ออาจารย์ผู้สอน" style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
+                  <div className="add-course-form-group">
+                    <label htmlFor="tutorName">ชื่อผู้สอน <span>*</span></label>
+                    <input
+                      type="text"
+                      id="tutorName"
+                      value={formData.tutorName}
+                      onChange={handleInputChange}
+                      required
+                      placeholder="ชื่ออาจารย์ผู้สอน"
+                    />
                   </div>
 
-                  <div className="form-group">
-                    <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>วัน-เวลาเรียน <span style={{ color: 'red' }}>*</span></label>
-                    <input type="text" id="courseTime" value={formData.courseTime} onChange={handleInputChange} required placeholder="เช่น เสาร์-อาทิตย์ 09:00-12:00" style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
+                  <div className="add-course-form-group">
+                    <label htmlFor="courseTime">วัน-เวลาเรียน <span>*</span></label>
+                    <input
+                      type="text"
+                      id="courseTime"
+                      value={formData.courseTime}
+                      onChange={handleInputChange}
+                      required
+                      placeholder="เช่น เสาร์-อาทิตย์ 09:00-12:00"
+                    />
                   </div>
 
-                  <div className="form-group">
-                    <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>วันที่เริ่มเรียน <span style={{ color: 'red' }}>*</span></label>
-                    <input type="date" id="startDate" value={formData.startDate} onChange={handleInputChange} required style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
+                  <div className="add-course-form-group">
+                    <label htmlFor="startDate">วันที่เริ่มเรียน <span>*</span></label>
+                    <input
+                      type="date"
+                      id="startDate"
+                      value={formData.startDate}
+                      onChange={handleInputChange}
+                      required
+                    />
                   </div>
 
-                  <div className="form-group">
-                    <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>จำนวนชั่วโมงทั้งหมด <span style={{ color: 'red' }}>*</span></label>
-                    <input type="number" id="totalHours" value={formData.totalHours} onChange={handleInputChange} required placeholder="เช่น 30" style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
+                  <div className="add-course-form-group">
+                    <label htmlFor="totalHours">จำนวนชั่วโมงทั้งหมด <span>*</span></label>
+                    <input
+                      type="number"
+                      id="totalHours"
+                      value={formData.totalHours}
+                      onChange={handleInputChange}
+                      required
+                      placeholder="เช่น 30"
+                    />
                   </div>
 
-                  <div className="form-group">
-                    <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>ราคาคอร์ส (บาท) <span style={{ color: 'red' }}>*</span></label>
-                    <input type="number" id="price" value={formData.price} onChange={handleInputChange} required placeholder="เช่น 3500" style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
+                  <div className="add-course-form-group">
+                    <label htmlFor="price">ราคาคอร์ส <span>*</span></label>
+                    <input
+                      type="number"
+                      id="price"
+                      value={formData.price}
+                      onChange={handleInputChange}
+                      required
+                      placeholder="เช่น 3500"
+                    />
                   </div>
 
-                  <div className="form-group">
-                    <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>จำนวนที่เปิดรับ (คน) <span style={{ color: 'red' }}>*</span></label>
-                    <input type="number" id="capacity" value={formData.capacity} onChange={handleInputChange} required placeholder="เช่น 20" style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1' }} />
+                  <div className="add-course-form-group">
+                    <label htmlFor="capacity">จำนวนที่เปิดรับ <span>*</span></label>
+                    <input
+                      type="number"
+                      id="capacity"
+                      value={formData.capacity}
+                      onChange={handleInputChange}
+                      required
+                      placeholder="เช่น 20"
+                    />
                   </div>
 
-                  <div className="form-group">
-                    <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>สถานะคอร์ส</label>
-                    <select id="status" value={formData.status} onChange={handleInputChange} style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1' }}>
-                      <option value="เปิดรับสมัคร">เปิดรับสมัคร</option>
-                      <option value="กำลังสอน">กำลังสอน</option>
-                      <option value="จบแล้ว">จบแล้ว</option>
-                      <option value="ปิดปรับปรุง">ปิดปรับปรุง</option>
-                    </select>
+                  <div className="add-course-form-group full-width">
+                    <label htmlFor="description">รายละเอียดคอร์สเรียน</label>
+                    <textarea
+                      id="description"
+                      value={formData.description}
+                      onChange={handleInputChange}
+                      rows="4"
+                      placeholder="ระบุรายละเอียดเนื้อหา จุดเด่น หรือสิ่งที่ผู้เรียนจะได้รับ"
+                    />
                   </div>
                 </div>
 
-                <div className="form-group-full remarks-group" style={{ marginTop: '20px' }}>
-                  <label style={{ display: 'block', fontWeight: 'bold', marginBottom: '8px' }}>รายละเอียดคอร์สเรียน (Description)</label>
-                  <textarea id="description" value={formData.description} onChange={handleInputChange} rows="4" placeholder="ระบุรายละเอียดเนื้อหาการเรียน..." style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #cbd5e1' }}></textarea>
-                </div>
-
-                <div className="form-actions" style={{ marginTop: '30px', display: 'flex', gap: '15px' }}>
-                  <button type="submit" className="btn-save" disabled={isLoading} style={{ background: '#10b981', color: 'white', padding: '12px 24px', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
-                    <i className="fas fa-save"></i> {isLoading ? 'กำลังบันทึก...' : 'บันทึกคอร์สเรียน'}
+                <div className="add-course-form-actions">
+                  <button type="submit" className="btn-save" disabled={isLoading}>
+                    {isLoading ? 'กำลังบันทึก...' : 'บันทึกคอร์สเรียน'}
                   </button>
-                  <button type="button" className="btn-cancel" onClick={() => navigate('/course')} style={{ background: '#94a3b8', color: 'white', padding: '12px 24px', border: 'none', borderRadius: '8px', fontWeight: 'bold', cursor: 'pointer' }}>
-                    <i className="fas fa-times"></i> ยกเลิก
+
+                  <button
+                    type="button"
+                    className="btn-cancel"
+                    onClick={() => navigate('/course')}
+                    disabled={isLoading}
+                  >
+                    ยกเลิก
                   </button>
                 </div>
               </div>

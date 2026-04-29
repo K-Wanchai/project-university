@@ -1,6 +1,5 @@
 import React, { useLayoutEffect, useRef } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
-import './Sidebar.css';
 
 const SIDEBAR_SCROLL_KEY = 'admin-sidebar-scroll-top';
 
@@ -33,7 +32,7 @@ const menuGroups = [
   },
 ];
 
-function Sidebar({ collapsed = false }) {
+function Sidebar({ isOpen = false, onClose }) {
   const navigate = useNavigate();
   const location = useLocation();
   const scrollableRef = useRef(null);
@@ -43,7 +42,6 @@ function Sidebar({ collapsed = false }) {
     if (!scrollElement) return;
 
     const savedScrollTop = sessionStorage.getItem(SIDEBAR_SCROLL_KEY);
-
     if (savedScrollTop !== null) {
       scrollElement.scrollTop = Number(savedScrollTop);
     }
@@ -63,6 +61,7 @@ function Sidebar({ collapsed = false }) {
   const handleLogout = () => {
     if (window.confirm('คุณต้องการออกจากระบบใช่หรือไม่?')) {
       localStorage.removeItem('token');
+      onClose?.();
       navigate('/login');
     }
   };
@@ -75,69 +74,86 @@ function Sidebar({ collapsed = false }) {
         return location.pathname.startsWith(item.to);
       })?.label || 'หน้าหลัก';
 
+  const handleMenuClick = () => {
+    onClose?.();
+  };
+
   return (
-    <nav className={`sidebar-container ${collapsed ? 'is-collapsed' : ''}`} aria-label="เมนูหลัก">
-      <div className="sidebar-logo">
-        <div className="logo-icon">
-          <i className="fas fa-brain" />
+    <>
+      <button
+        type="button"
+        className={`admin-sidebar-backdrop ${isOpen ? 'is-visible' : ''}`}
+        aria-label="ปิดเมนู"
+        onClick={onClose}
+      />
+
+      <aside className={`admin-sidebar ${isOpen ? 'is-open' : ''}`}>
+        <div className="admin-sidebar-logo">
+          <div className="admin-logo-icon">
+            <i className="fas fa-brain" />
+          </div>
+
+          <div className="admin-logo-text">
+            <h2>ครูปุ๊ก ติวเตอร์</h2>
+            <span>Admin Console</span>
+          </div>
         </div>
 
-        <div className="logo-text">
-          <h2>ครูปุ๊ก ติวเตอร์</h2>
-          <span>Admin Console</span>
+        <div className="admin-status-card">
+          <div className="admin-status-dot" />
+          <div>
+            <strong>ระบบพร้อมใช้งาน</strong>
+            <span>หน้าปัจจุบัน: {activeLabel}</span>
+          </div>
         </div>
-      </div>
 
-      <div className="sidebar-status-card">
-        <div className="status-dot" />
-        <div>
-          <strong>ระบบพร้อมใช้งาน</strong>
-          <span>หน้าปัจจุบัน: {activeLabel}</span>
+        <div className="admin-sidebar-scroll" ref={scrollableRef}>
+          <ul className="admin-menu">
+            {menuGroups.map((group) => (
+              <React.Fragment key={group.label}>
+                <li className="admin-menu-header">{group.label}</li>
+
+                {group.items.map((item) => (
+                  <li key={item.to}>
+                    <NavLink
+                      to={item.to}
+                      end={item.end}
+                      title={item.label}
+                      onClick={handleMenuClick}
+                      className={({ isActive }) =>
+                        isActive ? 'admin-menu-item active' : 'admin-menu-item'
+                      }
+                    >
+                      <i className={item.icon} />
+                      <span className="admin-menu-label">{item.label}</span>
+                      {item.badge && <span className="admin-menu-badge">{item.badge}</span>}
+                    </NavLink>
+                  </li>
+                ))}
+              </React.Fragment>
+            ))}
+          </ul>
         </div>
-      </div>
 
-      <div className="sidebar-scrollable" ref={scrollableRef}>
-        <ul className="sidebar-menu">
-          {menuGroups.map((group) => (
-            <React.Fragment key={group.label}>
-              <li className="menu-header">{group.label}</li>
+        <div className="admin-sidebar-footer">
+          <NavLink
+            to="/change-password"
+            onClick={handleMenuClick}
+            className={({ isActive }) =>
+              isActive ? 'admin-menu-item active' : 'admin-menu-item'
+            }
+          >
+            <i className="fas fa-key" />
+            <span className="admin-menu-label">เปลี่ยนรหัสผ่าน</span>
+          </NavLink>
 
-              {group.items.map((item) => (
-                <li key={item.to}>
-                  <NavLink
-                    to={item.to}
-                    end={item.end}
-                    className={({ isActive }) => (isActive ? 'menu-item active' : 'menu-item')}
-                    title={item.label}
-                  >
-                    <i className={item.icon} />
-                    <span className="menu-label">{item.label}</span>
-                    {item.badge && <span className="menu-badge">{item.badge}</span>}
-                  </NavLink>
-                </li>
-              ))}
-            </React.Fragment>
-          ))}
-        </ul>
-      </div>
-
-      <div className="sidebar-footer">
-        <NavLink
-          to="/change-password"
-          className={({ isActive }) => (isActive ? 'menu-item active' : 'menu-item')}
-        >
-          <i className="fas fa-key" />
-          <span className="menu-label">เปลี่ยนรหัสผ่าน</span>
-        </NavLink>
-      </div>
-
-      <div className="sidebar-logout-layer">
-        <button type="button" className="logout-layer-btn" onClick={handleLogout}>
-          <i className="fas fa-right-from-bracket" />
-          <span>ออกจากระบบ</span>
-        </button>
-      </div>
-    </nav>
+          <button type="button" className="admin-logout-btn" onClick={handleLogout}>
+            <i className="fas fa-right-from-bracket" />
+            <span>ออกจากระบบ</span>
+          </button>
+        </div>
+      </aside>
+    </>
   );
 }
 
