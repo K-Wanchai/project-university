@@ -25,7 +25,7 @@ function App() {
     <Router>
       <Routes>
         {/* เปิดหน้าแรกให้ไปหน้า Login */}
-        <Route path="/" element={<Navigate to="/Homepage" replace />} />
+        <Route path="/" element={<Navigate to="/Standard" replace />} />
 
         {/* User */}
         <Route path="/login" element={<Login />} />
@@ -49,7 +49,7 @@ function App() {
         <Route path="/add-examination" element={<AddExamination />} />
 
         {/* ถ้า path ไม่ตรง ให้กลับไปหน้า Login */}
-        <Route path="*" element={<Navigate to="/Homepage" replace />} />
+        <Route path="*" element={<Navigate to="/Login" replace />} />
       </Routes>
     </Router>
   );
