@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import './Money.css';
-import Sidebar from '../../components/Sidebar';
-import Header from '../../components/Header';
+import AdminLayout from '../../Layout/AdminLayout';
 
 function Money() {
   const [payments, setPayments] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
-
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [adminRemark, setAdminRemark] = useState('');
@@ -25,7 +23,7 @@ function Money() {
         date: '24-05-2026',
         status: 'WAIT_VERIFY',
         method: 'โอนเงินผ่านธนาคาร (e-wallet)',
-        slipUrl: 'https://i.pinimg.com/736x/8f/3e/36/8f3e36e392ef4f1d4ba7ad40b3c5885c.jpg'
+        slipUrl: 'https://i.pinimg.com/736x/8f/3e/36/8f3e36e392ef4f1d4ba7ad40b3c5885c.jpg',
       },
       {
         id: 2,
@@ -38,7 +36,7 @@ function Money() {
         date: '23-05-2026',
         status: 'APPROVED',
         method: 'โอนเงินผ่านธนาคาร',
-        slipUrl: ''
+        slipUrl: '',
       },
       {
         id: 3,
@@ -51,10 +49,24 @@ function Money() {
         date: '22-05-2026',
         status: 'REJECTED',
         method: 'โอนเงินผ่านธนาคาร',
-        slipUrl: ''
-      }
+        slipUrl: '',
+      },
     ]);
   }, []);
+
+  const getStatusText = (status) => {
+    if (status === 'WAIT_VERIFY') return 'รอตรวจสอบ';
+    if (status === 'APPROVED') return 'อนุมัติแล้ว';
+    if (status === 'REJECTED') return 'ปฏิเสธ';
+    return '-';
+  };
+
+  const getStatusClass = (status) => {
+    if (status === 'WAIT_VERIFY') return 'status-pending';
+    if (status === 'APPROVED') return 'status-approved';
+    if (status === 'REJECTED') return 'status-rejected';
+    return '';
+  };
 
   const openModal = (payment) => {
     setSelectedPayment(payment);
@@ -73,9 +85,7 @@ function Money() {
 
     setPayments((prev) =>
       prev.map((payment) =>
-        payment.id === selectedPayment.id
-          ? { ...payment, status }
-          : payment
+        payment.id === selectedPayment.id ? { ...payment, status } : payment
       )
     );
 
@@ -83,23 +93,8 @@ function Money() {
     closeModal();
   };
 
-  const getStatusText = (status) => {
-    if (status === 'WAIT_VERIFY') return 'รอตรวจสอบ';
-    if (status === 'APPROVED') return 'อนุมัติแล้ว';
-    if (status === 'REJECTED') return 'ปฏิเสธ';
-    return '-';
-  };
-
-  const getStatusClass = (status) => {
-    if (status === 'WAIT_VERIFY') return 'status-pending';
-    if (status === 'APPROVED') return 'status-approved';
-    if (status === 'REJECTED') return 'status-rejected';
-    return '';
-  };
-
   const filteredPayments = payments.filter((payment) => {
     const keyword = searchTerm.trim().toLowerCase();
-
     const searchableText = `
       ${payment.studentName}
       ${payment.studentId}
@@ -114,132 +109,122 @@ function Money() {
   });
 
   return (
-    <div className="money-page">
-      <Sidebar />
+    <AdminLayout>
 
-      <main className="money-main">
-        <div className="money-hero"></div>
+      <div className="breadcrumb">
+        ข้อมูลระบบ : ตรวจสอบสลิปยืนยันการโอนเงิน
+      </div>
 
-        <Header title="ยืนยันการชำระเงิน" />
-
-        <div className="breadcrumb">
-          ข้อมูลระบบ : ตรวจสอบสลิปยืนยันการโอนเงิน
+      <section className="filter-section">
+        <div className="search-box">
+          <span className="search-icon">🔎</span>
+          <input
+            type="text"
+            placeholder="ค้นหาชื่อนักเรียน รหัสนักเรียน หรือคอร์สเรียน..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
         </div>
 
-        <section className="filter-section">
-          <div className="search-box">
-            <span className="search-icon">🔎</span>
-            <input
-              type="text"
-              placeholder="ค้นหาชื่อนักเรียน รหัสนักเรียน หรือคอร์สเรียน..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+        <select
+          className="filter-select"
+          value={filterStatus}
+          onChange={(e) => setFilterStatus(e.target.value)}
+        >
+          <option value="">สถานะทั้งหมด</option>
+          <option value="WAIT_VERIFY">รอตรวจสอบ</option>
+          <option value="APPROVED">อนุมัติแล้ว</option>
+          <option value="REJECTED">ปฏิเสธ</option>
+        </select>
+      </section>
+
+      <section className="money-card">
+        <div className="card-header">
+          <div>
+            <h3>รายการแจ้งชำระเงิน</h3>
+            <p>ตรวจสอบรายการโอนเงินและจัดการสถานะการชำระเงิน</p>
           </div>
 
-          <select
-            className="filter-select"
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-          >
-            <option value="">สถานะทั้งหมด</option>
-            <option value="WAIT_VERIFY">รอตรวจสอบ</option>
-            <option value="APPROVED">อนุมัติแล้ว</option>
-            <option value="REJECTED">ปฏิเสธ</option>
-          </select>
-        </section>
-
-        <section className="money-card">
-          <div className="card-header">
-            <div>
-              <h3>รายการแจ้งชำระเงิน</h3>
-              <p>ตรวจสอบรายการโอนเงินและจัดการสถานะการชำระเงิน</p>
-            </div>
-
-            <div className="total-pill">
-              {filteredPayments.length} รายการ
-            </div>
+          <div className="total-pill">
+            {filteredPayments.length} รายการ
           </div>
+        </div>
 
-          <div className="table-wrap">
-            <table className="money-table">
-              <thead>
-                <tr>
-                  <th className="td-center">#</th>
-                  <th>ชื่อนักเรียน</th>
-                  <th>คอร์สเรียน</th>
-                  <th className="td-center">วันที่ชำระ</th>
-                  <th className="td-center">จำนวนเงิน</th>
-                  <th className="td-center">สถานะ</th>
-                  <th className="td-center">การจัดการ</th>
+        <div className="table-wrap">
+          <table className="money-table">
+            <thead>
+              <tr>
+                <th className="td-center">#</th>
+                <th>ชื่อนักเรียน</th>
+                <th>คอร์สเรียน</th>
+                <th className="td-center">วันที่ชำระ</th>
+                <th className="td-center">จำนวนเงิน</th>
+                <th className="td-center">สถานะ</th>
+                <th className="td-center">การจัดการ</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {filteredPayments.map((payment, index) => (
+                <tr key={payment.id}>
+                  <td className="td-center">{index + 1}</td>
+
+                  <td>
+                    <div className="student-cell">
+                      <img src={payment.profileUrl} alt={payment.studentName} />
+                      <div>
+                        <strong>{payment.studentName}</strong>
+                        <span>{payment.studentId}</span>
+                      </div>
+                    </div>
+                  </td>
+
+                  <td>
+                    <div className="course-cell">
+                      <strong>{payment.courseName}</strong>
+                      <span>{payment.courseId}</span>
+                    </div>
+                  </td>
+
+                  <td className="td-center">{payment.date}</td>
+
+                  <td className="td-center money-amount">
+                    ฿{payment.amount.toLocaleString()}
+                  </td>
+
+                  <td className="td-center">
+                    <span className={`status-badge ${getStatusClass(payment.status)}`}>
+                      <span className="status-dot" />
+                      {getStatusText(payment.status)}
+                    </span>
+                  </td>
+
+                  <td className="td-center">
+                    <button
+                      type="button"
+                      className="btn-view"
+                      onClick={() => openModal(payment)}
+                    >
+                      <span>👁️</span>
+                      ตรวจสอบ
+                    </button>
+                  </td>
                 </tr>
-              </thead>
+              ))}
 
-              <tbody>
-                {filteredPayments.map((payment, index) => (
-                  <tr key={payment.id}>
-                    <td className="td-center">{index + 1}</td>
-
-                    <td>
-                      <div className="student-cell">
-                        <img
-                          src={payment.profileUrl}
-                          alt={payment.studentName}
-                        />
-                        <div>
-                          <strong>{payment.studentName}</strong>
-                          <span>{payment.studentId}</span>
-                        </div>
-                      </div>
-                    </td>
-
-                    <td>
-                      <div className="course-cell">
-                        <strong>{payment.courseName}</strong>
-                        <span>{payment.courseId}</span>
-                      </div>
-                    </td>
-
-                    <td className="td-center">{payment.date}</td>
-
-                    <td className="td-center money-amount">
-                      ฿{payment.amount.toLocaleString()}
-                    </td>
-
-                    <td className="td-center">
-                      <span className={`status-badge ${getStatusClass(payment.status)}`}>
-                        <span className="status-dot"></span>
-                        {getStatusText(payment.status)}
-                      </span>
-                    </td>
-
-                    <td className="td-center">
-                      <button
-                        type="button"
-                        className="btn-view"
-                        onClick={() => openModal(payment)}
-                      >
-                        <span>👁️</span>
-                        ตรวจสอบ
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-
-                {filteredPayments.length === 0 && (
-                  <tr>
-                    <td colSpan="7">
-                      <div className="empty-state">
-                        ไม่พบรายการที่ตรงกับเงื่อนไขการค้นหา
-                      </div>
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
-        </section>
-      </main>
+              {filteredPayments.length === 0 && (
+                <tr>
+                  <td colSpan="7">
+                    <div className="empty-state">
+                      ไม่พบรายการที่ตรงกับเงื่อนไขการค้นหา
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
 
       {isModalOpen && selectedPayment && (
         <div className="modal-overlay" onClick={closeModal}>
@@ -265,13 +250,8 @@ function Money() {
               <div className="modal-left">
                 <div className="info-card">
                   <h4>ข้อมูลนักเรียน</h4>
-
                   <div className="profile-box">
-                    <img
-                      src={selectedPayment.profileUrl}
-                      alt={selectedPayment.studentName}
-                    />
-
+                    <img src={selectedPayment.profileUrl} alt={selectedPayment.studentName} />
                     <div>
                       <strong>{selectedPayment.studentName}</strong>
                       <span>{selectedPayment.studentId}</span>
@@ -281,7 +261,6 @@ function Money() {
 
                 <div className="info-card">
                   <h4>ข้อมูลคอร์สเรียน</h4>
-
                   <InfoRow label="ชื่อคอร์ส" value={selectedPayment.courseName} />
                   <InfoRow label="รหัสคอร์ส" value={selectedPayment.courseId} />
                   <InfoRow
@@ -292,7 +271,6 @@ function Money() {
 
                 <div className="info-card">
                   <h4>รายละเอียดการชำระเงิน</h4>
-
                   <InfoRow
                     label="จำนวนเงินที่แจ้ง"
                     value={`${selectedPayment.amount.toLocaleString()} ฿`}
@@ -310,7 +288,6 @@ function Money() {
               <div className="modal-right">
                 <div className="info-card">
                   <h4>หลักฐานการชำระเงิน</h4>
-
                   <div className="slip-box">
                     {selectedPayment.slipUrl ? (
                       <img
@@ -329,7 +306,6 @@ function Money() {
 
                 <div className="info-card">
                   <h4>ความคิดเห็น / หมายเหตุ</h4>
-
                   <textarea
                     className="remark-textarea"
                     placeholder="กรอกความคิดเห็นของคุณ..."
@@ -374,7 +350,7 @@ function Money() {
           </div>
         </div>
       )}
-    </div>
+    </AdminLayout>
   );
 }
 

@@ -1,6 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import Sidebar from '../../components/Sidebar';
 import './Newuser.css';
 
 import apiService from '../../services/apiService';
@@ -15,7 +14,7 @@ const INITIAL_FORM = {
   email: '',
   role: 'ติวเตอร์',
   status: 'ใช้งานอยู่',
-  remarks: ''
+  remarks: '',
 };
 
 function Newuser() {
@@ -23,6 +22,8 @@ function Newuser() {
   const [searchParams] = useSearchParams();
   const userId = searchParams.get('id');
   const isEditMode = Boolean(userId);
+
+  const fileInputRef = useRef(null);
 
   const [profileImage, setProfileImage] = useState(null);
   const [previewImage, setPreviewImage] = useState(null);
@@ -32,7 +33,6 @@ function Newuser() {
   const [errorMessage, setErrorMessage] = useState('');
   const [showPwd, setShowPwd] = useState(false);
   const [showConfirmPwd, setShowConfirmPwd] = useState(false);
-  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (!isEditMode) return;
@@ -43,6 +43,7 @@ function Newuser() {
 
       try {
         const user = await apiService.getUserById(userId);
+
         setFormData({
           fullName: `${user.firstName || ''} ${user.lastName || ''}`.trim(),
           username: user.username || '',
@@ -52,7 +53,7 @@ function Newuser() {
           email: user.email || '',
           role: user.role ? user.role.trim() : 'ติวเตอร์',
           status: user.status || 'ใช้งานอยู่',
-          remarks: user.remarks || ''
+          remarks: user.remarks || '',
         });
 
         if (user.profileImage) {
@@ -71,7 +72,13 @@ function Newuser() {
 
   const passwordStrength = useMemo(() => {
     const password = formData.password;
-    if (!password) return { label: isEditMode ? 'ไม่เปลี่ยนรหัสผ่าน' : 'ยังไม่ได้กรอก', className: 'strength-empty' };
+
+    if (!password) {
+      return {
+        label: isEditMode ? 'ไม่เปลี่ยนรหัสผ่าน' : 'ยังไม่ได้กรอก',
+        className: 'strength-empty',
+      };
+    }
 
     let score = 0;
     if (password.length >= 8) score += 1;
@@ -112,18 +119,11 @@ function Newuser() {
     setPreviewImage(URL.createObjectURL(file));
   };
 
-  const handleUploadClick = () => {
-    fileInputRef.current?.click();
-  };
-
   const validateForm = () => {
     const fullName = formData.fullName.trim();
     const phoneRegex = /^[0-9+\-\s()]{8,20}$/;
 
-    if (!fullName) {
-  return 'กรุณากรอกชื่อผู้ใช้งาน';
-}
-
+    if (!fullName) return 'กรุณากรอกชื่อผู้ใช้งาน';
     if (!formData.username.trim()) return 'กรุณากรอกชื่อผู้ใช้';
     if (!phoneRegex.test(formData.phone.trim())) return 'กรุณากรอกเบอร์โทรศัพท์ให้ถูกต้อง';
 
@@ -187,7 +187,7 @@ function Newuser() {
     if (formData.role === 'นักเรียน') {
       return (
         <div className="locked-role-box">
-          <i className="fas fa-user-graduate"></i>
+          <i className="fas fa-user-graduate" />
           <span>นักเรียน</span>
         </div>
       );
@@ -203,30 +203,30 @@ function Newuser() {
 
   return (
     <div className="newuser-page-container">
-      <Sidebar />
-
       <main className="newuser-main-content">
         <header className="newuser-header">
           <button
             type="button"
             onClick={() => navigate('/user')}
             className="btn-back-header"
-            title="ย้อนกลับไปหน้าผู้ใช้งาน"
           >
-            <i className="fas fa-arrow-left"></i>
-            <span>ย้อนกลับ</span>
+            ◀️ย้อนกลับ
           </button>
 
           <div>
-            <p className="newuser-eyebrow">User Form</p>
+            <p className="newuser-eyebrow">USER FORM</p>
             <h1>{isEditMode ? 'แก้ไขข้อมูลผู้ใช้งาน' : 'เพิ่มผู้ใช้งานใหม่'}</h1>
-            <p>{isEditMode ? 'อัปเดตข้อมูลบัญชี บทบาท สถานะ และรูปโปรไฟล์' : 'สร้างบัญชีใหม่พร้อมกำหนดบทบาทและข้อมูลติดต่อ'}</p>
+            <p>
+              {isEditMode
+                ? 'อัปเดตข้อมูลบัญชี บทบาท สถานะ และรูปโปรไฟล์'
+                : 'สร้างบัญชีใหม่พร้อมกำหนดบทบาทและข้อมูลติดต่อ'}
+            </p>
           </div>
         </header>
 
         {errorMessage && (
           <div className="newuser-alert error-alert">
-            <i className="fas fa-exclamation-circle"></i>
+            <i className="fas fa-exclamation-circle" />
             {errorMessage}
           </div>
         )}
@@ -234,7 +234,7 @@ function Newuser() {
         <section className="newuser-form-card">
           {isFetching ? (
             <div className="newuser-loading-state">
-              <i className="fas fa-spinner fa-spin"></i>
+              <i className="fas fa-spinner fa-spin" />
               กำลังโหลดข้อมูลผู้ใช้งาน...
             </div>
           ) : (
@@ -245,14 +245,18 @@ function Newuser() {
                     {previewImage ? (
                       <img src={previewImage} alt="Profile Preview" />
                     ) : (
-                      <i className="fas fa-user"></i>
+                      <i className="fas fa-user" />
                     )}
                   </div>
 
-                  <button type="button" className="newuser-btn-upload" onClick={handleUploadClick}>
-                    <i className="fas fa-cloud-upload-alt"></i>
+                  <button
+                    type="button"
+                    className="newuser-btn-upload"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
                     อัปโหลดรูปโปรไฟล์
                   </button>
+
                   <p className="upload-hint">รองรับ JPG/PNG ขนาดไม่เกิน 2MB</p>
 
                   <input
@@ -264,14 +268,19 @@ function Newuser() {
                   />
 
                   <div className="form-tip-card">
-                    <i className="fas fa-shield-alt"></i>
-                    <p>ตรวจสอบอีเมล เบอร์โทร และบทบาทก่อนบันทึก เพื่อป้องกันสิทธิ์การเข้าถึงผิดพลาด</p>
+                    <p>
+                      ตรวจสอบอีเมล เบอร์โทร และบทบาทก่อนบันทึก
+                      เพื่อป้องกันสิทธิ์การเข้าถึงผิดพลาด
+                    </p>
                   </div>
                 </aside>
 
                 <div className="newuser-fields-section">
                   <div className="form-section-title">
-                    <span><i className="fas fa-id-card"></i></span>
+                    <span>
+                      <i className="fas fa-id-card" />
+                    </span>
+
                     <div>
                       <h2>ข้อมูลบัญชี</h2>
                       <p>ข้อมูลพื้นฐานสำหรับเข้าสู่ระบบและติดต่อผู้ใช้งาน</p>
@@ -280,15 +289,21 @@ function Newuser() {
 
                   <div className="newuser-input-grid">
                     <div className="newuser-form-group full-width">
-                      <label htmlFor="role">บทบาท <span>*</span></label>
+                      <label htmlFor="role">
+                        บทบาท <span>*</span>
+                      </label>
                       {renderRoleField()}
                       {isEditMode && formData.role === 'นักเรียน' && (
-                        <small className="field-note">บัญชีนี้เป็นนักเรียน จึงไม่สามารถแก้ไขบทบาทได้</small>
+                        <small className="field-note">
+                          บัญชีนี้เป็นนักเรียน จึงไม่สามารถแก้ไขบทบาทได้
+                        </small>
                       )}
                     </div>
 
                     <div className="newuser-form-group">
-                      <label htmlFor="fullName">ชื่อ-นามสกุล <span>*</span></label>
+                      <label htmlFor="fullName">
+                        ชื่อ-นามสกุล <span>*</span>
+                      </label>
                       <input
                         type="text"
                         id="fullName"
@@ -300,7 +315,9 @@ function Newuser() {
                     </div>
 
                     <div className="newuser-form-group">
-                      <label htmlFor="username">ชื่อผู้ใช้ <span>*</span></label>
+                      <label htmlFor="username">
+                        ชื่อผู้ใช้ <span>*</span>
+                      </label>
                       <input
                         type="text"
                         id="username"
@@ -311,11 +328,12 @@ function Newuser() {
                         className={isEditMode ? 'input-disabled' : ''}
                         placeholder="username"
                       />
-                      {isEditMode && <small className="field-note">ชื่อผู้ใช้ถูกล็อกเพื่อป้องกันการซ้ำของบัญชี</small>}
                     </div>
 
                     <div className="newuser-form-group">
-                      <label htmlFor="phone">เบอร์โทรศัพท์ <span>*</span></label>
+                      <label htmlFor="phone">
+                        เบอร์โทรศัพท์ <span>*</span>
+                      </label>
                       <input
                         type="tel"
                         id="phone"
@@ -327,7 +345,9 @@ function Newuser() {
                     </div>
 
                     <div className="newuser-form-group">
-                      <label htmlFor="email">อีเมล <span>*</span></label>
+                      <label htmlFor="email">
+                        อีเมล <span>*</span>
+                      </label>
                       <input
                         type="email"
                         id="email"
@@ -340,16 +360,26 @@ function Newuser() {
                   </div>
 
                   <div className="form-section-title section-spacer">
-                    <span><i className="fas fa-key"></i></span>
+                    <span>
+                      <i className="fas fa-key" />
+                    </span>
+
                     <div>
                       <h2>ความปลอดภัยและสถานะ</h2>
-                      <p>{isEditMode ? 'เว้นรหัสผ่านว่างไว้ หากไม่ต้องการเปลี่ยนรหัสผ่านเดิม' : 'กำหนดรหัสผ่านเริ่มต้นสำหรับผู้ใช้งานใหม่'}</p>
+                      <p>
+                        {isEditMode
+                          ? 'เว้นรหัสผ่านว่างไว้ หากไม่ต้องการเปลี่ยนรหัสผ่านเดิม'
+                          : 'กำหนดรหัสผ่านเริ่มต้นสำหรับผู้ใช้งานใหม่'}
+                      </p>
                     </div>
                   </div>
 
                   <div className="newuser-input-grid">
                     <div className="newuser-form-group password-wrap">
-                      <label htmlFor="password">{isEditMode ? 'รหัสผ่านใหม่' : 'รหัสผ่าน'} {!isEditMode && <span>*</span>}</label>
+                      <label htmlFor="password">
+                        {isEditMode ? 'รหัสผ่านใหม่' : 'รหัสผ่าน'} {!isEditMode && <span>*</span>}
+                      </label>
+
                       <input
                         type={showPwd ? 'text' : 'password'}
                         id="password"
@@ -358,14 +388,26 @@ function Newuser() {
                         required={!isEditMode}
                         placeholder={isEditMode ? 'เว้นว่างหากไม่เปลี่ยน' : 'อย่างน้อย 8 ตัวอักษร'}
                       />
-                      <button type="button" className="password-toggle" onClick={() => setShowPwd((prev) => !prev)} aria-label="แสดงหรือซ่อนรหัสผ่าน">
-                        <i className={`fas ${showPwd ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+
+                      <button
+                        type="button"
+                        className="password-toggle"
+                        onClick={() => setShowPwd((prev) => !prev)}
+                        aria-label="แสดงหรือซ่อนรหัสผ่าน"
+                      >
+                        <i className={`fas ${showPwd ? 'fa-eye-slash' : 'fa-eye'}`} />
                       </button>
-                      <small className={`password-strength ${passwordStrength.className}`}>{passwordStrength.label}</small>
+
+                      <small className={`password-strength ${passwordStrength.className}`}>
+                        {passwordStrength.label}
+                      </small>
                     </div>
 
                     <div className="newuser-form-group password-wrap">
-                      <label htmlFor="confirmPassword">{isEditMode ? 'ยืนยันรหัสผ่านใหม่' : 'ยืนยันรหัสผ่าน'} {!isEditMode && <span>*</span>}</label>
+                      <label htmlFor="confirmPassword">
+                        {isEditMode ? 'ยืนยันรหัสผ่านใหม่' : 'ยืนยันรหัสผ่าน'} {!isEditMode && <span>*</span>}
+                      </label>
+
                       <input
                         type={showConfirmPwd ? 'text' : 'password'}
                         id="confirmPassword"
@@ -374,8 +416,14 @@ function Newuser() {
                         required={!isEditMode}
                         placeholder="กรอกรหัสผ่านอีกครั้ง"
                       />
-                      <button type="button" className="password-toggle" onClick={() => setShowConfirmPwd((prev) => !prev)} aria-label="แสดงหรือซ่อนยืนยันรหัสผ่าน">
-                        <i className={`fas ${showConfirmPwd ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+
+                      <button
+                        type="button"
+                        className="password-toggle"
+                        onClick={() => setShowConfirmPwd((prev) => !prev)}
+                        aria-label="แสดงหรือซ่อนยืนยันรหัสผ่าน"
+                      >
+                        <i className={`fas ${showConfirmPwd ? 'fa-eye-slash' : 'fa-eye'}`} />
                       </button>
                     </div>
 
@@ -399,15 +447,20 @@ function Newuser() {
                       onChange={handleInputChange}
                       rows="4"
                       placeholder="เช่น หมายเหตุเกี่ยวกับสิทธิ์การใช้งาน ตารางสอน หรือข้อมูลที่ทีมแอดมินควรรู้"
-                    ></textarea>
+                    />
                   </div>
 
                   <div className="newuser-form-actions">
                     <button type="submit" className="btn-save" disabled={isLoading}>
-                      <i className={`fas ${isLoading ? 'fa-spinner fa-spin' : 'fa-check'}`}></i>
                       {isLoading ? 'กำลังบันทึก...' : 'บันทึกข้อมูล'}
                     </button>
-                    <button type="button" className="btn-cancel" onClick={() => navigate('/user')} disabled={isLoading}>
+
+                    <button
+                      type="button"
+                      className="btn-cancel"
+                      onClick={() => navigate('/user')}
+                      disabled={isLoading}
+                    >
                       ยกเลิก
                     </button>
                   </div>

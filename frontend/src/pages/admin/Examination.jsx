@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import './Examination.css';
 import { useNavigate } from 'react-router-dom';
-import Sidebar from '../../components/Sidebar.jsx';
+import AdminLayout from '../../Layout/AdminLayout';
 
 const institutions = [
   {
@@ -76,10 +76,34 @@ const statCards = [
 ];
 
 const activities = [
-  { title: 'เพิ่มสถาบันใหม่', desc: 'โรงเรียนราชวินิตบางแก้ว', time: '22 พ.ค. 2567 11:20 น.', icon: '🏫', tone: 'green' },
-  { title: 'แก้ไขข้อมูลสถาบัน', desc: 'โรงเรียนสวนกุหลาบวิทยาลัย', time: '22 พ.ค. 2567 10:30 น.', icon: '✏️', tone: 'blue' },
-  { title: 'รอการตรวจสอบ', desc: 'โรงเรียนหาดใหญ่วิทยาลัย', time: '18 พ.ค. 2567 14:05 น.', icon: '⏱️', tone: 'orange' },
-  { title: 'อนุมัติสถาบัน', desc: 'วิทยาลัยเทคนิคระยอง', time: '17 พ.ค. 2567 09:15 น.', icon: '✅', tone: 'green' },
+  {
+    title: 'เพิ่มสถาบันใหม่',
+    desc: 'โรงเรียนราชวินิตบางแก้ว',
+    time: '22 พ.ค. 2567 11:20 น.',
+    icon: '🏫',
+    tone: 'green',
+  },
+  {
+    title: 'แก้ไขข้อมูลสถาบัน',
+    desc: 'โรงเรียนสวนกุหลาบวิทยาลัย',
+    time: '22 พ.ค. 2567 10:30 น.',
+    icon: '✏️',
+    tone: 'blue',
+  },
+  {
+    title: 'รอการตรวจสอบ',
+    desc: 'โรงเรียนหาดใหญ่วิทยาลัย',
+    time: '18 พ.ค. 2567 14:05 น.',
+    icon: '⏱️',
+    tone: 'orange',
+  },
+  {
+    title: 'อนุมัติสถาบัน',
+    desc: 'วิทยาลัยเทคนิคระยอง',
+    time: '17 พ.ค. 2567 09:15 น.',
+    icon: '✅',
+    tone: 'green',
+  },
 ];
 
 const SelectField = ({ label, value, options, onChange }) => (
@@ -96,6 +120,8 @@ const SelectField = ({ label, value, options, onChange }) => (
 );
 
 export default function AdminInstitutionDashboard() {
+  const navigate = useNavigate();
+
   const [filters, setFilters] = useState({
     academicYear: '2567',
     province: 'ทั้งหมด',
@@ -112,9 +138,15 @@ export default function AdminInstitutionDashboard() {
         !keyword ||
         item.id.toLowerCase().includes(keyword) ||
         item.name.toLowerCase().includes(keyword);
-      const matchesProvince = filters.province === 'ทั้งหมด' || item.province === filters.province;
-      const matchesType = filters.type === 'ทั้งหมด' || item.type === filters.type;
-      const matchesExamType = filters.examType === 'ทั้งหมด' || item.examType === filters.examType;
+
+      const matchesProvince =
+        filters.province === 'ทั้งหมด' || item.province === filters.province;
+
+      const matchesType =
+        filters.type === 'ทั้งหมด' || item.type === filters.type;
+
+      const matchesExamType =
+        filters.examType === 'ทั้งหมด' || item.examType === filters.examType;
 
       return matchesKeyword && matchesProvince && matchesType && matchesExamType;
     });
@@ -133,222 +165,240 @@ export default function AdminInstitutionDashboard() {
       keyword: '',
     });
   };
-  const navigate = useNavigate();
 
   return (
-     <div className="container" style={{ display: 'flex', minHeight: '100vh', backgroundColor: '#f8fafc' }}>
-      
-      <Sidebar />
-      <aside className="sidebar">
-        <div className="brand">
-          <div className="brand-emblem">⚜</div>
-          <div>
-            <strong>ระบบจัดการข้อมูล</strong>
-            <span>สถาบันที่จัดสอบ</span>
-          </div>
-        </div>
-
-        <nav className="sidebar-menu" aria-label="เมนูหลัก">
-          <a href="#overview">⌂ <span>ภาพรวม</span></a>
-          <a href="#institutions" className="active">🏛 <span>ข้อมูลสถาบัน</span></a>
-          <a href="#applicants">👥 <span>ผู้สมัคร</span></a>
-          <a href="#reports">▥ <span>รายงาน</span></a>
-          <a href="#settings">⚙ <span>ตั้งค่า</span></a>
-        </nav>
-
-        <div className="sidebar-footer">
-          <div className="footer-emblem">♛</div>
-          <div>
-            <strong>กระทรวงศึกษาธิการ</strong>
-            <span>© 2024 สงวนลิขสิทธิ์</span>
-          </div>
-        </div>
-      </aside>
-
-      <main className="dashboard-main">
-        <header className="topbar">
-          <button className="icon-button" aria-label="เปิดเมนู">☰</button>
-          <div className="topbar-actions">
-            <button className="notification-button" aria-label="การแจ้งเตือน">🔔<span>3</span></button>
-            <button className="icon-button" aria-label="ช่วยเหลือ">?</button>
-            <div className="profile-card">
-              <div className="avatar">👤</div>
-              <div>
-                <strong>ผู้ดูแลระบบ</strong>
-                <span>ผู้ดูแลระบบหลัก</span>
-              </div>
-              <span>⌄</span>
-            </div>
-          </div>
-        </header>
-
-        <section className="content-grid">
-          <div className="primary-column">
-            <div className="page-heading">
-              <div>
-                <h1>แดชบอร์ดจัดการข้อมูลสถาบันที่จัดสอบ</h1>
-                <p>ระบบเตรียมพร้อมสำหรับการรองรับข้อมูลจากฐานข้อมูลในอนาคต</p>
-              </div>
-              <div className="heading-actions">
-                <button
-  type="button"
-  className="primary-button"
-  onClick={() => navigate('/add-examination')}
->
-  + เพิ่มสถาบัน
-</button>
-          
-              </div>
+    <AdminLayout>
+      <section className="content-grid">
+        <div className="primary-column">
+          <div className="page-heading">
+            <div>
+              <h1>แดชบอร์ดจัดการข้อมูลสถาบันที่จัดสอบ</h1>
+              <p>ระบบเตรียมพร้อมสำหรับการรองรับข้อมูลจากฐานข้อมูลในอนาคต</p>
             </div>
 
-            <div className="stats-grid">
-              {statCards.map((card) => (
-                <article className="stat-card" key={card.label}>
-                  <div className={`stat-icon ${card.tone}`}>{card.icon}</div>
-                  <div className="stat-content">
-                    <p>{card.label}</p>
-                    <h2>{card.value}</h2>
-                    <a href="#details">ดูรายละเอียด ›</a>
+            <div className="heading-actions">
+              <button
+                type="button"
+                className="primary-button"
+                onClick={() => navigate('/add-examination')}
+              >
+                + เพิ่มสถาบัน
+              </button>
+            </div>
+          </div>
+
+          <div className="stats-grid">
+            {statCards.map((card) => (
+              <article className="stat-card" key={card.label}>
+                <div className={`stat-icon ${card.tone}`}>{card.icon}</div>
+                <div className="stat-content">
+                  <p>{card.label}</p>
+                  <h2>{card.value}</h2>
+                  <a href="#details">ดูรายละเอียด ›</a>
+                </div>
+              </article>
+            ))}
+          </div>
+
+          <section className="filter-panel" aria-label="ตัวกรองข้อมูลสถาบัน">
+            <div className="filter-grid">
+              <SelectField
+                label="ปีการศึกษา"
+                value={filters.academicYear}
+                options={['2567', '2566', '2565']}
+                onChange={(value) => updateFilter('academicYear', value)}
+              />
+
+              <SelectField
+                label="จังหวัด"
+                value={filters.province}
+                options={[
+                  'ทั้งหมด',
+                  'กรุงเทพมหานคร',
+                  'เชียงใหม่',
+                  'นครปฐม',
+                  'สงขลา',
+                  'ชลบุรี',
+                  'อุดรธานี',
+                  'นนทบุรี',
+                ]}
+                onChange={(value) => updateFilter('province', value)}
+              />
+
+              <SelectField
+                label="ประเภทสถาบัน"
+                value={filters.type}
+                options={[
+                  'ทั้งหมด',
+                  'โรงเรียนมัธยมศึกษา',
+                  'โรงเรียนวิทยาศาสตร์',
+                  'อาชีวศึกษา',
+                ]}
+                onChange={(value) => updateFilter('type', value)}
+              />
+
+              <SelectField
+                label="รูปแบบการสอบ"
+                value={filters.examType}
+                options={['ทั้งหมด', 'TCAS', 'Portfolio', 'Admission', 'โควตา']}
+                onChange={(value) => updateFilter('examType', value)}
+              />
+            </div>
+
+            <div className="search-row">
+              <div className="search-input">
+                <span>⌕</span>
+                <input
+                  value={filters.keyword}
+                  onChange={(event) => updateFilter('keyword', event.target.value)}
+                  placeholder="ค้นหาชื่อสถาบัน / รหัสสถาบัน"
+                />
+              </div>
+
+              <button type="button" className="primary-button">
+                ค้นหา
+              </button>
+
+              <button
+                type="button"
+                className="secondary-button"
+                onClick={resetFilters}
+              >
+                รีเซ็ต
+              </button>
+            </div>
+          </section>
+
+          <section className="table-card">
+            <div className="table-scroll">
+              <table>
+                <thead>
+                  <tr>
+                    <th>รหัสสถาบัน</th>
+                    <th>ชื่อสถาบัน</th>
+                    <th>ประเภท</th>
+                    <th>จังหวัด</th>
+                    <th>รูปแบบการสอบ</th>
+                    <th>อัปเดตล่าสุด</th>
+                    <th>จัดการ</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  {filteredInstitutions.map((institution) => (
+                    <tr key={institution.id}>
+                      <td className="mono">{institution.id}</td>
+                      <td className="name-cell">{institution.name}</td>
+                      <td>{institution.type}</td>
+                      <td>{institution.province}</td>
+                      <td>{institution.examType}</td>
+                      <td>{institution.lastUpdated}</td>
+                      <td>
+                        <div className="table-actions">
+                          <button type="button" title="ดูข้อมูล">
+                            👁
+                          </button>
+                          <button type="button" title="แก้ไข">
+                            ✎
+                          </button>
+                          <button type="button" title="ลบ" className="danger">
+                            🗑
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="table-footer">
+              <span>
+                แสดง {filteredInstitutions.length ? 1 : 0} ถึง{' '}
+                {filteredInstitutions.length} จาก 1,248 รายการ
+              </span>
+
+              <div className="pagination">
+                <select aria-label="จำนวนรายการต่อหน้า">
+                  <option>10 / หน้า</option>
+                  <option>25 / หน้า</option>
+                  <option>50 / หน้า</option>
+                </select>
+
+                <button type="button">‹</button>
+                <button type="button" className="current">
+                  1
+                </button>
+                <button type="button">2</button>
+                <button type="button">3</button>
+                <button type="button">›</button>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <aside className="insight-column">
+          <section className="chart-card">
+            <h3>สถิติจำแนกตามประเภทสถาบัน</h3>
+
+            <div
+              className="donut-chart"
+              aria-label="แผนภูมิวงกลมจำแนกตามประเภทสถาบัน"
+            >
+              <div className="donut-center">
+                <span>รวมทั้งสิ้น</span>
+                <strong>1,248</strong>
+                <span>สถาบัน</span>
+              </div>
+            </div>
+
+            <ul className="legend-list">
+              <li>
+                <span className="dot blue" />
+                โรงเรียนมัธยมศึกษา <strong>856</strong>
+              </li>
+              <li>
+                <span className="dot green" />
+                อาชีวศึกษา <strong>248</strong>
+              </li>
+              <li>
+                <span className="dot orange" />
+                โรงเรียนวิทยาศาสตร์ <strong>72</strong>
+              </li>
+              <li>
+                <span className="dot purple" />
+                อื่น ๆ <strong>72</strong>
+              </li>
+            </ul>
+          </section>
+
+          <section className="activity-card">
+            <div className="card-title-row">
+              <h3>การอัปเดตล่าสุด</h3>
+              <a href="#all">ดูทั้งหมด</a>
+            </div>
+
+            <div className="activity-list">
+              {activities.map((activity) => (
+                <article
+                  className="activity-item"
+                  key={`${activity.title}-${activity.time}`}
+                >
+                  <div className={`activity-icon ${activity.tone}`}>
+                    {activity.icon}
+                  </div>
+
+                  <div>
+                    <strong>{activity.title}</strong>
+                    <p>{activity.desc}</p>
+                    <span>{activity.time}</span>
                   </div>
                 </article>
               ))}
             </div>
-
-            <section className="filter-panel" aria-label="ตัวกรองข้อมูลสถาบัน">
-              <div className="filter-grid">
-                <SelectField
-                  label="ปีการศึกษา"
-                  value={filters.academicYear}
-                  options={['2567', '2566', '2565']}
-                  onChange={(value) => updateFilter('academicYear', value)}
-                />
-                <SelectField
-                  label="จังหวัด"
-                  value={filters.province}
-                  options={['ทั้งหมด', 'กรุงเทพมหานคร', 'เชียงใหม่', 'นครปฐม', 'สงขลา', 'ชลบุรี', 'อุดรธานี', 'นนทบุรี']}
-                  onChange={(value) => updateFilter('province', value)}
-                />
-                <SelectField
-                  label="ประเภทสถาบัน"
-                  value={filters.type}
-                  options={['ทั้งหมด', 'โรงเรียนมัธยมศึกษา', 'โรงเรียนวิทยาศาสตร์', 'อาชีวศึกษา']}
-                  onChange={(value) => updateFilter('type', value)}
-                />
-                <SelectField
-                  label="รูปแบบการสอบ"
-                  value={filters.examType}
-                  options={['ทั้งหมด', 'TCAS', 'Portfolio', 'Admission', 'โควตา']}
-                  onChange={(value) => updateFilter('examType', value)}
-                />
-              </div>
-
-              <div className="search-row">
-                <div className="search-input">
-                  <span>⌕</span>
-                  <input
-                    value={filters.keyword}
-                    onChange={(event) => updateFilter('keyword', event.target.value)}
-                    placeholder="ค้นหาชื่อสถาบัน / รหัสสถาบัน"
-                  />
-                </div>
-                <button className="primary-button">ค้นหา</button>
-                <button className="secondary-button" onClick={resetFilters}>รีเซ็ต</button>
-              </div>
-            </section>
-
-            <section className="table-card">
-              <div className="table-scroll">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>รหัสสถาบัน</th>
-                      <th>ชื่อสถาบัน</th>
-                      <th>ประเภท</th>
-                      <th>จังหวัด</th>
-                      <th>รูปแบบการสอบ</th>
-                      <th>อัปเดตล่าสุด</th>
-                      <th>จัดการ</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {filteredInstitutions.map((institution) => (
-                      <tr key={institution.id}>
-                        <td className="mono">{institution.id}</td>
-                        <td className="name-cell">{institution.name}</td>
-                        <td>{institution.type}</td>
-                        <td>{institution.province}</td>
-                        <td>{institution.examType}</td>
-                        <td>{institution.lastUpdated}</td>
-                        <td>
-                          <div className="table-actions">
-                            <button title="ดูข้อมูล">👁</button>
-                            <button title="แก้ไข">✎</button>
-                            <button title="ลบ" className="danger">🗑</button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              <div className="table-footer">
-                <span>แสดง {filteredInstitutions.length ? 1 : 0} ถึง {filteredInstitutions.length} จาก 1,248 รายการ</span>
-                <div className="pagination">
-                  <select aria-label="จำนวนรายการต่อหน้า">
-                    <option>10 / หน้า</option>
-                    <option>25 / หน้า</option>
-                    <option>50 / หน้า</option>
-                  </select>
-                  <button>‹</button>
-                  <button className="current">1</button>
-                  <button>2</button>
-                  <button>3</button>
-                  <button>›</button>
-                </div>
-              </div>
-            </section>
-          </div>
-
-          <aside className="insight-column">
-            <section className="chart-card">
-              <h3>สถิติจำแนกตามประเภทสถาบัน</h3>
-              <div className="donut-chart" aria-label="แผนภูมิวงกลมจำแนกตามประเภทสถาบัน">
-                <div className="donut-center">
-                  <span>รวมทั้งสิ้น</span>
-                  <strong>1,248</strong>
-                  <span>สถาบัน</span>
-                </div>
-              </div>
-              <ul className="legend-list">
-                <li><span className="dot blue" />โรงเรียนมัธยมศึกษา <strong>856</strong></li>
-                <li><span className="dot green" />อาชีวศึกษา <strong>248</strong></li>
-                <li><span className="dot orange" />โรงเรียนวิทยาศาสตร์ <strong>72</strong></li>
-                <li><span className="dot purple" />อื่น ๆ <strong>72</strong></li>
-              </ul>
-            </section>
-
-            <section className="activity-card">
-              <div className="card-title-row">
-                <h3>การอัปเดตล่าสุด</h3>
-                <a href="#all">ดูทั้งหมด</a>
-              </div>
-              <div className="activity-list">
-                {activities.map((activity) => (
-                  <article className="activity-item" key={`${activity.title}-${activity.time}`}>
-                    <div className={`activity-icon ${activity.tone}`}>{activity.icon}</div>
-                    <div>
-                      <strong>{activity.title}</strong>
-                      <p>{activity.desc}</p>
-                      <span>{activity.time}</span>
-                    </div>
-                  </article>
-                ))}
-              </div>
-            </section>
-          </aside>
-        </section>
-      </main>
-    </div>
+          </section>
+        </aside>
+      </section>
+    </AdminLayout>
   );
 }

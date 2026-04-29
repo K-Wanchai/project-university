@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import Sidebar from '../../components/Sidebar';
-import Header from '../../components/Header';
+import AdminLayout from '../../Layout/AdminLayout';
 import './User.css';
 
 import apiService from '../../services/apiService';
@@ -81,7 +80,7 @@ function User() {
       total: users.length,
       active,
       suspended,
-      students
+      students,
     };
   }, [users]);
 
@@ -92,7 +91,9 @@ function User() {
   };
 
   const renderAvatar = (user) => {
-    const displayName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username || 'User';
+    const displayName =
+      `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.username || 'User';
+
     const imageUrl = user.profileImage
       ? `${SERVER_URL}/uploads/profiles/${user.profileImage}`
       : `https://ui-avatars.com/api/?name=${encodeURIComponent(displayName)}&background=0ea5e9&color=fff`;
@@ -101,185 +102,232 @@ function User() {
   };
 
   return (
-    <div className="user-page-container">
-      <Sidebar />
+    <AdminLayout>
+      <section className="user-hero-card">
+        <div>
+          <p className="eyebrow">User Management</p>
+          <h2>จัดการบัญชีผู้ใช้งานทั้งหมด</h2>
+          <p>ค้นหา กรองบทบาท ตรวจสอบสถานะ และเพิ่มผู้ใช้งานใหม่ได้จากหน้านี้</p>
+        </div>
 
-      <main className="user-main-content">
-        <Header title="ข้อมูลผู้ใช้งาน" />
+        <Link to="/newuser" className="btn-add user-hero-action">
+          <i className="fas fa-plus" />
+          เพิ่มผู้ใช้งานใหม่
+        </Link>
+      </section>
 
-        <section className="user-hero-card">
+      <section className="user-summary-grid" aria-label="สรุปข้อมูลผู้ใช้งาน">
+        <div className="summary-card">
+          <span className="summary-icon summary-total">
+            <i className="fas fa-users" />
+          </span>
           <div>
-            <p className="eyebrow">User Management</p>
-            <h2>จัดการบัญชีผู้ใช้งานทั้งหมด</h2>
-            <p>ค้นหา กรองบทบาท ตรวจสอบสถานะ และเพิ่มผู้ใช้งานใหม่ได้จากหน้านี้</p>
+            <p>ผู้ใช้ทั้งหมด</p>
+            <strong>{summary.total}</strong>
           </div>
-          <Link to="/newuser" className="btn-add user-hero-action">
-            <i className="fas fa-plus"></i>
-            เพิ่มผู้ใช้งานใหม่
-          </Link>
-        </section>
+        </div>
 
-        <section className="user-summary-grid" aria-label="สรุปข้อมูลผู้ใช้งาน">
-          <div className="summary-card">
-            <span className="summary-icon summary-total"><i className="fas fa-users"></i></span>
-            <div>
-              <p>ผู้ใช้ทั้งหมด</p>
-              <strong>{summary.total}</strong>
-            </div>
+        <div className="summary-card">
+          <span className="summary-icon summary-active">
+            <i className="fas fa-user-check" />
+          </span>
+          <div>
+            <p>ใช้งานอยู่</p>
+            <strong>{summary.active}</strong>
           </div>
-          <div className="summary-card">
-            <span className="summary-icon summary-active"><i className="fas fa-user-check"></i></span>
-            <div>
-              <p>ใช้งานอยู่</p>
-              <strong>{summary.active}</strong>
-            </div>
-          </div>
-          <div className="summary-card">
-            <span className="summary-icon summary-student"><i className="fas fa-user-graduate"></i></span>
-            <div>
-              <p>นักเรียน</p>
-              <strong>{summary.students}</strong>
-            </div>
-          </div>
-          <div className="summary-card">
-            <span className="summary-icon summary-suspended"><i className="fas fa-user-slash"></i></span>
-            <div>
-              <p>ถูกระงับ</p>
-              <strong>{summary.suspended}</strong>
-            </div>
-          </div>
-        </section>
+        </div>
 
-        <section className="table-container">
-          <div className="table-toolbar">
-            <div>
-              <h3>รายการผู้ใช้งาน</h3>
-              <p>แสดง {filteredUsers.length} จาก {users.length} รายการ</p>
-            </div>
+        <div className="summary-card">
+          <span className="summary-icon summary-student">
+            <i className="fas fa-user-graduate" />
+          </span>
+          <div>
+            <p>นักเรียน</p>
+            <strong>{summary.students}</strong>
+          </div>
+        </div>
 
-            <button type="button" className="btn-refresh" onClick={loadUsersTable} disabled={isLoading}>
-              <i className="fas fa-sync-alt"></i>
-              รีเฟรช
+        <div className="summary-card">
+          <span className="summary-icon summary-suspended">
+            <i className="fas fa-user-slash" />
+          </span>
+          <div>
+            <p>ถูกระงับ</p>
+            <strong>{summary.suspended}</strong>
+          </div>
+        </div>
+      </section>
+
+      <section className="table-container">
+        <div className="table-toolbar">
+          <div>
+            <h3>รายการผู้ใช้งาน</h3>
+            <p>
+              แสดง {filteredUsers.length} จาก {users.length} รายการ
+            </p>
+          </div>
+
+          <button
+            type="button"
+            className="btn-refresh"
+            onClick={loadUsersTable}
+            disabled={isLoading}
+          >
+            <i className="fas fa-sync-alt" />
+            รีเฟรช
+          </button>
+        </div>
+
+        <div className="table-controls">
+          <label className="search-box" aria-label="ค้นหาผู้ใช้งาน">
+            <i className="fas fa-search" />
+            <input
+              type="text"
+              placeholder="ค้นหาชื่อ ผู้ใช้ อีเมล หรือเบอร์โทร..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </label>
+
+          <select
+            className="filter-select"
+            value={roleFilter}
+            onChange={(e) => setRoleFilter(e.target.value)}
+          >
+            <option value="">บทบาททั้งหมด</option>
+            {ROLE_OPTIONS.map((role) => (
+              <option key={role} value={role}>
+                {role}
+              </option>
+            ))}
+          </select>
+
+          <select
+            className="filter-select"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            <option value="">สถานะทั้งหมด</option>
+            {STATUS_OPTIONS.map((status) => (
+              <option key={status} value={status}>
+                {status}
+              </option>
+            ))}
+          </select>
+
+          {(searchTerm || roleFilter || statusFilter) && (
+            <button type="button" className="btn-clear" onClick={clearFilters}>
+              ล้างตัวกรอง
             </button>
-          </div>
-
-          <div className="table-controls">
-            <label className="search-box" aria-label="ค้นหาผู้ใช้งาน">
-              <i className="fas fa-search"></i>
-              <input
-                type="text"
-                placeholder="ค้นหาชื่อ ผู้ใช้ อีเมล หรือเบอร์โทร..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-              />
-            </label>
-
-            <select className="filter-select" value={roleFilter} onChange={(e) => setRoleFilter(e.target.value)}>
-              <option value="">บทบาททั้งหมด</option>
-              {ROLE_OPTIONS.map((role) => (
-                <option key={role} value={role}>{role}</option>
-              ))}
-            </select>
-
-            <select className="filter-select" value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-              <option value="">สถานะทั้งหมด</option>
-              {STATUS_OPTIONS.map((status) => (
-                <option key={status} value={status}>{status}</option>
-              ))}
-            </select>
-
-            {(searchTerm || roleFilter || statusFilter) && (
-              <button type="button" className="btn-clear" onClick={clearFilters}>
-                ล้างตัวกรอง
-              </button>
-            )}
-          </div>
-
-          {errorMessage && (
-            <div className="user-alert error-alert">
-              <i className="fas fa-exclamation-circle"></i>
-              {errorMessage}
-            </div>
           )}
+        </div>
 
-          <div className="table-scroll-wrapper">
-            <table className="user-table">
-              <thead>
+        {errorMessage && (
+          <div className="user-alert error-alert">
+            <i className="fas fa-exclamation-circle" />
+            {errorMessage}
+          </div>
+        )}
+
+        <div className="table-scroll-wrapper">
+          <table className="user-table">
+            <thead>
+              <tr>
+                <th>ผู้ใช้งาน</th>
+                <th>ชื่อผู้ใช้</th>
+                <th>อีเมล</th>
+                <th>เบอร์โทร</th>
+                <th>บทบาท</th>
+                <th>สถานะ</th>
+                <th className="text-right">การจัดการ</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              {isLoading ? (
                 <tr>
-                  <th>ผู้ใช้งาน</th>
-                  <th>ชื่อผู้ใช้</th>
-                  <th>อีเมล</th>
-                  <th>เบอร์โทร</th>
-                  <th>บทบาท</th>
-                  <th>สถานะ</th>
-                  <th className="text-right">การจัดการ</th>
+                  <td colSpan="7" className="empty-state">
+                    <i className="fas fa-spinner fa-spin" />
+                    กำลังโหลดข้อมูล...
+                  </td>
                 </tr>
-              </thead>
-              <tbody>
-                {isLoading ? (
-                  <tr>
-                    <td colSpan="7" className="empty-state">
-                      <i className="fas fa-spinner fa-spin"></i>
-                      กำลังโหลดข้อมูล...
-                    </td>
-                  </tr>
-                ) : filteredUsers.length === 0 ? (
-                  <tr>
-                    <td colSpan="7" className="empty-state">
-                      <i className="fas fa-user-slash"></i>
-                      ไม่พบข้อมูลผู้ใช้งานตามเงื่อนไขที่ค้นหา
-                    </td>
-                  </tr>
-                ) : (
-                  filteredUsers.map((user) => {
-                    const statusText = getStatusText(user.status);
-                    const statusClass = statusText === 'ระงับการใช้งาน'
+              ) : filteredUsers.length === 0 ? (
+                <tr>
+                  <td colSpan="7" className="empty-state">
+                    <i className="fas fa-user-slash" />
+                    ไม่พบข้อมูลผู้ใช้งานตามเงื่อนไขที่ค้นหา
+                  </td>
+                </tr>
+              ) : (
+                filteredUsers.map((user) => {
+                  const statusText = getStatusText(user.status);
+                  const statusClass =
+                    statusText === 'ระงับการใช้งาน'
                       ? 'status-suspended'
                       : statusText === 'รอตรวจสอบ'
                         ? 'status-pending'
                         : 'status-active';
-                    const fullName = `${user.firstName || ''} ${user.lastName || ''}`.trim() || '-';
 
-                    return (
-                      <tr key={user.id}>
-                        <td>
-                          <div className="user-profile-cell">
-                            {renderAvatar(user)}
-                            <div>
-                              <strong>{fullName}</strong>
-                              <span>{user.remarks || 'ไม่มีบันทึกเพิ่มเติม'}</span>
-                            </div>
+                  const fullName =
+                    `${user.firstName || ''} ${user.lastName || ''}`.trim() || '-';
+
+                  return (
+                    <tr key={user.id}>
+                      <td>
+                        <div className="user-profile-cell">
+                          {renderAvatar(user)}
+                          <div>
+                            <strong>{fullName}</strong>
+                            <span>{user.remarks || 'ไม่มีบันทึกเพิ่มเติม'}</span>
                           </div>
-                        </td>
-                        <td>{user.username || '-'}</td>
-                        <td>{user.email || '-'}</td>
-                        <td>{user.phoneNumber || '-'}</td>
-                        <td><span className="role-pill">{user.role || '-'}</span></td>
-                        <td>
-                          <span className={`status-badge ${statusClass}`}>{statusText}</span>
-                        </td>
-                        <td>
-                          <div className="action-buttons">
-                            <Link to={`/newuser?id=${user.id}`} className="btn-edit" title="แก้ไขข้อมูล">
-                              <i className="fas fa-edit"></i>
-                              แก้ไข
-                            </Link>
-                            <button type="button" onClick={() => deleteUser(user.id)} className="btn-delete" title="ลบผู้ใช้งาน">
-                              <i className="fas fa-trash"></i>
-                              ลบ
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
-        </section>
-      </main>
-    </div>
+                        </div>
+                      </td>
+
+                      <td>{user.username || '-'}</td>
+                      <td>{user.email || '-'}</td>
+                      <td>{user.phoneNumber || '-'}</td>
+
+                      <td>
+                        <span className="role-pill">{user.role || '-'}</span>
+                      </td>
+
+                      <td>
+                        <span className={`status-badge ${statusClass}`}>
+                          {statusText}
+                        </span>
+                      </td>
+
+                      <td>
+                        <div className="action-buttons">
+                          <Link
+                            to={`/newuser?id=${user.id}`}
+                            className="btn-edit"
+                            title="แก้ไขข้อมูล"
+                          >
+                            <i className="fas fa-edit" />
+                            แก้ไข
+                          </Link>
+
+                          <button
+                            type="button"
+                            onClick={() => deleteUser(user.id)}
+                            className="btn-delete"
+                            title="ลบผู้ใช้งาน"
+                          >
+                            <i className="fas fa-trash" />
+                            ลบ
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </AdminLayout>
   );
 }
 
