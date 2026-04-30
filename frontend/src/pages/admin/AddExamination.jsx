@@ -1,7 +1,8 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ThaiAddressSelect } from 'thai-address-select';
 import Sidebar from '../../components/Sidebar';
-import apiService from "../../services/apiService";
+import apiService from '../../services/apiService';
 import {
   FaArrowLeft,
   FaSave,
@@ -41,8 +42,54 @@ const initialFormData = {
 
 const AddExamination = () => {
   const navigate = useNavigate();
+
+  const provinceRef = useRef(null);
+  const districtRef = useRef(null);
+  const subDistrictRef = useRef(null);
+  const zipcodeRef = useRef(null);
+
   const [imagePreview, setImagePreview] = useState(null);
   const [formData, setFormData] = useState(initialFormData);
+
+  useEffect(() => {
+    if (!provinceRef.current || !districtRef.current || !subDistrictRef.current) return;
+
+    const thaiAddress = new ThaiAddressSelect({
+      provinceEl: provinceRef.current,
+      districtEl: districtRef.current,
+      subDistrictEl: subDistrictRef.current,
+      zipCodeEl: zipcodeRef.current,
+      placeholder: {
+        province: 'เลือกจังหวัด',
+        district: 'เลือกอำเภอ / เขต',
+        subDistrict: 'เลือกตำบล / แขวง',
+      },
+    });
+
+    const updateAddress = () => {
+      setFormData((prev) => ({
+        ...prev,
+        province: provinceRef.current?.value || '',
+        district: districtRef.current?.value || '',
+        subDistrict: subDistrictRef.current?.value || '',
+        zipcode: zipcodeRef.current?.value || '',
+      }));
+    };
+
+    provinceRef.current.addEventListener('change', updateAddress);
+    districtRef.current.addEventListener('change', updateAddress);
+    subDistrictRef.current.addEventListener('change', updateAddress);
+
+    return () => {
+      provinceRef.current?.removeEventListener('change', updateAddress);
+      districtRef.current?.removeEventListener('change', updateAddress);
+      subDistrictRef.current?.removeEventListener('change', updateAddress);
+
+      if (thaiAddress?.destroy) {
+        thaiAddress.destroy();
+      }
+    };
+  }, []);
 
   const completedFields = useMemo(() => {
     const requiredKeys = ['nameTh', 'code', 'province', 'contactName', 'phone'];
@@ -80,52 +127,58 @@ const AddExamination = () => {
   const handleReset = () => {
     setFormData(initialFormData);
     setImagePreview(null);
+
+    if (provinceRef.current) provinceRef.current.value = '';
+    if (districtRef.current) districtRef.current.value = '';
+    if (subDistrictRef.current) subDistrictRef.current.value = '';
+    if (zipcodeRef.current) zipcodeRef.current.value = '';
   };
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  try {
-    const sendData = new FormData();
+    try {
+      const sendData = new FormData();
 
-    sendData.append(
-      "data",
-      JSON.stringify({
-        nameTh: formData.nameTh,
-        nameEn: formData.nameEn,
-        code: formData.code,
-        type: formData.type,
-        status: formData.status,
+      sendData.append(
+        'data',
+        JSON.stringify({
+          nameTh: formData.nameTh,
+          nameEn: formData.nameEn,
+          code: formData.code,
+          type: formData.type,
+          status: formData.status,
 
-        address: formData.road,
-        district: formData.subDistrict,
-        amphoe: formData.district,
-        province: formData.province,
-        zipcode: formData.zipcode,
+          address: formData.road,
+          district: formData.subDistrict,
+          amphoe: formData.district,
+          province: formData.province,
+          zipcode: formData.zipcode,
 
-        contactName: formData.contactName,
-        regDate: new Date().toISOString().split("T")[0],
-        totalSeats: formData.capacity ? Number(formData.capacity) : 0,
-      })
-    );
+          contactName: formData.contactName,
+          regDate: new Date().toISOString().split('T')[0],
+          totalSeats: formData.capacity ? Number(formData.capacity) : 0,
+        })
+      );
 
-    if (formData.image) {
-      sendData.append("image", formData.image);
+      if (formData.image) {
+        sendData.append('image', formData.image);
+      }
+
+      const res = await apiService.createExamination(sendData);
+
+      if (!res.ok) {
+        throw new Error('บันทึกไม่สำเร็จ');
+      }
+
+      alert('เพิ่มข้อมูลสถาบันสอบสำเร็จ');
+      navigate('/examination');
+    } catch (err) {
+      console.error(err);
+      alert('เกิดข้อผิดพลาดในการบันทึกข้อมูล');
     }
+  };
 
-    const res = await apiService.createExamination(sendData);
-
-    if (!res.ok) {
-      throw new Error("บันทึกไม่สำเร็จ");
-    }
-
-    alert("เพิ่มข้อมูลสถาบันสอบสำเร็จ");
-    navigate("/examination");
-  } catch (err) {
-    console.error(err);
-    alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
-  }
-};
   return (
     <div className="add-exam-shell">
       <Sidebar />
@@ -254,9 +307,7 @@ const handleSubmit = async (e) => {
                     <select name="type" value={formData.type} onChange={handleChange}>
                       <option value="มหาวิทยาลัย">มหาวิทยาลัย</option>
                       <option value="โรงเรียนมัธยมศึกษา">โรงเรียนมัธยมศึกษา</option>
-                      <option value="โรงเรียนวิทยาศาสตร์">โรงเรียนวิทยาศาสตร์</option>
                       <option value="อาชีวศึกษา">อาชีวศึกษา</option>
-                      <option value="อื่น ๆ">อื่น ๆ</option>
                     </select>
                   </label>
 
@@ -267,7 +318,7 @@ const handleSubmit = async (e) => {
                       <option value="Portfolio">Portfolio</option>
                       <option value="Admission">Admission</option>
                       <option value="โควตา">โควตา</option>
-                      <option value="อื่น ๆ">อื่น ๆ</option>
+                      <option value="รอบรับตรง">รอบรับตรง</option>
                     </select>
                   </label>
 
@@ -331,48 +382,37 @@ const handleSubmit = async (e) => {
                   </label>
 
                   <label className="form-group">
-                    <span>ตำบล / แขวง</span>
-                    <input
-                      type="text"
-                      name="subDistrict"
-                      value={formData.subDistrict}
-                      onChange={handleChange}
-                      placeholder="เช่น วังบูรพาภิรมย์"
-                    />
+                    <span>จังหวัด *</span>
+                    <select ref={provinceRef} required>
+                      <option value="">เลือกจังหวัด</option>
+                    </select>
                   </label>
 
                   <label className="form-group">
                     <span>อำเภอ / เขต</span>
-                    <input
-                      type="text"
-                      name="district"
-                      value={formData.district}
-                      onChange={handleChange}
-                      placeholder="เช่น พระนคร"
-                    />
+                    <select ref={districtRef}>
+                      <option value="">เลือกอำเภอ / เขต</option>
+                    </select>
                   </label>
 
                   <label className="form-group">
-                    <span>จังหวัด *</span>
-                    <input
-                      type="text"
-                      name="province"
-                      value={formData.province}
-                      onChange={handleChange}
-                      placeholder="เช่น กรุงเทพมหานคร"
-                      required
-                    />
+                    <span>ตำบล / แขวง</span>
+                    <select ref={subDistrictRef}>
+                      <option value="">เลือกตำบล / แขวง</option>
+                    </select>
                   </label>
 
                   <label className="form-group">
                     <span>รหัสไปรษณีย์</span>
                     <input
+                      ref={zipcodeRef}
                       type="text"
                       name="zipcode"
                       value={formData.zipcode}
                       onChange={handleChange}
                       placeholder="เช่น 10200"
                       maxLength="5"
+                      readOnly
                     />
                   </label>
 
@@ -497,6 +537,18 @@ const handleSubmit = async (e) => {
                   <div>
                     <span>จังหวัด</span>
                     <strong>{formData.province || '-'}</strong>
+                  </div>
+                  <div>
+                    <span>อำเภอ / เขต</span>
+                    <strong>{formData.district || '-'}</strong>
+                  </div>
+                  <div>
+                    <span>ตำบล / แขวง</span>
+                    <strong>{formData.subDistrict || '-'}</strong>
+                  </div>
+                  <div>
+                    <span>รหัสไปรษณีย์</span>
+                    <strong>{formData.zipcode || '-'}</strong>
                   </div>
                 </div>
               </section>

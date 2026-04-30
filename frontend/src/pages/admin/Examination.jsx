@@ -1,110 +1,8 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import './Examination.css';
 import { useNavigate } from 'react-router-dom';
 import AdminLayout from '../../Layout/AdminLayout';
-
-const institutions = [
-  {
-    id: 'INST0001',
-    name: 'โรงเรียนสวนกุหลาบวิทยาลัย',
-    type: 'โรงเรียนมัธยมศึกษา',
-    province: 'กรุงเทพมหานคร',
-    examType: 'TCAS',
-    lastUpdated: '22 พ.ค. 2567 10:30 น.',
-  },
-  {
-    id: 'INST0002',
-    name: 'โรงเรียนมหิดลวิทยานุสรณ์',
-    type: 'โรงเรียนวิทยาศาสตร์',
-    province: 'นครปฐม',
-    examType: 'Portfolio',
-    lastUpdated: '21 พ.ค. 2567 15:45 น.',
-  },
-  {
-    id: 'INST0003',
-    name: 'วิทยาลัยอาชีวศึกษาธนบุรี',
-    type: 'อาชีวศึกษา',
-    province: 'กรุงเทพมหานคร',
-    examType: 'โควตา',
-    lastUpdated: '20 พ.ค. 2567 09:15 น.',
-  },
-  {
-    id: 'INST0004',
-    name: 'โรงเรียนเชียงใหม่วิทยาคม',
-    type: 'โรงเรียนมัธยมศึกษา',
-    province: 'เชียงใหม่',
-    examType: 'TCAS',
-    lastUpdated: '19 พ.ค. 2567 11:20 น.',
-  },
-  {
-    id: 'INST0005',
-    name: 'โรงเรียนหาดใหญ่วิทยาลัย',
-    type: 'โรงเรียนมัธยมศึกษา',
-    province: 'สงขลา',
-    examType: 'Admission',
-    lastUpdated: '18 พ.ค. 2567 14:05 น.',
-  },
-  {
-    id: 'INST0006',
-    name: 'วิทยาลัยเทคนิคชลบุรี',
-    type: 'อาชีวศึกษา',
-    province: 'ชลบุรี',
-    examType: 'โควตา',
-    lastUpdated: '17 พ.ค. 2567 16:40 น.',
-  },
-  {
-    id: 'INST0007',
-    name: 'โรงเรียนอุดรพิทยานุกูล',
-    type: 'โรงเรียนมัธยมศึกษา',
-    province: 'อุดรธานี',
-    examType: 'TCAS',
-    lastUpdated: '16 พ.ค. 2567 10:10 น.',
-  },
-  {
-    id: 'INST0008',
-    name: 'โรงเรียนเบญจมราชูทิศ',
-    type: 'โรงเรียนมัธยมศึกษา',
-    province: 'นนทบุรี',
-    examType: 'Portfolio',
-    lastUpdated: '15 พ.ค. 2567 13:25 น.',
-  },
-];
-
-const statCards = [
-  { label: 'สถาบันทั้งหมด', value: '1,248', icon: '🏫', tone: 'blue' },
-  { label: 'ผู้สมัครศึกษาต่อ', value: '156,789', icon: '👥', tone: 'purple' },
-];
-
-const activities = [
-  {
-    title: 'เพิ่มสถาบันใหม่',
-    desc: 'โรงเรียนราชวินิตบางแก้ว',
-    time: '22 พ.ค. 2567 11:20 น.',
-    icon: '🏫',
-    tone: 'green',
-  },
-  {
-    title: 'แก้ไขข้อมูลสถาบัน',
-    desc: 'โรงเรียนสวนกุหลาบวิทยาลัย',
-    time: '22 พ.ค. 2567 10:30 น.',
-    icon: '✏️',
-    tone: 'blue',
-  },
-  {
-    title: 'รอการตรวจสอบ',
-    desc: 'โรงเรียนหาดใหญ่วิทยาลัย',
-    time: '18 พ.ค. 2567 14:05 น.',
-    icon: '⏱️',
-    tone: 'orange',
-  },
-  {
-    title: 'อนุมัติสถาบัน',
-    desc: 'วิทยาลัยเทคนิคระยอง',
-    time: '17 พ.ค. 2567 09:15 น.',
-    icon: '✅',
-    tone: 'green',
-  },
-];
+import apiService from '../../services/apiService';
 
 const SelectField = ({ label, value, options, onChange }) => (
   <label className="filter-field">
@@ -119,16 +17,97 @@ const SelectField = ({ label, value, options, onChange }) => (
   </label>
 );
 
+const formatThaiDate = (dateValue) => {
+  if (!dateValue) return '-';
+
+  const date = new Date(dateValue);
+
+  if (Number.isNaN(date.getTime())) {
+    return '-';
+  }
+
+  return date.toLocaleString('th-TH', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+};
+
+const normalizeInstitution = (item) => ({
+  id: item.code || item.id || item._id || '-',
+  databaseId: item._id || item.id,
+  name: item.nameTh || item.name || '-',
+  type: item.type || '-',
+  province: item.province || '-',
+  examType: item.examType || '-',
+  lastUpdated: formatThaiDate(item.updatedAt || item.createdAt || item.regDate),
+});
+
 export default function AdminInstitutionDashboard() {
   const navigate = useNavigate();
 
+  const [institutions, setInstitutions] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
+
   const [filters, setFilters] = useState({
-    academicYear: '2567',
+    academicYear: 'ทั้งหมด',
     province: 'ทั้งหมด',
     type: 'ทั้งหมด',
     examType: 'ทั้งหมด',
     keyword: '',
   });
+
+const fetchInstitutions = async () => {
+  try {
+    setLoading(true);
+    setErrorMessage('');
+
+    const data = await apiService.getExaminations();
+
+    const list = Array.isArray(data)
+      ? data
+      : data.data || data.examinations || data.items || [];
+
+    setInstitutions(list.map(normalizeInstitution));
+  } catch (error) {
+    console.error(error);
+    setErrorMessage('เกิดข้อผิดพลาดในการโหลดข้อมูลจากฐานข้อมูล');
+    setInstitutions([]);
+  } finally {
+    setLoading(false);
+  }
+};
+
+  useEffect(() => {
+    fetchInstitutions();
+  }, []);
+
+  const provinceOptions = useMemo(() => {
+    const provinces = institutions
+      .map((item) => item.province)
+      .filter((province) => province && province !== '-');
+
+    return ['ทั้งหมด', ...new Set(provinces)];
+  }, [institutions]);
+
+  const typeOptions = useMemo(() => {
+    const types = institutions
+      .map((item) => item.type)
+      .filter((type) => type && type !== '-');
+
+    return ['ทั้งหมด', ...new Set(types)];
+  }, [institutions]);
+
+  const examTypeOptions = useMemo(() => {
+    const examTypes = institutions
+      .map((item) => item.examType)
+      .filter((examType) => examType && examType !== '-');
+
+    return ['ทั้งหมด', ...new Set(examTypes)];
+  }, [institutions]);
 
   const filteredInstitutions = useMemo(() => {
     const keyword = filters.keyword.trim().toLowerCase();
@@ -136,8 +115,8 @@ export default function AdminInstitutionDashboard() {
     return institutions.filter((item) => {
       const matchesKeyword =
         !keyword ||
-        item.id.toLowerCase().includes(keyword) ||
-        item.name.toLowerCase().includes(keyword);
+        String(item.id).toLowerCase().includes(keyword) ||
+        String(item.name).toLowerCase().includes(keyword);
 
       const matchesProvince =
         filters.province === 'ทั้งหมด' || item.province === filters.province;
@@ -150,7 +129,7 @@ export default function AdminInstitutionDashboard() {
 
       return matchesKeyword && matchesProvince && matchesType && matchesExamType;
     });
-  }, [filters]);
+  }, [filters, institutions]);
 
   const updateFilter = (key, value) => {
     setFilters((current) => ({ ...current, [key]: value }));
@@ -158,13 +137,15 @@ export default function AdminInstitutionDashboard() {
 
   const resetFilters = () => {
     setFilters({
-      academicYear: '2567',
+      academicYear: 'ทั้งหมด',
       province: 'ทั้งหมด',
       type: 'ทั้งหมด',
       examType: 'ทั้งหมด',
       keyword: '',
     });
   };
+
+  const totalInstitution = institutions.length;
 
   return (
     <AdminLayout>
@@ -173,7 +154,7 @@ export default function AdminInstitutionDashboard() {
           <div className="page-heading">
             <div>
               <h1>แดชบอร์ดจัดการข้อมูลสถาบันที่จัดสอบ</h1>
-              <p>ระบบเตรียมพร้อมสำหรับการรองรับข้อมูลจากฐานข้อมูลในอนาคต</p>
+              <p>แสดงข้อมูลสถาบันที่จัดสอบจากฐานข้อมูลจริง</p>
             </div>
 
             <div className="heading-actions">
@@ -188,16 +169,23 @@ export default function AdminInstitutionDashboard() {
           </div>
 
           <div className="stats-grid">
-            {statCards.map((card) => (
-              <article className="stat-card" key={card.label}>
-                <div className={`stat-icon ${card.tone}`}>{card.icon}</div>
-                <div className="stat-content">
-                  <p>{card.label}</p>
-                  <h2>{card.value}</h2>
-                  <a href="#details">ดูรายละเอียด ›</a>
-                </div>
-              </article>
-            ))}
+            <article className="stat-card">
+              <div className="stat-icon blue">🏫</div>
+              <div className="stat-content">
+                <p>สถาบันทั้งหมด</p>
+                <h2>{totalInstitution.toLocaleString('th-TH')}</h2>
+                <a href="#details">ดูรายละเอียด ›</a>
+              </div>
+            </article>
+
+            <article className="stat-card">
+              <div className="stat-icon purple">👥</div>
+              <div className="stat-content">
+                <p>รายการที่แสดงผล</p>
+                <h2>{filteredInstitutions.length.toLocaleString('th-TH')}</h2>
+                <a href="#details">ดูรายละเอียด ›</a>
+              </div>
+            </article>
           </div>
 
           <section className="filter-panel" aria-label="ตัวกรองข้อมูลสถาบัน">
@@ -205,42 +193,28 @@ export default function AdminInstitutionDashboard() {
               <SelectField
                 label="ปีการศึกษา"
                 value={filters.academicYear}
-                options={['2567', '2566', '2565']}
+                options={['ทั้งหมด', '2567', '2566', '2565']}
                 onChange={(value) => updateFilter('academicYear', value)}
               />
 
               <SelectField
                 label="จังหวัด"
                 value={filters.province}
-                options={[
-                  'ทั้งหมด',
-                  'กรุงเทพมหานคร',
-                  'เชียงใหม่',
-                  'นครปฐม',
-                  'สงขลา',
-                  'ชลบุรี',
-                  'อุดรธานี',
-                  'นนทบุรี',
-                ]}
+                options={provinceOptions}
                 onChange={(value) => updateFilter('province', value)}
               />
 
               <SelectField
                 label="ประเภทสถาบัน"
                 value={filters.type}
-                options={[
-                  'ทั้งหมด',
-                  'โรงเรียนมัธยมศึกษา',
-                  'โรงเรียนวิทยาศาสตร์',
-                  'อาชีวศึกษา',
-                ]}
+                options={typeOptions}
                 onChange={(value) => updateFilter('type', value)}
               />
 
               <SelectField
                 label="รูปแบบการสอบ"
                 value={filters.examType}
-                options={['ทั้งหมด', 'TCAS', 'Portfolio', 'Admission', 'โควตา']}
+                options={examTypeOptions}
                 onChange={(value) => updateFilter('examType', value)}
               />
             </div>
@@ -255,8 +229,8 @@ export default function AdminInstitutionDashboard() {
                 />
               </div>
 
-              <button type="button" className="primary-button">
-                ค้นหา
+              <button type="button" className="primary-button" onClick={fetchInstitutions}>
+                โหลดใหม่
               </button>
 
               <button
@@ -269,71 +243,75 @@ export default function AdminInstitutionDashboard() {
             </div>
           </section>
 
-          <section className="table-card">
-            <div className="table-scroll">
-              <table>
-                <thead>
-                  <tr>
-                    <th>รหัสสถาบัน</th>
-                    <th>ชื่อสถาบัน</th>
-                    <th>ประเภท</th>
-                    <th>จังหวัด</th>
-                    <th>รูปแบบการสอบ</th>
-                    <th>อัปเดตล่าสุด</th>
-                    <th>จัดการ</th>
-                  </tr>
-                </thead>
-
-                <tbody>
-                  {filteredInstitutions.map((institution) => (
-                    <tr key={institution.id}>
-                      <td className="mono">{institution.id}</td>
-                      <td className="name-cell">{institution.name}</td>
-                      <td>{institution.type}</td>
-                      <td>{institution.province}</td>
-                      <td>{institution.examType}</td>
-                      <td>{institution.lastUpdated}</td>
-                      <td>
-                        <div className="table-actions">
-                          <button type="button" title="ดูข้อมูล">
-                            👁
-                          </button>
-                          <button type="button" title="แก้ไข">
-                            ✎
-                          </button>
-                          <button type="button" title="ลบ" className="danger">
-                            🗑
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
-            <div className="table-footer">
-              <span>
-                แสดง {filteredInstitutions.length ? 1 : 0} ถึง{' '}
-                {filteredInstitutions.length} จาก 1,248 รายการ
-              </span>
-
-              <div className="pagination">
-                <select aria-label="จำนวนรายการต่อหน้า">
-                  <option>10 / หน้า</option>
-                  <option>25 / หน้า</option>
-                  <option>50 / หน้า</option>
-                </select>
-
-                <button type="button">‹</button>
-                <button type="button" className="current">
-                  1
-                </button>
-                <button type="button">2</button>
-                <button type="button">3</button>
-                <button type="button">›</button>
+          <section className="table-card" id="details">
+            {loading ? (
+              <div style={{ padding: '24px', textAlign: 'center' }}>
+                กำลังโหลดข้อมูล...
               </div>
-            </div>
+            ) : errorMessage ? (
+              <div style={{ padding: '24px', textAlign: 'center', color: '#dc2626' }}>
+                {errorMessage}
+              </div>
+            ) : (
+              <>
+                <div className="table-scroll">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th>รหัสสถาบัน</th>
+                        <th>ชื่อสถาบัน</th>
+                        <th>ประเภท</th>
+                        <th>จังหวัด</th>
+                        <th>รูปแบบการสอบ</th>
+                        <th>อัปเดตล่าสุด</th>
+                        <th>จัดการ</th>
+                      </tr>
+                    </thead>
+
+                    <tbody>
+                      {filteredInstitutions.length > 0 ? (
+                        filteredInstitutions.map((institution) => (
+                          <tr key={institution.databaseId || institution.id}>
+                            <td className="mono">{institution.id}</td>
+                            <td className="name-cell">{institution.name}</td>
+                            <td>{institution.type}</td>
+                            <td>{institution.province}</td>
+                            <td>{institution.examType}</td>
+                            <td>{institution.lastUpdated}</td>
+                            <td>
+                              <div className="table-actions">
+                                <button type="button" title="ดูข้อมูล">
+                                  👁
+                                </button>
+                                <button type="button" title="แก้ไข">
+                                  ✎
+                                </button>
+                                <button type="button" title="ลบ" className="danger">
+                                  🗑
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="7" style={{ textAlign: 'center', padding: '24px' }}>
+                            ไม่พบข้อมูลสถาบัน
+                          </td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className="table-footer">
+                  <span>
+                    แสดง {filteredInstitutions.length ? 1 : 0} ถึง{' '}
+                    {filteredInstitutions.length} จาก {institutions.length} รายการ
+                  </span>
+                </div>
+              </>
+            )}
           </section>
         </div>
 
@@ -347,28 +325,25 @@ export default function AdminInstitutionDashboard() {
             >
               <div className="donut-center">
                 <span>รวมทั้งสิ้น</span>
-                <strong>1,248</strong>
+                <strong>{totalInstitution.toLocaleString('th-TH')}</strong>
                 <span>สถาบัน</span>
               </div>
             </div>
 
             <ul className="legend-list">
-              <li>
-                <span className="dot blue" />
-                โรงเรียนมัธยมศึกษา <strong>856</strong>
-              </li>
-              <li>
-                <span className="dot green" />
-                อาชีวศึกษา <strong>248</strong>
-              </li>
-              <li>
-                <span className="dot orange" />
-                โรงเรียนวิทยาศาสตร์ <strong>72</strong>
-              </li>
-              <li>
-                <span className="dot purple" />
-                อื่น ๆ <strong>72</strong>
-              </li>
+              {typeOptions
+                .filter((type) => type !== 'ทั้งหมด')
+                .map((type, index) => {
+                  const count = institutions.filter((item) => item.type === type).length;
+                  const tones = ['blue', 'green', 'orange', 'purple'];
+
+                  return (
+                    <li key={type}>
+                      <span className={`dot ${tones[index % tones.length]}`} />
+                      {type} <strong>{count.toLocaleString('th-TH')}</strong>
+                    </li>
+                  );
+                })}
             </ul>
           </section>
 
@@ -379,22 +354,24 @@ export default function AdminInstitutionDashboard() {
             </div>
 
             <div className="activity-list">
-              {activities.map((activity) => (
+              {institutions.slice(0, 4).map((institution) => (
                 <article
                   className="activity-item"
-                  key={`${activity.title}-${activity.time}`}
+                  key={`activity-${institution.databaseId || institution.id}`}
                 >
-                  <div className={`activity-icon ${activity.tone}`}>
-                    {activity.icon}
-                  </div>
+                  <div className="activity-icon green">🏫</div>
 
                   <div>
-                    <strong>{activity.title}</strong>
-                    <p>{activity.desc}</p>
-                    <span>{activity.time}</span>
+                    <strong>ข้อมูลสถาบัน</strong>
+                    <p>{institution.name}</p>
+                    <span>{institution.lastUpdated}</span>
                   </div>
                 </article>
               ))}
+
+              {!loading && institutions.length === 0 && (
+                <p style={{ padding: '12px' }}>ยังไม่มีข้อมูลล่าสุด</p>
+              )}
             </div>
           </section>
         </aside>
