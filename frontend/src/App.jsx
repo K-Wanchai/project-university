@@ -19,6 +19,7 @@ import Examination from './pages/admin/Examination.jsx';
 import EditExamination from './pages/admin/EditExamination.jsx';
 import Money from './pages/admin/Money.jsx';
 import AddExamination from './pages/admin/AddExamination.jsx';
+import DetailExamination from './pages/admin/DetailExamination.jsx';
 
 function App() {
   return (
@@ -47,7 +48,7 @@ function App() {
         <Route path="/edit-examination/:id" element={<EditExamination />} />
         <Route path="/money" element={<Money />} />
         <Route path="/add-examination" element={<AddExamination />} />
-
+        <Route path="/detail-examination/:id" element={<DetailExamination />} />
         {/* ถ้า path ไม่ตรง ให้กลับไปหน้า Login */}
         <Route path="*" element={<Navigate to="/Login" replace />} />
       </Routes>
