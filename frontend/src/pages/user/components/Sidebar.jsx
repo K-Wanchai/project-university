@@ -1,107 +1,78 @@
-import React, { useLayoutEffect, useRef } from "react";
+import React, { useLayoutEffect, useMemo, useRef } from "react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import "./Sidebar.css";
 
 const SIDEBAR_SCROLL_KEY = "user-sidebar-scroll-top";
 
-function Sidebar({
-  collapsed = false,
-  newPaymentCount = 0,
-  paymentNoticeCount = newPaymentCount,
-  onMobileOpen,
-  onMobileClose,
-}) {
+const menuGroups = [
+  {
+    label: "เมนูหลัก",
+    items: [
+      {
+        to: "/homepage",
+        icon: "fas fa-house",
+        label: "หน้าหลัก",
+        end: true,
+      },
+      {
+        to: "/student-history",
+        icon: "fas fa-id-card",
+        label: "ข้อมูลส่วนตัว",
+        relatedPaths: ["/student-profile/edit"],
+      },
+    ],
+  },
+  {
+    label: "การเรียนของฉัน",
+    items: [
+      {
+        to: "/my-courses",
+        icon: "fas fa-book-open",
+        label: "คอร์สเรียนของฉัน",
+      },
+      {
+        to: "/schedule",
+        icon: "fas fa-calendar-days",
+        label: "ตารางเรียน",
+      },
+      {
+        to: "/attendance",
+        icon: "fas fa-chalkboard-user",
+        label: "การเข้าเรียน",
+      },
+    ],
+  },
+  {
+    label: "ลงทะเบียนและชำระเงิน",
+    items: [
+      {
+        to: "/enrollment",
+        icon: "fas fa-file-signature",
+        label: "ลงทะเบียนเรียน",
+      },
+      {
+        to: "/enrollment-check",
+        icon: "fas fa-magnifying-glass",
+        label: "ตรวจสอบใบลงทะเบียน",
+      },
+      {
+        to: "/invoice",
+        icon: "fas fa-receipt",
+        label: "ใบแจ้งชำระเงิน",
+      },
+    ],
+  },
+];
+
+const extraPageLabels = {
+  "/student-profile/edit": "แก้ไขโปรไฟล์นักเรียน",
+  "/change-password": "เปลี่ยนรหัสผ่าน",
+};
+
+function Sidebar({ isOpen = false, onClose }) {
   const navigate = useNavigate();
   const location = useLocation();
   const scrollableRef = useRef(null);
-
-  const userName =
-    localStorage.getItem("studentName") ||
-    localStorage.getItem("username") ||
-    "ผู้ใช้งาน";
-
-  const role = localStorage.getItem("role") || "student";
-  const paymentCount = Number(paymentNoticeCount) || 0;
-
-  const menuGroups = [
-    {
-      label: "เมนูหลัก",
-      items: [
-        {
-          to: "/Homepage",
-          icon: "fas fa-house",
-          label: "หน้าหลัก",
-          end: true,
-        },
-        {
-          to: "/student-history",
-          icon: "far fa-circle-user",
-          label: "ข้อมูลส่วนตัว",
-        },
-      ],
-    },
-    {
-      label: "การเรียนของฉัน",
-      items: [
-        {
-          to: "/my-courses",
-          icon: "fas fa-book-open-reader",
-          label: "คอร์สเรียนของฉัน",
-        },
-        {
-          to: "/schedule",
-          icon: "far fa-calendar-days",
-          label: "ตารางเรียน",
-        },
-        {
-          to: "/attendance-record",
-          icon: "fas fa-user-check",
-          label: "การเข้าเรียน",
-        },
-      ],
-    },
-    {
-      label: "ลงทะเบียนและชำระเงิน",
-      items: [
-        {
-          to: "/register-course",
-          icon: "far fa-rectangle-list",
-          label: "ลงทะเบียนเรียน",
-        },
-        {
-          to: "/check-registration",
-          icon: "fas fa-clipboard-check",
-          label: "ตรวจสอบใบลงทะเบียน",
-        },
-        {
-          to: "/payment-notice",
-          icon: "fas fa-credit-card",
-          label: "ใบแจ้งชำระเงิน",
-          badge: paymentCount > 0 ? paymentCount : null,
-        },
-      ],
-    },
-    {
-      label: "ผลการเรียน",
-      items: [
-        {
-          to: "/test-result",
-          icon: "fas fa-square-poll-vertical",
-          label: "ผลทดสอบ",
-        },
-        {
-          to: "/study-result",
-          icon: "fas fa-graduation-cap",
-          label: "ผลการศึกษา",
-        },
-        {
-          to: "/teacher-evaluation",
-          icon: "fas fa-star-half-stroke",
-          label: "ประเมินผู้สอน",
-        },
-      ],
-    },
-  ];
 
   useLayoutEffect(() => {
     const scrollElement = scrollableRef.current;
@@ -131,6 +102,40 @@ function Sidebar({
     };
   }, []);
 
+  const flatItems = useMemo(
+    () => menuGroups.flatMap((group) => group.items),
+    []
+  );
+
+  const isItemActive = (item) => {
+    const pathname = location.pathname.toLowerCase();
+    const itemPath = item.to.toLowerCase();
+
+    if (item.end) {
+      return pathname === itemPath;
+    }
+
+    if (pathname === itemPath || pathname.startsWith(`${itemPath}/`)) {
+      return true;
+    }
+
+    return item.relatedPaths?.some((path) => {
+      const relatedPath = path.toLowerCase();
+      return pathname === relatedPath || pathname.startsWith(`${relatedPath}/`);
+    });
+  };
+
+  const activeMenuItem = flatItems.find(isItemActive);
+
+  const activeLabel =
+    extraPageLabels[location.pathname] ||
+    activeMenuItem?.label ||
+    "หน้าหลัก";
+
+  const handleMenuClick = () => {
+    onClose?.();
+  };
+
   const handleLogout = () => {
     if (window.confirm("คุณต้องการออกจากระบบใช่หรือไม่?")) {
       localStorage.removeItem("token");
@@ -139,105 +144,61 @@ function Sidebar({
       localStorage.removeItem("studentId");
       localStorage.removeItem("studentName");
 
+      onClose?.();
       navigate("/login");
     }
   };
 
-  const closeMobileAfterClick = () => {
-    if (window.innerWidth <= 900 && onMobileClose) {
-      onMobileClose();
-    }
-  };
-
-  const activeLabel =
-    menuGroups
-      .flatMap((group) => group.items)
-      .find((item) => {
-        if (item.end) return location.pathname === item.to;
-
-        return (
-          location.pathname === item.to ||
-          location.pathname.startsWith(item.to)
-        );
-      })?.label || "หน้าหลัก";
-
-  const renderBadge = (badge) => {
-    if (!badge) return null;
-
-    if (typeof badge === "number") {
-      return <span className="menu-badge">{badge > 99 ? "99+" : badge}</span>;
-    }
-
-    return <span className="menu-badge">{badge}</span>;
-  };
-
   return (
     <>
-      <aside className="mobile-sidebar-rail">
-        <button
-          type="button"
-          className="mobile-rail-menu-btn"
-          onClick={onMobileOpen}
-          aria-label="เปิดเมนู"
-        >
-          <span className="menu-emoji">☰</span>
-          <span className="menu-emoji-text">เมนู</span>
-        </button>
-      </aside>
+      <button
+        type="button"
+        className={`user-sidebar-backdrop ${isOpen ? "is-visible" : ""}`}
+        aria-label="ปิดเมนู"
+        onClick={onClose}
+      />
 
-      <nav
-        className={`sidebar-container ${collapsed ? "is-collapsed" : ""}`}
-        aria-label="เมนูผู้ใช้"
-      >
-        <div className="sidebar-logo">
-          <div className="logo-icon">
-            <i className="fas fa-user-graduate" />
+      <aside className={`user-sidebar ${isOpen ? "is-open" : ""}`}>
+        <div className="user-sidebar-top">
+          <div className="user-sidebar-brand">
+            <div className="user-sidebar-brand-icon" />
+
+            <div className="user-sidebar-brand-text">
+              <h2>ผู้ใช้งาน</h2>
+              <span>STUDENT CONSOLE</span>
+            </div>
           </div>
-
-          <div className="logo-text">
-            <h2>{userName}</h2>
-            <span>{role === "student" ? "STUDENT CONSOLE" : "USER CONSOLE"}</span>
-          </div>
-
-          <button
-            type="button"
-            className="sidebar-close-btn"
-            onClick={onMobileClose}
-            aria-label="ปิดเมนู"
-          >
-            <i className="fas fa-xmark" />
-          </button>
         </div>
 
-        <div className="sidebar-status-card">
-          <div className="status-dot" />
+        <div className="user-sidebar-status-card">
+          <div className="user-sidebar-status-dot" />
 
-          <div>
+          <div className="user-sidebar-status-text">
             <strong>เข้าสู่ระบบแล้ว</strong>
             <span>หน้าปัจจุบัน: {activeLabel}</span>
           </div>
         </div>
 
-        <div className="sidebar-scrollable" ref={scrollableRef}>
-          <ul className="sidebar-menu">
+        <div className="user-sidebar-scroll" ref={scrollableRef}>
+          <ul className="user-sidebar-menu">
             {menuGroups.map((group) => (
               <React.Fragment key={group.label}>
-                <li className="menu-header">{group.label}</li>
+                <li className="user-sidebar-menu-group">{group.label}</li>
 
                 {group.items.map((item) => (
                   <li key={item.to}>
                     <NavLink
                       to={item.to}
                       end={item.end}
-                      onClick={closeMobileAfterClick}
-                      className={({ isActive }) =>
-                        isActive ? "menu-item active" : "menu-item"
+                      onClick={handleMenuClick}
+                      className={() =>
+                        isItemActive(item)
+                          ? "user-sidebar-link active"
+                          : "user-sidebar-link"
                       }
-                      title={item.label}
                     >
                       <i className={item.icon} />
-                      <span className="menu-label">{item.label}</span>
-                      {renderBadge(item.badge)}
+                      <span>{item.label}</span>
                     </NavLink>
                   </li>
                 ))}
@@ -246,30 +207,28 @@ function Sidebar({
           </ul>
         </div>
 
-        <div className="sidebar-footer">
+        <div className="user-sidebar-footer">
           <NavLink
             to="/change-password"
-            onClick={closeMobileAfterClick}
+            onClick={handleMenuClick}
             className={({ isActive }) =>
-              isActive ? "menu-item active" : "menu-item"
+              isActive ? "user-sidebar-link active" : "user-sidebar-link"
             }
           >
             <i className="fas fa-key" />
-            <span className="menu-label">เปลี่ยนรหัสผ่าน</span>
+            <span>เปลี่ยนรหัสผ่าน</span>
           </NavLink>
-        </div>
 
-        <div className="sidebar-logout-layer">
           <button
             type="button"
-            className="logout-layer-btn"
+            className="user-sidebar-logout-btn"
             onClick={handleLogout}
           >
             <i className="fas fa-right-from-bracket" />
             <span>ออกจากระบบ</span>
           </button>
         </div>
-      </nav>
+      </aside>
     </>
   );
 }

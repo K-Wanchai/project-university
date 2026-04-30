@@ -1,404 +1,345 @@
-* {
-  box-sizing: border-box;
-}
-
-:root {
-  --sidebar-width: 272px;
-}
-
-body {
-  margin: 0;
-  font-family: "Kanit", "Prompt", Arial, sans-serif;
-  background: #eef2f8;
-}
-
-.homepage {
-  width: 100%;
-  min-height: 100vh;
-  background:
-    radial-gradient(circle at top right, rgba(76, 107, 255, 0.14), transparent 34%),
-    linear-gradient(135deg, #eef2f8 0%, #f8fafc 100%);
-}
-
-/* ===============================
-   MAIN LAYOUT
-================================ */
-
 .homepage-main {
-  min-height: 100vh;
-  margin-left: var(--sidebar-width);
-  width: calc(100% - var(--sidebar-width));
-  padding: clamp(20px, 3vw, 46px);
-  color: #111827;
-  overflow-x: hidden;
-  transition:
-    margin-left 0.28s ease,
-    width 0.28s ease,
-    padding 0.28s ease;
-}
-
-.homepage.sidebar-open .homepage-main {
-  margin-left: var(--sidebar-width);
-  width: calc(100% - var(--sidebar-width));
-}
-
-.homepage.sidebar-closed .homepage-main {
-  margin-left: 0;
   width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 42px 0 64px;
 }
 
-/* ===============================
-   OVERLAY
-================================ */
-
-.homepage-overlay {
-  display: none;
-}
-
-/* ===============================
-   HERO
-================================ */
+/* ================= Hero ================= */
 
 .homepage-hero {
-  display: flex;
-  justify-content: space-between;
+  width: 100%;
+  min-height: 260px;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1.3fr) minmax(220px, 0.7fr);
   align-items: center;
-  gap: 24px;
-  margin-bottom: 34px;
-  padding: clamp(22px, 3vw, 32px);
-  border-radius: 32px;
+  gap: 28px;
+
+  padding: clamp(26px, 4vw, 48px);
+  border: 1px solid #dfe6f1;
+  border-radius: 28px;
+
   background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.76)),
-    linear-gradient(135deg, rgba(37, 99, 235, 0.12), rgba(255, 138, 0, 0.1));
-  border: 1px solid rgba(148, 163, 184, 0.28);
-  box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
+    radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 32%),
+    linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+
+  box-shadow: 0 22px 48px rgba(15, 23, 42, 0.08);
 }
 
 .hero-profile {
+  min-width: 0;
   display: flex;
   align-items: center;
-  gap: 24px;
-  min-width: 0;
+  gap: 28px;
 }
 
 .hero-avatar {
-  width: clamp(82px, 9vw, 108px);
-  height: clamp(82px, 9vw, 108px);
+  width: 110px;
+  height: 110px;
+  flex: 0 0 110px;
+
+  display: grid;
+  place-items: center;
+
   border-radius: 50%;
-  padding: 5px;
-  background: linear-gradient(135deg, #ff8a00, #4f6df5);
-  box-shadow: 0 16px 28px rgba(15, 23, 42, 0.18);
-  flex-shrink: 0;
+  padding: 6px;
+
+  background: linear-gradient(135deg, #f97316, #6366f1);
+  box-shadow: 0 18px 34px rgba(15, 23, 42, 0.14);
 }
 
 .hero-avatar img {
   width: 100%;
   height: 100%;
-  border-radius: inherit;
-  object-fit: cover;
-  background: #ffffff;
+  display: block;
+
+  border-radius: 50%;
+  background: #dbeafe;
 }
 
 .hero-content {
   min-width: 0;
 }
 
-.hero-kicker,
-.section-kicker {
-  margin: 0 0 6px;
+.hero-kicker {
+  margin: 0 0 10px;
   color: #4f6df5;
-  font-size: clamp(12px, 1.4vw, 14px);
+  font-size: 14px;
   font-weight: 900;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
 }
 
-.homepage-hero h1 {
+.hero-content h1 {
   margin: 0;
-  color: #0f172a;
-  font-size: clamp(28px, 4vw, 54px);
-  line-height: 1.12;
-  font-weight: 900;
-  word-break: break-word;
+
+  color: #111827;
+  font-size: clamp(34px, 4.2vw, 58px);
+  font-weight: 950;
+  line-height: 1.04;
+  letter-spacing: -0.05em;
 }
 
-.homepage-hero h1 span {
-  color: #ff7a00;
+.hero-content h1 span {
+  display: block;
+  color: #f97316;
 }
 
 .hero-subtitle {
-  margin: 8px 0 0;
+  margin: 18px 0 0;
+
   color: #1f2937;
-  font-size: clamp(16px, 2vw, 26px);
-  font-weight: 800;
-  line-height: 1.35;
+  font-size: clamp(18px, 2vw, 28px);
+  font-weight: 900;
+  line-height: 1.38;
 }
 
 .hero-status-card {
-  min-width: 180px;
-  padding: 20px;
+  width: 100%;
+  max-width: 230px;
+  justify-self: end;
+
+  display: grid;
+  place-items: center;
+
+  padding: 26px 20px;
   border-radius: 24px;
-  background: #111b70;
+
   color: #ffffff;
-  text-align: center;
-  box-shadow: 0 18px 35px rgba(17, 27, 112, 0.22);
+  background: #151f7a;
+  box-shadow: 0 20px 36px rgba(21, 31, 122, 0.22);
 }
 
 .status-label {
-  display: block;
-  margin-bottom: 8px;
-  color: rgba(255, 255, 255, 0.72);
-  font-size: 14px;
+  color: rgba(255, 255, 255, 0.74);
+  font-size: 13px;
+  font-weight: 800;
 }
 
 .hero-status-card strong {
-  font-size: 22px;
+  margin-top: 8px;
+  color: #ffffff;
+  font-size: 28px;
+  font-weight: 950;
 }
 
-/* ===============================
-   SECTIONS
-================================ */
+/* ================= Sections ================= */
 
 .quick-section,
-.course-section {
-  margin-bottom: 36px;
+.course-section,
+.bottom-section {
+  margin-top: 34px;
 }
 
 .section-header {
   display: flex;
-  justify-content: space-between;
   align-items: end;
-  gap: 20px;
+  justify-content: space-between;
+  gap: 16px;
+
   margin-bottom: 18px;
 }
 
-.section-header h2 {
+.section-kicker {
+  margin: 0 0 6px;
+  color: #4f6df5;
+  font-size: 13px;
+  font-weight: 950;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.section-header h2,
+.progress-card h2,
+.announcement-header h2 {
   margin: 0;
   color: #111827;
-  font-size: clamp(24px, 3vw, 32px);
-  line-height: 1.25;
+  font-size: clamp(26px, 3vw, 38px);
+  font-weight: 950;
+  line-height: 1.16;
+  letter-spacing: -0.04em;
 }
 
-.view-all-link {
-  color: #4f6df5;
-  text-decoration: none;
-  font-weight: 900;
-  padding: 10px 16px;
-  border-radius: 999px;
-  background: rgba(79, 109, 245, 0.1);
-  transition: 0.2s ease;
-  white-space: nowrap;
-}
-
-.view-all-link:hover {
-  background: rgba(79, 109, 245, 0.18);
-  transform: translateY(-1px);
-}
-
-/* ===============================
-   QUICK MENU
-================================ */
+/* ================= Quick cards ================= */
 
 .quick-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 18px;
+  gap: 16px;
 }
 
 .quick-card {
+  min-width: 0;
+  min-height: 118px;
+
   display: flex;
   align-items: center;
-  gap: 14px;
-  min-height: 110px;
-  padding: 20px;
-  border-radius: 24px;
+  gap: 16px;
+
+  padding: 22px;
+  border: 1px solid #dfe6f1;
+  border-radius: 22px;
+
   background: #ffffff;
+  color: #111827;
   text-decoration: none;
-  color: inherit;
-  border: 1px solid rgba(148, 163, 184, 0.26);
-  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.07);
-  transition: 0.22s ease;
-  min-width: 0;
+
+  box-shadow: 0 14px 30px rgba(15, 23, 42, 0.06);
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
 }
 
 .quick-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 20px 38px rgba(15, 23, 42, 0.12);
+  transform: translateY(-3px);
+  border-color: #c7d2fe;
+  box-shadow: 0 18px 38px rgba(15, 23, 42, 0.1);
 }
 
 .quick-icon {
   width: 52px;
   height: 52px;
-  border-radius: 18px;
+  flex: 0 0 52px;
+
   display: grid;
   place-items: center;
-  background: #fff3e4;
+
+  border-radius: 16px;
+  background: #fff3e6;
   font-size: 26px;
-  flex-shrink: 0;
 }
 
 .quick-card h3 {
-  margin: 0 0 4px;
+  margin: 0;
   color: #111827;
   font-size: 18px;
+  font-weight: 950;
+  line-height: 1.2;
 }
 
 .quick-card p {
-  margin: 0;
-  color: #6b7280;
+  margin: 5px 0 0;
+  color: #64748b;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 800;
+  line-height: 1.35;
 }
 
-/* ===============================
-   COURSE CARDS
-================================ */
+/* ================= Course cards ================= */
+
+.view-all-link {
+  flex: 0 0 auto;
+
+  padding: 10px 18px;
+  border-radius: 999px;
+
+  background: #e8edff;
+  color: #4f6df5;
+
+  font-size: 14px;
+  font-weight: 900;
+  text-decoration: none;
+}
 
 .course-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 22px;
+  gap: 18px;
 }
 
 .course-card {
   overflow: hidden;
-  border-radius: 26px;
-  background: #ffffff;
-  border: 1px solid rgba(148, 163, 184, 0.3);
-  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.12);
-  transition: 0.22s ease;
-  min-width: 0;
-}
 
-.course-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 24px 45px rgba(15, 23, 42, 0.16);
+  border: 1px solid #dfe6f1;
+  border-radius: 24px;
+  background: #ffffff;
+
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.07);
 }
 
 .course-image {
-  height: clamp(110px, 13vw, 140px);
-  padding: 12px 12px 0;
+  height: 170px;
+  overflow: hidden;
 }
 
 .course-image img {
   width: 100%;
   height: 100%;
-  border-radius: 18px;
+  display: block;
   object-fit: cover;
 }
 
 .course-body {
-  padding: 18px 18px 20px;
+  padding: 20px;
 }
 
 .course-body h3 {
-  margin: 0 0 8px;
+  margin: 0 0 12px;
   color: #111827;
   font-size: 22px;
-  font-weight: 900;
+  font-weight: 950;
 }
 
 .course-teacher,
 .course-hours {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  margin: 7px 0;
-  color: #6b7280;
+  margin: 8px 0;
+  color: #64748b;
+  font-size: 14px;
   font-weight: 800;
-  line-height: 1.4;
 }
 
 .course-button {
-  display: block;
+  width: 100%;
+  min-height: 44px;
+
+  display: grid;
+  place-items: center;
+
   margin-top: 16px;
-  padding: 11px 18px;
-  border-radius: 999px;
-  background: #4f6df5;
+  border-radius: 14px;
+
+  background: #2563eb;
   color: #ffffff;
-  text-align: center;
-  text-decoration: none;
+
+  font-size: 14px;
   font-weight: 900;
-  transition: 0.2s ease;
+  text-decoration: none;
 }
 
-.course-button:hover {
-  background: #3957dc;
-}
-
-.course-card.orange .course-button {
-  background: #ff8a00;
-}
-
-.course-card.orange .course-button:hover {
-  background: #e97800;
-}
-
-.course-card.purple .course-button {
-  background: #7c3aed;
-}
-
-.course-card.purple .course-button:hover {
-  background: #6d28d9;
-}
-
-/* ===============================
-   BOTTOM SECTION
-================================ */
+/* ================= Bottom ================= */
 
 .bottom-section {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.85fr);
-  gap: 22px;
-  align-items: stretch;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
 }
 
 .announcement-card,
 .progress-card {
   padding: 24px;
-  border-radius: 26px;
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(148, 163, 184, 0.3);
-  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.09);
-  min-width: 0;
+  border: 1px solid #dfe6f1;
+  border-radius: 24px;
+  background: #ffffff;
+  box-shadow: 0 16px 34px rgba(15, 23, 42, 0.07);
 }
 
 .announcement-header {
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 14px;
-}
-
-.announcement-header span {
-  width: 44px;
-  height: 44px;
-  border-radius: 15px;
-  display: grid;
-  place-items: center;
-  background: #eef2ff;
-  font-size: 22px;
-  flex-shrink: 0;
-}
-
-.announcement-header h2,
-.progress-card h2 {
-  margin: 0;
-  color: #374151;
-  font-size: clamp(22px, 2.5vw, 28px);
 }
 
 .announcement-card ul {
-  margin: 0;
+  margin: 18px 0 0;
   padding-left: 20px;
 }
 
 .announcement-card li {
   margin: 10px 0;
-  color: #1f2937;
-  font-size: clamp(15px, 1.8vw, 17px);
+  color: #475569;
+  font-size: 15px;
   font-weight: 800;
-  line-height: 1.55;
 }
 
 .progress-list {
@@ -408,18 +349,18 @@ body {
 .progress-item {
   display: flex;
   justify-content: space-between;
-  margin: 16px 0 8px;
-  color: #374151;
+  gap: 12px;
+
+  color: #475569;
+  font-size: 15px;
   font-weight: 900;
 }
 
-.progress-item strong {
-  color: #4f6df5;
-}
-
 .progress-bar {
-  height: 12px;
+  height: 10px;
   overflow: hidden;
+
+  margin: 10px 0 18px;
   border-radius: 999px;
   background: #e5e7eb;
 }
@@ -427,14 +368,16 @@ body {
 .progress-bar div {
   height: 100%;
   border-radius: inherit;
-  background: linear-gradient(90deg, #4f6df5, #ff8a00);
+  background: linear-gradient(90deg, #2563eb, #22c55e);
 }
 
-/* ===============================
-   RESPONSIVE: NOTEBOOK
-================================ */
+/* ================= Responsive ================= */
 
-@media (max-width: 1280px) {
+@media (max-width: 1200px) {
+  .homepage-main {
+    max-width: 960px;
+  }
+
   .quick-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -443,226 +386,84 @@ body {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .bottom-section {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* ===============================
-   RESPONSIVE: TABLET
-================================ */
-
-@media (max-width: 1024px) {
-  .homepage-main {
-    padding: 28px;
-  }
-
   .homepage-hero {
-    align-items: flex-start;
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
 
   .hero-status-card {
-    width: 100%;
+    max-width: none;
+    justify-self: stretch;
   }
 }
 
-/* ===============================
-   RESPONSIVE: MOBILE BALANCED
-================================ */
-
 @media (max-width: 900px) {
-  .homepage {
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-  }
-
-  .homepage-main,
-  .homepage.sidebar-open .homepage-main,
-  .homepage.sidebar-closed .homepage-main {
-    margin-left: 0;
-    width: 100%;
-    max-width: 390px;
-    min-height: 100vh;
-    padding: 76px 18px 24px;
-  }
-
-  .homepage-overlay {
-    display: block;
-    position: fixed;
-    inset: 0;
-    z-index: 998;
-    border: 0;
-    background: rgba(15, 23, 42, 0.25);
-    cursor: pointer;
+  .homepage-main {
+    max-width: 680px;
+    padding-top: 72px;
   }
 
   .homepage-hero {
-    width: 100%;
-    margin: 0 auto 24px;
-    padding: 18px;
-    border-radius: 24px;
+    padding: 24px;
+    border-radius: 26px;
   }
 
   .hero-profile {
     align-items: flex-start;
-    flex-direction: column;
-    gap: 12px;
   }
 
   .hero-avatar {
-    width: 66px;
-    height: 66px;
-    padding: 4px;
+    width: 82px;
+    height: 82px;
+    flex-basis: 82px;
   }
 
-  .hero-kicker {
-    font-size: 11px;
-    margin-bottom: 6px;
-  }
-
-  .homepage-hero h1 {
-    font-size: 22px;
-    line-height: 1.2;
+  .hero-content h1 {
+    font-size: 34px;
   }
 
   .hero-subtitle {
-    margin-top: 12px;
-    font-size: 13px;
-    line-height: 1.45;
+    font-size: 18px;
   }
 
-  .hero-status-card {
-    width: 100%;
-    min-width: 0;
-    margin-top: 8px;
-    padding: 14px;
-    border-radius: 18px;
+  .quick-grid,
+  .course-grid,
+  .bottom-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .homepage-main {
+    max-width: 100%;
+    padding-top: 64px;
+    padding-bottom: 40px;
   }
 
-  .status-label {
-    font-size: 12px;
-    margin-bottom: 6px;
+  .homepage-hero {
+    padding: 22px;
   }
 
-  .hero-status-card strong {
-    font-size: 19px;
+  .hero-profile {
+    flex-direction: column;
+    gap: 16px;
   }
 
-  .quick-section {
-    margin-bottom: 0;
+  .hero-content h1 {
+    font-size: 30px;
   }
 
-  .quick-section .section-kicker {
-    display: none;
+  .quick-card {
+    min-height: 96px;
+    padding: 18px;
   }
 
   .section-header {
-    margin-bottom: 14px;
+    align-items: flex-start;
+    flex-direction: column;
   }
 
-  .section-header h2 {
-    font-size: 21px;
-    line-height: 1.25;
-  }
-
-  .quick-grid {
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-
-  .quick-card {
-    min-height: 74px;
-    padding: 14px 16px;
-    border-radius: 20px;
-    gap: 12px;
-  }
-
-  .quick-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 15px;
-    font-size: 21px;
-  }
-
-  .quick-card h3 {
-    font-size: 16px;
-    margin-bottom: 2px;
-  }
-
-  .quick-card p {
-    font-size: 12px;
-  }
-
-  .course-section,
-  .bottom-section {
-    display: none;
-  }
-}
-
-@media (max-width: 520px) {
-  .homepage-main,
-  .homepage.sidebar-open .homepage-main,
-  .homepage.sidebar-closed .homepage-main {
-    max-width: 370px;
-    padding: 72px 16px 20px;
-  }
-
-  .homepage-hero {
-    padding: 18px;
-    margin-bottom: 22px;
-  }
-
-  .hero-avatar {
-    width: 64px;
-    height: 64px;
-  }
-
-  .homepage-hero h1 {
-    font-size: 21px;
-  }
-
-  .hero-subtitle {
-    font-size: 12.5px;
-  }
-
-  .section-header h2 {
-    font-size: 20px;
-  }
-
-  .quick-card {
-    min-height: 72px;
-    padding: 13px 15px;
-  }
-}
-
-@media (max-width: 360px) {
-  .homepage-main,
-  .homepage.sidebar-open .homepage-main,
-  .homepage.sidebar-closed .homepage-main {
-    max-width: 340px;
-    padding-left: 12px;
-    padding-right: 12px;
-  }
-
-  .homepage-hero {
-    border-radius: 20px;
-  }
-
-  .homepage-hero h1 {
-    font-size: 20px;
-  }
-
-  .quick-card {
-    border-radius: 18px;
-  }
-
-  .quick-card h3 {
-    font-size: 15px;
-  }
-
-  .quick-card p {
-    font-size: 11.5px;
+  .view-all-link {
+    width: 100%;
+    text-align: center;
   }
 }
