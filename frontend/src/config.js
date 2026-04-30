@@ -18,4 +18,8 @@ export const ENDPOINTS = {
   ADMIN_INSTITUTES: `${API_BASE_URL}/admin/institutes`,
 
   EXAMINATIONS: `${API_BASE_URL}/examinations`,
+
+  // Student
+  STUDENT_PROFILE: `${API_BASE_URL}/students/profile`,
+  STUDENT_BY_ID: `${API_BASE_URL}/students`,
 };

@@ -6,6 +6,8 @@ import Register from './pages/user/pages/Register.jsx';
 import ParentLogin from './pages/user/pages/ParentLogin.jsx';
 
 import Homepage from './pages/user/pages/Homepage.jsx';
+import Studentdata from './pages/user/pages/Studentdata.jsx';
+import EditStudentProfile from "./pages/user/pages/EditStudentProfile";
 
 import Standard from './pages/admin/Standard.jsx';
 import User from './pages/admin/User.jsx';
@@ -25,14 +27,15 @@ function App() {
     <Router>
       <Routes>
         {/* เปิดหน้าแรกให้ไปหน้า Login */}
-        <Route path="/" element={<Navigate to="/Standard" replace />} />
+        <Route path="/" element={<Navigate to="/Homepage" replace />} />
 
         {/* User */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/parentlogin" element={<ParentLogin />} />
         <Route path="/homepage" element={<Homepage />} />
-
+        <Route path="/student-history" element={<Studentdata />} />
+        <Route path="/student-profile/edit" element={<EditStudentProfile />} />
 
         {/* Admin */}
         <Route path="/standard" element={<Standard />} />

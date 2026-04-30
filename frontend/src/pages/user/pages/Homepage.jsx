@@ -1,31 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
+import Layout from "../Layout/Layout";
 import "./Homepage.css";
-import Sidebar from "../components/Sidebar";
 
 function Homepage() {
-  const [sidebarOpen, setSidebarOpen] = useState(() => {
-    if (typeof window === "undefined") return true;
-    return window.innerWidth > 900;
-  });
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth > 900) {
-        setSidebarOpen(true);
-      } else {
-        setSidebarOpen(false);
-      }
-    };
-
-    window.addEventListener("resize", handleResize);
-    handleResize();
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
-
   const userName = localStorage.getItem("username") || "น้องตั้งใจ";
   const role = localStorage.getItem("role") || "student";
 
@@ -96,22 +74,12 @@ function Homepage() {
   ];
 
   return (
-    <div className={`homepage ${sidebarOpen ? "sidebar-open" : "sidebar-closed"}`}>
-      <Sidebar
-        collapsed={!sidebarOpen}
-        onMobileOpen={() => setSidebarOpen(true)}
-        onMobileClose={() => setSidebarOpen(false)}
-      />
-
-      {sidebarOpen && window.innerWidth <= 900 && (
-        <button
-          type="button"
-          className="homepage-overlay"
-          onClick={() => setSidebarOpen(false)}
-          aria-label="ปิดเมนู"
-        />
-      )}
-
+    <Layout
+      title="หน้าหลัก"
+      subtitle="จัดการข้อมูลการเรียนของคุณ"
+      notificationCount={0}
+      showHeader={false}
+    >
       <main className="homepage-main">
         <section className="homepage-hero">
           <div className="hero-profile">
@@ -246,7 +214,7 @@ function Homepage() {
           </div>
         </section>
       </main>
-    </div>
+    </Layout>
   );
 }
 
