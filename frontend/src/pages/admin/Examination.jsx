@@ -51,6 +51,7 @@ export default function AdminInstitutionDashboard() {
   const [institutions, setInstitutions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+  const [deletingId, setDeletingId] = useState('');
 
   const [filters, setFilters] = useState({
     academicYear: 'ทั้งหมด',
@@ -60,26 +61,26 @@ export default function AdminInstitutionDashboard() {
     keyword: '',
   });
 
-const fetchInstitutions = async () => {
-  try {
-    setLoading(true);
-    setErrorMessage('');
+  const fetchInstitutions = async () => {
+    try {
+      setLoading(true);
+      setErrorMessage('');
 
-    const data = await apiService.getExaminations();
+      const data = await apiService.getExaminations();
 
-    const list = Array.isArray(data)
-      ? data
-      : data.data || data.examinations || data.items || [];
+      const list = Array.isArray(data)
+        ? data
+        : data.data || data.examinations || data.items || [];
 
-    setInstitutions(list.map(normalizeInstitution));
-  } catch (error) {
-    console.error(error);
-    setErrorMessage('เกิดข้อผิดพลาดในการโหลดข้อมูลจากฐานข้อมูล');
-    setInstitutions([]);
-  } finally {
-    setLoading(false);
-  }
-};
+      setInstitutions(list.map(normalizeInstitution));
+    } catch (error) {
+      console.error(error);
+      setErrorMessage('เกิดข้อผิดพลาดในการโหลดข้อมูลจากฐานข้อมูล');
+      setInstitutions([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     fetchInstitutions();
@@ -143,6 +144,64 @@ const fetchInstitutions = async () => {
       examType: 'ทั้งหมด',
       keyword: '',
     });
+  };
+
+  const goToDetailPage = (institution) => {
+    const examinationId = institution.databaseId || institution.id;
+
+    navigate(`/detail-examination/${examinationId}`, {
+      state: {
+        examination: institution,
+      },
+    });
+  };
+
+  const goToEditPage = (institution) => {
+    const examinationId = institution.databaseId || institution.id;
+
+    navigate(`/edit-examination/${examinationId}`, {
+      state: {
+        examination: institution,
+      },
+    });
+  };
+
+  const handleDeleteInstitution = async (institution) => {
+    const examinationId = institution.databaseId || institution.id;
+
+    if (!examinationId || examinationId === '-') {
+      alert('ไม่พบรหัสข้อมูลสำหรับลบ');
+      return;
+    }
+
+    const isConfirmed = window.confirm(
+      `คุณต้องการลบข้อมูลสถาบัน "${institution.name}" ใช่หรือไม่?\n\nเมื่อลบแล้วจะไม่สามารถกู้คืนข้อมูลได้`
+    );
+
+    if (!isConfirmed) {
+      return;
+    }
+
+    try {
+      setDeletingId(examinationId);
+      setErrorMessage('');
+
+      await apiService.deleteExamination(examinationId);
+
+      setInstitutions((current) =>
+        current.filter((item) => {
+          const currentId = item.databaseId || item.id;
+          return currentId !== examinationId;
+        })
+      );
+
+      alert('ลบข้อมูลสำเร็จ');
+    } catch (error) {
+      console.error(error);
+      alert('เกิดข้อผิดพลาดในการลบข้อมูล');
+    } finally {
+      setDeletingId('');
+    }
   };
 
   const totalInstitution = institutions.length;
@@ -262,40 +321,61 @@ const fetchInstitutions = async () => {
                         <th>ชื่อสถาบัน</th>
                         <th>ประเภท</th>
                         <th>จังหวัด</th>
-                        <th>รูปแบบการสอบ</th>
-                        <th>อัปเดตล่าสุด</th>
                         <th>จัดการ</th>
+                        <th>อัปเดตล่าสุด</th>
                       </tr>
                     </thead>
 
                     <tbody>
                       {filteredInstitutions.length > 0 ? (
-                        filteredInstitutions.map((institution) => (
-                          <tr key={institution.databaseId || institution.id}>
-                            <td className="mono">{institution.id}</td>
-                            <td className="name-cell">{institution.name}</td>
-                            <td>{institution.type}</td>
-                            <td>{institution.province}</td>
-                            <td>{institution.examType}</td>
-                            <td>{institution.lastUpdated}</td>
-                            <td>
-                              <div className="table-actions">
-                                <button type="button" title="ดูข้อมูล">
-                                  👁
-                                </button>
-                                <button type="button" title="แก้ไข">
-                                  ✎
-                                </button>
-                                <button type="button" title="ลบ" className="danger">
-                                  🗑
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))
+                        filteredInstitutions.map((institution) => {
+                          const examinationId = institution.databaseId || institution.id;
+                          const isDeleting = deletingId === examinationId;
+
+                          return (
+                            <tr key={examinationId}>
+                              <td className="mono">{institution.id}</td>
+                              <td className="name-cell">{institution.name}</td>
+                              <td>{institution.type}</td>
+                              <td>{institution.province}</td>
+                              <td>
+                                <div className="table-actions">
+                                  <button
+                                    type="button"
+                                    title="ดูข้อมูล"
+                                    onClick={() => goToDetailPage(institution)}
+                                    disabled={isDeleting}
+                                  >
+                                    👁
+                                  </button>
+
+                                  <button
+                                    type="button"
+                                    title="แก้ไข"
+                                    onClick={() => goToEditPage(institution)}
+                                    disabled={isDeleting}
+                                  >
+                                    ✎
+                                  </button>
+
+                                  <button
+                                    type="button"
+                                    title="ลบ"
+                                    className="danger"
+                                    onClick={() => handleDeleteInstitution(institution)}
+                                    disabled={isDeleting}
+                                  >
+                                    {isDeleting ? '...' : '🗑'}
+                                  </button>
+                                </div>
+                              </td>
+                              <td>{institution.lastUpdated}</td>
+                            </tr>
+                          );
+                        })
                       ) : (
                         <tr>
-                          <td colSpan="7" style={{ textAlign: 'center', padding: '24px' }}>
+                          <td colSpan="6" style={{ textAlign: 'center', padding: '24px' }}>
                             ไม่พบข้อมูลสถาบัน
                           </td>
                         </tr>

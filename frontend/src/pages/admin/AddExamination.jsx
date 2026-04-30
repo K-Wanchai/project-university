@@ -274,7 +274,7 @@ const AddExamination = () => {
                       name="nameTh"
                       value={formData.nameTh}
                       onChange={handleChange}
-                      placeholder="เช่น โรงเรียนสวนกุหลาบวิทยาลัย"
+                      placeholder="ชื่อสถาบันที่จัดสอบ"
                       required
                     />
                   </label>
@@ -286,7 +286,7 @@ const AddExamination = () => {
                       name="nameEn"
                       value={formData.nameEn}
                       onChange={handleChange}
-                      placeholder="เช่น Suankularb Wittayalai School"
+                      placeholder="Institution Name in English"
                     />
                   </label>
 
@@ -297,7 +297,7 @@ const AddExamination = () => {
                       name="code"
                       value={formData.code}
                       onChange={handleChange}
-                      placeholder="เช่น INST0009"
+                      placeholder="รหัสสถาบัน"
                       required
                     />
                   </label>
@@ -311,50 +311,6 @@ const AddExamination = () => {
                     </select>
                   </label>
 
-                  <label className="form-group">
-                    <span>รูปแบบการสอบ</span>
-                    <select name="examType" value={formData.examType} onChange={handleChange}>
-                      <option value="TCAS">TCAS</option>
-                      <option value="Portfolio">Portfolio</option>
-                      <option value="Admission">Admission</option>
-                      <option value="โควตา">โควตา</option>
-                      <option value="รอบรับตรง">รอบรับตรง</option>
-                    </select>
-                  </label>
-
-                  <label className="form-group">
-                    <span>สถานะ</span>
-                    <select name="status" value={formData.status} onChange={handleChange}>
-                      <option value="กำลังเปิดรับสมัคร">กำลังเปิดรับสมัคร</option>
-                      <option value="พร้อมใช้งาน">พร้อมใช้งาน</option>
-                      <option value="รอตรวจสอบ">รอตรวจสอบ</option>
-                      <option value="ปิดใช้งาน">ปิดใช้งาน</option>
-                    </select>
-                  </label>
-
-                  <label className="form-group">
-                    <span>จำนวนผู้เข้าสอบที่รองรับ</span>
-                    <input
-                      type="number"
-                      name="capacity"
-                      value={formData.capacity}
-                      onChange={handleChange}
-                      placeholder="เช่น 500"
-                      min="0"
-                    />
-                  </label>
-
-                  <label className="form-group">
-                    <span>จำนวนห้องสอบ</span>
-                    <input
-                      type="number"
-                      name="roomCount"
-                      value={formData.roomCount}
-                      onChange={handleChange}
-                      placeholder="เช่น 20"
-                      min="0"
-                    />
-                  </label>
                 </div>
               </section>
 
@@ -377,7 +333,7 @@ const AddExamination = () => {
                       name="road"
                       value={formData.road}
                       onChange={handleChange}
-                      placeholder="เช่น 88 ถนนตรีเพชร"
+                      placeholder="ถนน, ซอย, อาคาร"
                     />
                   </label>
 
@@ -448,7 +404,7 @@ const AddExamination = () => {
                       name="contactName"
                       value={formData.contactName}
                       onChange={handleChange}
-                      placeholder="เช่น นายสมชาย ใจดี"
+                      placeholder="ชื่อ-นามสกุลผู้ประสานงาน"
                       required
                     />
                   </label>
@@ -460,7 +416,7 @@ const AddExamination = () => {
                       name="position"
                       value={formData.position}
                       onChange={handleChange}
-                      placeholder="เช่น เจ้าหน้าที่ประสานงาน"
+                      placeholder="ตำแหน่ง"
                     />
                   </label>
 
@@ -471,7 +427,7 @@ const AddExamination = () => {
                       name="phone"
                       value={formData.phone}
                       onChange={handleChange}
-                      placeholder="เช่น 0812345678"
+                      placeholder="เบอร์โทรศัพท์"
                       required
                     />
                   </label>
@@ -525,14 +481,6 @@ const AddExamination = () => {
                   <div>
                     <span>ประเภท</span>
                     <strong>{formData.type}</strong>
-                  </div>
-                  <div>
-                    <span>รูปแบบการสอบ</span>
-                    <strong>{formData.examType}</strong>
-                  </div>
-                  <div>
-                    <span>สถานะ</span>
-                    <strong className="status-pill">{formData.status}</strong>
                   </div>
                   <div>
                     <span>จังหวัด</span>
